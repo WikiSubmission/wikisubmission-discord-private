@@ -1,12 +1,10 @@
 import dotenv from "dotenv";
 import http from "http";
-import { GlobalCache } from "./utils/global-cache";
 import { Bot } from "./bot/client";
 
 (async () => {
     // [Environment]
     dotenv.config();
-    process.env.TZ = "America/Denver";
     console.log(
         `NODE_ENV: ${process.env.NODE_ENV || 'development (default)'}`,
     );
@@ -16,7 +14,7 @@ import { Bot } from "./bot/client";
         console.log(`Environment variables loaded (using token/client ID from .env)\n`)
     } else {
         console.error(
-            `Missing environment variables: SUPABASE_URL, SUPABASE_API_KEY`,
+            `Missing environment variables (BOT_TOKEN, BOT_CLIENT_ID) or (SUPABASE_URL, SUPABASE_API_KEY)`,
         );
         process.exit(1);
     }
@@ -27,6 +25,5 @@ import { Bot } from "./bot/client";
 
     // [Bot]
     const instance = new Bot();
-    GlobalCache.set("bot_instance", instance);
     await instance.start();
 })();
