@@ -11,7 +11,7 @@ The following environment variables are required to be defined inside a .env fil
 
 ## Main Bot
 
-Our main bot, WikiSubmission, can be found [here](https://github.com/WikiSubmission/wikisubmission-discord).
+Our main bot, WikiSubmission, can be found [here](https://github.com/WikiSubmission/wikisubmission-discord-service).
 
 ## License
 
