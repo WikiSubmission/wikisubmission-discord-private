@@ -1,4 +1,4 @@
-A simple, private bot designed for Submission Server. This bot is not available for public use, however, its source code is publicly available as part of our commitment to open source.
+A simple, private bot designed for Submission Server. While this bot is not available for public use, its source code is publicly available as part of our commitment to transparency and open source.
 
 ## Running
 
@@ -13,7 +13,7 @@ Our main bot, WikiSubmission, can be found [here](https://github.com/WikiSubmiss
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for more information.
 
 ## Contact
 Email: developer@wikisubmission.org
