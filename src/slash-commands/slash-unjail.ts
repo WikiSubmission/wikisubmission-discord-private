@@ -18,21 +18,9 @@ export default function Command(): WSlashCommand {
         required: true,
       },
     ],
+    access_control: 'MOD_AND_ABOVE',
     execute: async (interaction) => {
       try {
-        // [Authenticate request]
-        const isAuthorized = authenticateMember(
-          interaction.member,
-          'MOD_AND_ABOVE',
-        );
-        if (!isAuthorized) {
-          await interaction.reply({
-            content: 'You are not authorized to use this command',
-            flags: ['Ephemeral']
-          });
-          return;
-        }
-
         // [Fetch suspect]
         const suspectID = interaction.options.get('user')?.value as string;
         var suspect = interaction.guild?.members.cache.get(suspectID);
