@@ -4,8 +4,8 @@ A simple, private bot designed for Submission Server. This bot is not available 
 
 Install dependencies using `npm run install`. Then, start the bot with `npm run start`. The following environment variables are required to be defined inside a .env file at the root directory of the project:
 
-- BOT_TOKEN
-- BOT_CLIENT_ID
+- `BOT_TOKEN`
+- `BOT_CLIENT_ID`
 
 ## Main Bot
 
@@ -17,4 +17,5 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Contact
 Email: developer@wikisubmission.org
+
 Community Discord: https://discord.gg/submissionserver
