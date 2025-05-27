@@ -1,14 +1,13 @@
 import { Awaitable, Client, ClientEvents, GatewayIntentBits, REST, Routes } from 'discord.js'
+import { WEventListener } from '../types/w-event-listener';
+import { WSlashCommand } from '../types/w-slash-command';
+import { ScheduledTaskManager } from '../utils/discord/create-scheduled-action';
+import { authenticateMember } from '../utils/discord/authenticate-member';
+import { getCliParams } from '../utils/get-cli-params';
+import { parseInteraction } from '../utils/discord/parse-interaction';
 import { getEnv } from "../utils/get-env";
 import { getFileExports } from "../utils/get-file-exports";
-import { WSlashCommand } from '../types/w-slash-command';
-import { getCliParams } from '../utils/get-cli-params';
-import { SupportedGuilds } from '../constants/supported-guilds';
 import { logError } from '../utils/log-error';
-import { parseInteraction } from '../utils/discord/parse-interaction';
-import { authenticateMember } from '../utils/discord/authenticate-member';
-import { ScheduledTaskManager } from '../utils/discord/create-scheduled-action';
-import { WEventListener } from '../types/w-event-listener';
 
 export class Bot {
     public static client = new Client({
