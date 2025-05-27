@@ -1,8 +1,10 @@
-A simple, private bot designed for Submission Server. While this bot is not available for public use, its source code is publicly available as part of our commitment to transparency and open source.
+A minimalistic, private bot designed for the Submission Server. While not available for public use, its source code is publicly available as part of a commitment to transparency and open source.
 
 ## Running
 
-Install dependencies using `npm run install`. Then, start the bot with `npm run start`. The following environment variables are required to be defined inside a .env file at the root directory of the project:
+Install dependencies using `npm run install`. Then, start the bot with `npm run start`. 
+
+The following environment variables are required to be defined inside a .env file at the root directory of the project:
 
 - `BOT_TOKEN`
 - `BOT_CLIENT_ID`
