@@ -33,7 +33,7 @@ export default function listener(): WEventListener {
                 // [Case: member not found i.e. newly joined]
                 if (!memberRecord.data) {
                     // [Welcome]
-                    channels["staff-log"].send({
+                    channels["welcome"].send({
                         content: `<@${member.user.id}>`,
                         embeds: [
                             new EmbedBuilder()
@@ -94,7 +94,7 @@ export default function listener(): WEventListener {
                 // [Case: member found i.e. rejoined]
                 else {
                     // [Welcome message]
-                    await channels.welcome.send({
+                    await channels["welcome"].send({
                         content: `<@${member.user.id}>`,
                         embeds: [
                             new EmbedBuilder()
