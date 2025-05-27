@@ -2,6 +2,7 @@ import { EmbedBuilder } from 'discord.js';
 import { WEventListener } from '../types/w-event-listener';
 import { stringifyName } from '../utils/discord/stringify-name';
 import { stringifyRoles } from '../utils/discord/stringify-roles';
+import { logError } from '../utils/log-error';
 
 export default function listener(): WEventListener {
   return {
@@ -11,30 +12,34 @@ export default function listener(): WEventListener {
       if (!interaction.member) return;
       if (!interaction.isButton()) return;
       if (interaction.customId === 'view_roles') {
-        const guild = interaction.client.guilds.cache.find(
-          (g) => g.id === interaction.guildId,
-        );
-        const member = await guild?.members.fetch(interaction.user.id);
-        if (!member) return;
-        await interaction.reply({
-          embeds: [
-            new EmbedBuilder()
-              .setTitle('View Roles')
-              .addFields(
-                {
-                  name: `User`,
-                  value: stringifyName(member),
-                },
-                {
-                  name: `Roles`,
-                  value: stringifyRoles(member),
-                },
-              )
-              .setThumbnail(member.displayAvatarURL())
-              .setColor('DarkButNotBlack'),
-          ],
-          flags: ['Ephemeral'],
-        });
+        try {
+          const guild = interaction.client.guilds.cache.find(
+            (g) => g.id === interaction.guildId,
+          );
+          const member = await guild?.members.fetch(interaction.user.id);
+          if (!member) return;
+          await interaction.reply({
+            embeds: [
+              new EmbedBuilder()
+                .setTitle('View Roles')
+                .addFields(
+                  {
+                    name: `User`,
+                    value: stringifyName(member),
+                  },
+                  {
+                    name: `Roles`,
+                    value: stringifyRoles(member),
+                  },
+                )
+                .setThumbnail(member.displayAvatarURL())
+                .setColor('DarkButNotBlack'),
+            ],
+            flags: ['Ephemeral'],
+          });
+        } catch (error) {
+          logError(error, __filename);
+        }
       }
     },
   };

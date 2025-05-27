@@ -3,6 +3,7 @@ import { WEventListener } from '../types/w-event-listener';
 import { SelectableRoles } from '../constants/selectable-roles';
 import { getChannel } from '../utils/discord/get-channel';
 import { stringifyName } from '../utils/discord/stringify-name';
+import { logError } from '../utils/log-error';
 
 export default function listener(): WEventListener {
   return {
@@ -68,7 +69,7 @@ export default function listener(): WEventListener {
             ],
           });
         } catch (error) {
-          console.error(error);
+          logError(error, __filename);
           await interaction.reply({
             content: '`You do not have any roles to clear`',
             flags: ['Ephemeral']
