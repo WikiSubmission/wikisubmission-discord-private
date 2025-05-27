@@ -1,0 +1,26 @@
+{
+  "name": "wikisubmission-discord-private",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "clean": "rimraf ./build",
+    "build": "npm run clean && tsc",
+    "start": "npm run build && node build/index.js $*",
+    "generate-types": "npx supabase gen types --lang=typescript --project-id uunhgbgnjwcdnhmgadra --schema public > src/types/generated/database.types.ts"
+  },
+  "keywords": [],
+  "author": "WikiSubmission",
+  "license": "MIT",
+  "type": "commonjs",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.8",
+    "@types/minimist": "^1.2.5",
+    "date-fns": "^4.1.0",
+    "discord.js": "^14.19.3",
+    "dotenv": "^16.5.0",
+    "minimist": "^1.2.8",
+    "node-cache": "^5.1.2",
+    "rimraf": "^6.0.1"
+  }
+}
