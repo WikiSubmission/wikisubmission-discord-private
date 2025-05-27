@@ -58,12 +58,14 @@ export class Bot {
         token: string;
         clientId: string;
     }> {
+        // [Default to .env file]
         if (process.env.BOT_TOKEN && process.env.BOT_CLIENT_ID) {
             return {
                 token: process.env.BOT_TOKEN,
                 clientId: process.env.BOT_CLIENT_ID
             }
         }
+        // [Fetch keys from cloud - for WikiSubmission]
         return {
             token: await getEnv(
                 process.env.NODE_ENV === 'production'
@@ -195,13 +197,19 @@ export class Bot {
         // [Add event listener to listen for slash commands]
         this.addEventListener('interactionCreate', async (interaction) => {
             if (interaction.isCommand()) {
+                // [Get start timestamp]
                 const startTime = Date.now();
+
+                // [Debug log]
                 console.log(parseInteraction(interaction));
 
+                // [Loop over each known command]
                 for (const slashCommand of slashCommands) {
+
+                    // [Find the matching command requested]
                     if (interaction.commandName === slashCommand.name) {
                         try {
-                            // Early return case: unsupported DM use.
+                            // [Early return: DM use disabled]
                             if (slashCommand.disabled_in_dm && !interaction.guild) {
                                 await interaction.reply({
                                     content:
@@ -211,7 +219,7 @@ export class Bot {
                                 return;
                             }
 
-                            // Early return case: unauthorized user.
+                            // [Early return: unauthorized]
                             if (
                                 slashCommand.access_control &&
                                 !authenticateMember(
@@ -226,10 +234,10 @@ export class Bot {
                                 return;
                             }
 
-                            // Run slash command handler.
+                            // [Run handler]
                             await slashCommand.execute(interaction);
 
-                            // Record ping.
+                            // [Record ping]
                             const endTime = Date.now();
                             console.log(
                                 `[${interaction.id}] completed in ${(
