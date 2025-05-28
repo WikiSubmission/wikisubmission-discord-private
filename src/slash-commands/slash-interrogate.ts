@@ -25,7 +25,6 @@ export default function Command(): WSlashCommand {
                 // [Fetch suspect]
                 const suspectID = interaction.options.get('user')?.value as string;
                 var suspect = interaction.guild?.members.cache.get(suspectID);
-                const reason = interaction.options.get('reason')?.value as string;
                 if (!suspectID || !suspect) {
                     suspect = await interaction.guild?.members.fetch(suspectID);
                     if (!suspect) {
@@ -67,64 +66,62 @@ export default function Command(): WSlashCommand {
                 }
 
                 // [Send alerts]
-                if (!reason?.includes('!testing')) {
-                    await channels["verify"].send({
-                        content: `<@${suspect.user.id}> **Please verify with a staff member to gain access to the server.**`,
-                        embeds: [
-                            new EmbedBuilder()
-                                .addFields(
-                                    {
-                                        name: 'User',
-                                        value: stringifyName(suspect),
-                                    },
-                                    {
-                                        name: 'Account Created',
-                                        value:
-                                            DateUtils.distanceFromNow(
-                                                suspect.user.createdTimestamp,
-                                            )
-                                    },
-                                )
-                                .setFooter({
-                                    text: `${interaction.user.username}`,
-                                    iconURL: interaction.user.displayAvatarURL(),
-                                })
-                                .setTimestamp(Date.now())
-                                .setThumbnail(suspect.displayAvatarURL())
-                                .setColor('DarkRed'),
-                        ],
-                    });
-                    await channels["staff-log"].send({
-                        embeds: [
-                            new EmbedBuilder()
-                                .setAuthor({
-                                    name: `${suspect.user.username} was sent to verification channel`,
-                                    iconURL: suspect.displayAvatarURL(),
-                                })
-                                .addFields(
-                                    {
-                                        name: 'User',
-                                        value:
-                                            stringifyName(suspect),
-                                    },
-                                    {
-                                        name: 'Account Created',
-                                        value:
-                                            DateUtils.distanceFromNow(
-                                                suspect.user.createdTimestamp,
-                                            ),
-                                    },
-                                )
-                                .setFooter({
-                                    text: `${interaction.user.username}`,
-                                    iconURL: interaction.user.displayAvatarURL(),
-                                })
-                                .setThumbnail(suspect.displayAvatarURL())
-                                .setTimestamp(Date.now())
-                                .setColor('DarkButNotBlack'),
-                        ],
-                    });
-                }
+                await channels["verify"].send({
+                    content: `<@${suspect.user.id}> **Please verify with a staff member to gain access to the server.**`,
+                    embeds: [
+                        new EmbedBuilder()
+                            .addFields(
+                                {
+                                    name: 'User',
+                                    value: stringifyName(suspect),
+                                },
+                                {
+                                    name: 'Account Created',
+                                    value:
+                                        DateUtils.distanceFromNow(
+                                            suspect.user.createdTimestamp,
+                                        )
+                                },
+                            )
+                            .setFooter({
+                                text: `${interaction.user.username}`,
+                                iconURL: interaction.user.displayAvatarURL(),
+                            })
+                            .setTimestamp(Date.now())
+                            .setThumbnail(suspect.displayAvatarURL())
+                            .setColor('DarkRed'),
+                    ],
+                });
+                await channels["staff-log"].send({
+                    embeds: [
+                        new EmbedBuilder()
+                            .setAuthor({
+                                name: `${suspect.user.username} was sent to verification channel`,
+                                iconURL: suspect.displayAvatarURL(),
+                            })
+                            .addFields(
+                                {
+                                    name: 'User',
+                                    value:
+                                        stringifyName(suspect),
+                                },
+                                {
+                                    name: 'Account Created',
+                                    value:
+                                        DateUtils.distanceFromNow(
+                                            suspect.user.createdTimestamp,
+                                        ),
+                                },
+                            )
+                            .setFooter({
+                                text: `${interaction.user.username}`,
+                                iconURL: interaction.user.displayAvatarURL(),
+                            })
+                            .setThumbnail(suspect.displayAvatarURL())
+                            .setTimestamp(Date.now())
+                            .setColor('DarkButNotBlack'),
+                    ],
+                });
                 // [Move user out of VC, if they were in one]
                 if (suspect.voice.channel) {
                     const JAIL_VC_CHANNEL = getChannel('Verify VC', 'voice', interaction);
