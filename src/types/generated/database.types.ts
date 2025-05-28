@@ -9,30 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      ApplePushNotifications: {
-        Row: {
-          apns_token: string
-          created_at: string
-          failed_times: number
-          latitude: number | null
-          longitude: number | null
-        }
-        Insert: {
-          apns_token: string
-          created_at?: string
-          failed_times?: number
-          latitude?: number | null
-          longitude?: number | null
-        }
-        Update: {
-          apns_token?: string
-          created_at?: string
-          failed_times?: number
-          latitude?: number | null
-          longitude?: number | null
-        }
-        Relationships: []
-      }
       DataMocMedia: {
         Row: {
           media_end_seconds: number | null
@@ -300,24 +276,6 @@ export type Database = {
         }
         Relationships: []
       }
-      DiscordGuilds: {
-        Row: {
-          guild_id: string
-          id: number
-          name: string
-        }
-        Insert: {
-          guild_id: string
-          id?: number
-          name: string
-        }
-        Update: {
-          guild_id?: string
-          id?: number
-          name?: string
-        }
-        Relationships: []
-      }
       DiscordMembers: {
         Row: {
           avatar_url: string
@@ -355,15 +313,22 @@ export type Database = {
           user_id?: string
           user_name?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "DiscordMembers_guild_id_fkey"
-            columns: ["guild_id"]
-            isOneToOne: false
-            referencedRelation: "DiscordGuilds"
-            referencedColumns: ["guild_id"]
-          },
-        ]
+        Relationships: []
+      }
+      DiscordSecrets: {
+        Row: {
+          key: string
+          value: string
+        }
+        Insert: {
+          key: string
+          value?: string
+        }
+        Update: {
+          key?: string
+          value?: string
+        }
+        Relationships: []
       }
       GlobalCache: {
         Row: {
