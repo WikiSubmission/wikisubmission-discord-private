@@ -199,6 +199,13 @@ export default function listener(): WEventListener {
                                                     member.user.createdTimestamp,
                                                 ),
                                         },
+                                        {
+                                            name: 'Joined',
+                                            value:
+                                                DateUtils.distanceFromNow(
+                                                    member.joinedTimestamp,
+                                                ),
+                                        }
                                     )
                                     .setFooter({
                                         text: member.client.user.username,
@@ -218,10 +225,31 @@ export default function listener(): WEventListener {
                                         name: `${member.user.username} was jailed`,
                                         iconURL: member.displayAvatarURL(),
                                     })
-                                    .addFields({
-                                        name: 'Reason',
-                                        value: 'Rejoined (previously jailed)',
-                                    })
+                                    .addFields(
+                                        {
+                                            name: 'Reason',
+                                            value: 'Rejoined (previously jailed)',
+                                        },
+                                        {
+                                            name: 'User',
+                                            value:
+                                                stringifyName(member),
+                                        },
+                                        {
+                                            name: 'Account Created',
+                                            value:
+                                                DateUtils.distanceFromNow(
+                                                    member.user.createdTimestamp,
+                                                ),
+                                        },
+                                        {
+                                            name: 'Joined',
+                                            value:
+                                                DateUtils.distanceFromNow(
+                                                    member.joinedTimestamp,
+                                                ),
+                                        }
+                                    )
                                     .setFooter({
                                         text: member.client.user.username,
                                         iconURL: member.client.user.displayAvatarURL(),
@@ -269,6 +297,13 @@ export default function listener(): WEventListener {
                                                     member.user.createdTimestamp,
                                                 )
                                         },
+                                        {
+                                            name: 'Joined',
+                                            value:
+                                                DateUtils.distanceFromNow(
+                                                    member.joinedTimestamp,
+                                                ),
+                                        }
                                     )
                                     .setFooter({
                                         text: `${member.client.user.username}`,
@@ -301,6 +336,13 @@ export default function listener(): WEventListener {
                                                     member.user.createdTimestamp,
                                                 ),
                                         },
+                                        {
+                                            name: 'Joined',
+                                            value:
+                                                DateUtils.distanceFromNow(
+                                                    member.joinedTimestamp,
+                                                ),
+                                        }
                                     )
                                     .setFooter({
                                         text: `${member.user.username}`,

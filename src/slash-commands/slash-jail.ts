@@ -92,6 +92,13 @@ export default function Command(): WSlashCommand {
                         suspect.user.createdTimestamp,
                       )
                   },
+                  {
+                    name: 'Joined',
+                    value:
+                      DateUtils.distanceFromNow(
+                        suspect.joinedTimestamp,
+                      ),
+                  }
                 )
                 .setFooter({
                   text: `${interaction.user.username}`,
@@ -123,6 +130,13 @@ export default function Command(): WSlashCommand {
                         suspect.user.createdTimestamp,
                       ),
                   },
+                  {
+                    name: 'Joined',
+                    value:
+                      DateUtils.distanceFromNow(
+                        suspect.joinedTimestamp,
+                      ),
+                  }
                 )
                 .setFooter({
                   text: `${interaction.user.username}`,
