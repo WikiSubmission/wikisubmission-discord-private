@@ -30,6 +30,5 @@ import { Bot } from "./bot/client";
     server.listen(process.env.PORT || 8080);
 
     // [Bot]
-    const instance = new Bot();
-    await instance.start();
+    await Bot.instance.start();
 })();

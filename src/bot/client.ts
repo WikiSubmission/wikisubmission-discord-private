@@ -10,6 +10,8 @@ import { getFileExports } from "../utils/get-file-exports";
 import { logError } from '../utils/log-error';
 
 export class Bot {
+    static instance = new Bot();
+    
     public static client = new Client({
         intents: [
             // [Non-privileged intents]
