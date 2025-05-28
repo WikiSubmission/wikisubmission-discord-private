@@ -232,6 +232,86 @@ export default function listener(): WEventListener {
                             ],
                         })
                     }
+
+                    // === [Reinterrogate if previously pending verification] ===
+
+                    // [Dependencies]
+                    const verifyChannel = getChannel('verify', 'text', member);
+                    const unverifiedRole = getRole('Unverified', member);
+                    if (!verifyChannel) {
+                        console.warn(`Verify channel not found`);
+                        return;
+                    }
+                    if (!unverifiedRole) {
+                        console.warn(`Unveriried role not found`)
+                        return;
+                    }
+
+                    // [Case: was previously unverified]
+                    if (memberRecord.data.roles.split(",").includes(unverifiedRole.id)) {
+                        // [Add back role]
+                        await member.roles.add(unverifiedRole.id);
+
+                        // [Alert user]
+                        await verifyChannel.send({
+                            content: `<@${member.user.id}> **Please verify with a staff member to gain access to the server.**`,
+                            embeds: [
+                                new EmbedBuilder()
+                                    .addFields(
+                                        {
+                                            name: 'User',
+                                            value: stringifyName(member),
+                                        },
+                                        {
+                                            name: 'Account Created',
+                                            value:
+                                                DateUtils.distanceFromNow(
+                                                    member.user.createdTimestamp,
+                                                )
+                                        },
+                                    )
+                                    .setFooter({
+                                        text: `${member.client.user.username}`,
+                                        iconURL: member.client.user.displayAvatarURL(),
+                                    })
+                                    .setTimestamp(Date.now())
+                                    .setThumbnail(member.displayAvatarURL())
+                                    .setColor('DarkRed'),
+                            ],
+                        })
+
+                        // [Staff notice]
+                        await channels["staff-log"].send({
+                            embeds: [
+                                new EmbedBuilder()
+                                    .setAuthor({
+                                        name: `${member.user.username} was sent to verification channel`,
+                                        iconURL: member.displayAvatarURL(),
+                                    })
+                                    .addFields(
+                                        {
+                                            name: 'User',
+                                            value:
+                                                stringifyName(member),
+                                        },
+                                        {
+                                            name: 'Account Created',
+                                            value:
+                                                DateUtils.distanceFromNow(
+                                                    member.user.createdTimestamp,
+                                                ),
+                                        },
+                                    )
+                                    .setFooter({
+                                        text: `${member.user.username}`,
+                                        iconURL: member.user.displayAvatarURL(),
+                                    })
+                                    .setThumbnail(member.displayAvatarURL())
+                                    .setTimestamp(Date.now())
+                                    .setColor('DarkButNotBlack'),
+                            ],
+                        })
+                    }
                 }
 
             } catch (error) {
