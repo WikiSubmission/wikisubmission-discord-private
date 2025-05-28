@@ -1,7 +1,6 @@
 import { EmbedBuilder } from 'discord.js';
 import { WSlashCommand } from '../types/w-slash-command';
 import { DateUtils } from '../utils/date-utils';
-import { authenticateMember } from '../utils/discord/authenticate-member';
 import { stringifyName } from '../utils/discord/stringify-name';
 import { syncMember } from '../utils/discord/sync-member';
 import { getRole } from '../utils/discord/get-role';
