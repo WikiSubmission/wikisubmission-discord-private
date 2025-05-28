@@ -78,7 +78,7 @@ export default function listener(): WEventListener {
                                         value:
                                             DateUtils.distanceFromNow(member.user.createdTimestamp),
                                     },
-                                    ...(rolesString !== "--"
+                                    ...(rolesString !== "None"
                                         ? [
                                             {
                                                 name: 'Roles',
