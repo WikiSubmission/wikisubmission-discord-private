@@ -36,7 +36,8 @@ export default function Command(): WSlashCommand {
 
         // [Fetch associated roles and channels]
         const channels = getChannels(['verify', 'staff-log'])
-        const jailRole = getRole('Unverified', interaction);
+        const unverifiedRole = getRole('Unverified', interaction);
+
         if (!channels) {
           await interaction.reply({
             content: `At least one channel is missing: verify, staff-log `,
@@ -45,7 +46,7 @@ export default function Command(): WSlashCommand {
           return;
         }
 
-        if (!jailRole) {
+        if (!unverifiedRole) {
           await interaction.reply({
             content: `Verified role not found`,
             flags: ['Ephemeral']
@@ -53,9 +54,18 @@ export default function Command(): WSlashCommand {
           return;
         }
 
-        // [Unjail the user]
+        // [Check if already verified]
+        if (!suspect.roles.cache.has(unverifiedRole.id)) {
+          await interaction.reply({
+            content: `User "<@${suspectID}>" is already verified. To move them to verification, use \`/interrogate\`.`,
+            flags: ['Ephemeral']
+          });
+          return;
+        }
+
+        // [Verify the user]
         try {
-          await suspect.roles.remove(jailRole);
+          await suspect.roles.remove(unverifiedRole);
         } catch (error) {
           await interaction.reply({
             content: `Failed to verify user "<@${suspectID}>" (permission/role error).`,

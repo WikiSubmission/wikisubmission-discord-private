@@ -38,6 +38,7 @@ export default function Command(): WSlashCommand {
                 // [Fetch associated roles and channels]
                 const channels = getChannels(['verify', 'staff-log'])
                 const unverifiedRole = getRole('Unverified', interaction);
+
                 if (!channels) {
                     await interaction.reply({
                         content: `At least one channel is missing: verify, staff-log `,
@@ -54,7 +55,16 @@ export default function Command(): WSlashCommand {
                     return;
                 }
 
-                // [Jail the user]
+                // [Check if already pending verification]
+                if (suspect.roles.cache.has(unverifiedRole.id)) {
+                    await interaction.reply({
+                        content: `User "<@${suspectID}>" was already sent to verification. To move them out, use \`/verify\`.`,
+                        flags: ['Ephemeral']
+                    });
+                    return;
+                }
+
+                // [Move the user to verification]
                 try {
                     await suspect.roles.add(unverifiedRole);
                 } catch (error) {
