@@ -42,7 +42,7 @@ export default function listener(): WEventListener {
                                 .setColor('DarkBlue')
                                 .setTimestamp(Date.now())
                                 .setDescription(
-                                    `**Welcome to the Submission Server,** ${member.user.displayName || member.user.username}. Feel free to look around and check out the different channels.\n\nThis server is most active with voice chat activity. Join <#${getChannel('VC1', 'text', member) || '576134569338732565'}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${channels["choose-roles"].id}>.`,
+                                    `**Welcome to the Submission Server,** ${member.user.displayName || member.user.username}. Feel free to look around and check out the different channels.\n\nThis server is most active with voice chat activity. Join <#${getChannel('VC1', 'voice', member)?.id || '576134569338732565'}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${channels["choose-roles"].id}>.`,
                                 )
                                 .setFooter({
                                     text:
@@ -103,7 +103,7 @@ export default function listener(): WEventListener {
                                 .setColor('DarkBlue')
                                 .setTimestamp(Date.now())
                                 .setDescription(
-                                    `**Welcome back,** <@${member.user.id}>. Join <#576134569338732565> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#1373470762924511352>.`,
+                                    `**Welcome back,** <@${member.user.id}>. Join <#${getChannel('VC1', 'text', member)?.id || '576134569338732565'}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel('choose-roles', 'text', member)?.id || '576134569338732565'}>.`,
                                 )
                                 .setFooter({
                                     text:
