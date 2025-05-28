@@ -192,20 +192,6 @@ export default function listener(): WEventListener {
                                             name: 'User',
                                             value: stringifyName(member),
                                         },
-                                        {
-                                            name: 'Account Created',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.user.createdTimestamp,
-                                                ),
-                                        },
-                                        {
-                                            name: 'Joined',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.joinedTimestamp,
-                                                ),
-                                        }
                                     )
                                     .setFooter({
                                         text: member.client.user.username,
@@ -230,25 +216,6 @@ export default function listener(): WEventListener {
                                             name: 'Reason',
                                             value: 'Rejoined (previously jailed)',
                                         },
-                                        {
-                                            name: 'User',
-                                            value:
-                                                stringifyName(member),
-                                        },
-                                        {
-                                            name: 'Account Created',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.user.createdTimestamp,
-                                                ),
-                                        },
-                                        {
-                                            name: 'Joined',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.joinedTimestamp,
-                                                ),
-                                        }
                                     )
                                     .setFooter({
                                         text: member.client.user.username,
@@ -256,7 +223,7 @@ export default function listener(): WEventListener {
                                     })
                                     .setThumbnail(member.displayAvatarURL())
                                     .setTimestamp(Date.now())
-                                    .setColor('DarkButNotBlack'),
+                                    .setColor('DarkRed'),
                             ],
                         })
                     }
@@ -290,20 +257,6 @@ export default function listener(): WEventListener {
                                             name: 'User',
                                             value: stringifyName(member),
                                         },
-                                        {
-                                            name: 'Account Created',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.user.createdTimestamp,
-                                                )
-                                        },
-                                        {
-                                            name: 'Joined',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.joinedTimestamp,
-                                                ),
-                                        }
                                     )
                                     .setFooter({
                                         text: `${member.client.user.username}`,
@@ -329,20 +282,6 @@ export default function listener(): WEventListener {
                                             value:
                                                 stringifyName(member),
                                         },
-                                        {
-                                            name: 'Account Created',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.user.createdTimestamp,
-                                                ),
-                                        },
-                                        {
-                                            name: 'Joined',
-                                            value:
-                                                DateUtils.distanceFromNow(
-                                                    member.joinedTimestamp,
-                                                ),
-                                        }
                                     )
                                     .setFooter({
                                         text: `${member.user.username}`,
@@ -350,7 +289,7 @@ export default function listener(): WEventListener {
                                     })
                                     .setThumbnail(member.displayAvatarURL())
                                     .setTimestamp(Date.now())
-                                    .setColor('DarkButNotBlack'),
+                                    .setColor('DarkRed'),
                             ],
                         })
                     }
