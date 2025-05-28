@@ -9,6 +9,7 @@ export async function getFileExports<T>(
     opts?: {
         enforcePrefix?: string;
         ignoreChildrenDirectories?: boolean;
+        ignoreIfNotFound?: boolean;
     },
 ): Promise<T[]> {
     const cached = fileExportCache.get<T[]>(directoryPath);
@@ -21,7 +22,7 @@ export async function getFileExports<T>(
     );
 
     if (!fs.existsSync(targetDirectory)) {
-        console.warn(`Directory "${targetDirectory}" does not exist.`);
+        if (!opts?.ignoreIfNotFound) console.warn(`Directory "${targetDirectory}" does not exist.`);
         return [];
     }
 
@@ -55,7 +56,7 @@ export async function getFileExports<T>(
     }
 
     if (results.length === 0) {
-        console.warn(`No valid exports found in directory "${directoryPath}"`);
+        if (!opts?.ignoreIfNotFound) console.warn(`No valid exports found in directory "${directoryPath}"`);
     }
 
     fileExportCache.set(directoryPath, results);
