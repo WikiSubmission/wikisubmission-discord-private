@@ -68,13 +68,13 @@ export class Bot {
         return {
             token: await getEnv(
                 process.env.NODE_ENV === 'production'
-                    ? 'DISCORD_SUBMISSIONMOD_TOKEN'
-                    : 'DISCORD_SUBMISSIONMOD_DEVELOPMENT_TOKEN',
+                    ? 'DISCORD_TOKEN_SUBMISSIONMOD'
+                    : 'DISCORD_TOKEN_SUBMISSIONMOD_DEVELOPMENT',
             ),
             clientId: await getEnv(
                 process.env.NODE_ENV === 'production'
-                    ? 'DISCORD_SUBMISSIONMOD_CLIENT_ID'
-                    : 'DISCORD_SUBMISSIONMOD_DEVELOPMENT_CLIENT_ID',
+                    ? 'DISCORD_CLIENTID_SUBMISSIONMOD'
+                    : 'DISCORD_CLIENTID_SUBMISSIONMOD_DEVELOPMENT',
             ),
         }
     }

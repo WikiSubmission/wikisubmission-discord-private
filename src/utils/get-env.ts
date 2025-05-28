@@ -3,14 +3,8 @@ import { getSupabaseClient } from './get-supabase-client';
 
 export const EnvCache = new NodeCache();
 
-export type EnvironmentVariables =
-  | 'DISCORD_SUBMISSIONMOD_TOKEN'
-  | 'DISCORD_SUBMISSIONMOD_CLIENT_ID'
-  | 'DISCORD_SUBMISSIONMOD_DEVELOPMENT_TOKEN'
-  | 'DISCORD_SUBMISSIONMOD_DEVELOPMENT_CLIENT_ID'
-
 export async function getEnv(
-  secret: EnvironmentVariables,
+  secret: `DISCORD_TOKEN_${string}` | `DISCORD_CLIENTID_${string}`,
   critical: boolean = true,
 ): Promise<string> {
   const cached = EnvCache.get(secret);
@@ -19,7 +13,7 @@ export async function getEnv(
   }
   const client = getSupabaseClient();
   const request = await client
-    .from('Secrets')
+    .from('DiscordSecrets')
     .select('*')
     .eq('key', secret)
     .single();
