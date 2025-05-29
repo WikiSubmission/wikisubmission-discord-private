@@ -7,9 +7,9 @@ import { logError } from '../utils/log-error';
 
 export default function action(): ScheduledTaskManager {
   return new ScheduledTaskManager({
-    id: 'HOURLY_MEMBER_SYNC',
+    id: 'DAILY_MEMBER_SYNC',
     description: 'Syncs necessary member data',
-    interval: 'EVERY_HOUR',
+    interval: 'EVERY_DAY',
     action: async () => {
       try {
         const guild = await Bot.client.guilds.fetch(
