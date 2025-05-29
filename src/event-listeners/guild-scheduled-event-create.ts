@@ -38,7 +38,8 @@ export default function listener(): WEventListener {
                                 text:
                                     scheduledEvent.creatorId === scheduledEvent.client.user?.id
                                         ? `/event`
-                                        : '',
+                                        : `${scheduledEvent.creator?.username || scheduledEvent.id}`,
+                                iconURL: scheduledEvent.creator?.displayAvatarURL(),
                             })
                             .setColor('DarkBlue')
                             .setTimestamp(new Date()),
