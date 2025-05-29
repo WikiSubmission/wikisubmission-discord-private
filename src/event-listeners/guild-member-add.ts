@@ -13,7 +13,7 @@ export default function listener(): WEventListener {
     return {
         name: "guildMemberAdd",
         handler: async (member) => {
-            console.log(`Member "${member.user.username} (${member.user.displayName}" joined ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`);
+            console.log(`Member "${member.user.username} (${member.user.displayName}") joined ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`);
 
             try {
                 // [Required channels]
