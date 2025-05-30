@@ -11,7 +11,7 @@ export default function listener(): WEventListener {
     return {
         name: "guildMemberRemove",
         handler: async (member) => {
-            console.log(`Member "${member.user.username} (${member.user.displayName}") left ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`)
+            console.log(`Member "${member.user.username} (${member.user.displayName})" left ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`)
 
             try {
                 // [Staff log]

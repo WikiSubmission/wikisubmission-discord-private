@@ -9,7 +9,7 @@ export default function listener(): WEventListener {
     return {
         name: "guildBanAdd",
         handler: async (ban) => {
-            console.log(`Member "${ban.user.username} (${ban.user.displayName}") banned from ${ban.guild.name} (${ban.guild.id}).`)
+            console.log(`Member "${ban.user.username} (${ban.user.displayName})" banned from ${ban.guild.name} (${ban.guild.id}).`)
 
             try {
                 // [Delay for audit log]

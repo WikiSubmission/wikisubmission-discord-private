@@ -7,7 +7,7 @@ export default function listener(): WEventListener {
     return {
         name: "guildScheduledEventCreate",
         handler: async (scheduledEvent) => {
-            console.log(`Event "${scheduledEvent.name} (${scheduledEvent.channel?.name || scheduledEvent.channelId})" created by ${scheduledEvent.creator?.username || scheduledEvent.creatorId}.`)
+            console.log(`Event "${scheduledEvent.name}" (${scheduledEvent.channel?.name || scheduledEvent.channelId}) created by ${scheduledEvent.creator?.username || scheduledEvent.creatorId}.`)
 
             try {
                 // [Send alert]

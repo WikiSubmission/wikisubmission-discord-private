@@ -9,7 +9,7 @@ export default function listener(): WEventListener {
     return {
         name: "guildBanRemove",
         handler: async (unban) => {
-            console.log(`Member "${unban.user.username} (${unban.user.displayName}") unbanned from ${unban.guild.name} (${unban.guild.id}).`)
+            console.log(`Member "${unban.user.username} (${unban.user.displayName})" unbanned from ${unban.guild.name} (${unban.guild.id}).`)
 
             try {
                 // [Delay for audit log]
