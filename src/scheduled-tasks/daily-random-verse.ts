@@ -10,7 +10,7 @@ export default function action(): ScheduledTaskManager {
     description: 'Sends a random verse to `#quran` channel every 24 hours',
     interval: 'EVERY_DAY',
     action: async () => {
-      const quranChannel = getChannel('quran', 'text')
+      const quranChannel = getChannel(process.env.NODE_ENV === "production" ? 'zikr-remembrance' : 'quran', 'text')
 
       if (!quranChannel) {
         console.warn(`Could not find quran channel (environment=${process.env.NODE_ENV})`);
