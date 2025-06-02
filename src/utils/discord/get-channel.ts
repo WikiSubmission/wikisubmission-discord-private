@@ -20,10 +20,10 @@ export function getChannel<K extends 'text' | 'voice'>(
     context?: string | AcceptableContexts,
 ): (
     K extends 'text'
-        ? GuildTextBasedChannel
-        : K extends 'voice'
-        ? VoiceChannel
-        : never
+    ? GuildTextBasedChannel
+    : K extends 'voice'
+    ? VoiceChannel
+    : never
 ) | null {
     const matches = (channel: GuildBasedChannel) => {
         const matchesName = channel.name === name;
@@ -33,9 +33,21 @@ export function getChannel<K extends 'text' | 'voice'>(
         return matchesName && matchesType;
     };
 
+    const fallbackMatches = (channel: GuildBasedChannel) => {
+        const matchesName = channel.name.includes(name);
+        const matchesType =
+            (type === 'text' && 'send' in channel) ||
+            (type === 'voice' && channel.type === 2);
+        return matchesName && matchesType;
+    };
+
+    // Try exact match first
     if (context && typeof context !== "string") {
         const ch = context.guild?.channels.cache.find(matches);
         if (ch) return ch as any;
+        // Fallback to includes match
+        const fallbackCh = context.guild?.channels.cache.find(fallbackMatches);
+        if (fallbackCh) return fallbackCh as any;
     }
 
     if (!context || typeof context === "string") {
@@ -47,11 +59,21 @@ export function getChannel<K extends 'text' | 'voice'>(
         if (guild) {
             const ch = guild.channels.cache.find(matches);
             if (ch) return ch as any;
+            // Fallback to includes match
+            const fallbackCh = guild.channels.cache.find(fallbackMatches);
+            if (fallbackCh) return fallbackCh as any;
         }
     }
 
+    // Try exact match in all guilds
     for (const guild of Bot.client.guilds.cache.values()) {
         const ch = guild.channels.cache.find(matches);
+        if (ch) return ch as any;
+    }
+
+    // Fallback to includes match in all guilds
+    for (const guild of Bot.client.guilds.cache.values()) {
+        const ch = guild.channels.cache.find(fallbackMatches);
         if (ch) return ch as any;
     }
 
@@ -68,18 +90,18 @@ export function getChannels<
 ): Record<
     T,
     K extends 'text'
-        ? GuildTextBasedChannel
-        : K extends 'voice'
-        ? VoiceChannel
-        : never
+    ? GuildTextBasedChannel
+    : K extends 'voice'
+    ? VoiceChannel
+    : never
 > | null {
     const result = {} as Record<
         T,
         K extends 'text'
-            ? GuildTextBasedChannel
-            : K extends 'voice'
-            ? VoiceChannel
-            : never
+        ? GuildTextBasedChannel
+        : K extends 'voice'
+        ? VoiceChannel
+        : never
     >;
 
     for (const name of names) {
