@@ -16,7 +16,7 @@ type AcceptableContexts = Interaction | GuildMember | PartialGuildMember | Messa
 
 export function getChannel<K extends 'text' | 'voice'>(
     name: string,
-    type: K,
+    type: K = 'text' as K,
     context?: string | AcceptableContexts,
 ): (
     K extends 'text'
