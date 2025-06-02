@@ -7,7 +7,7 @@ export default function listener(): WEventListener {
         name: "voiceStateUpdate",
         handler: async (previousState, newState) => {
             try {
-                // [Joined]
+                // [VC Joined]
                 if (previousState.channelId === null && newState.channelId !== null) {
                     const associatedTextChannel = getChannel(`${newState.channel?.name?.split(" ")[0].toLowerCase().trim()}-chat`);
 
@@ -16,9 +16,10 @@ export default function listener(): WEventListener {
                     }
                 }
 
-                // [Left]
+                // [VC Left]
                 if (previousState.channelId !== null && newState.channelId === null) {
                     const associatedTextChannel = getChannel(`${previousState.channel?.name?.split(" ")[0].toLowerCase().trim()}-chat`);
+
                     if (associatedTextChannel) {
                         associatedTextChannel.send(`\`${previousState.member?.displayName}\` has left <#${previousState.channelId}>.`);
                     }
