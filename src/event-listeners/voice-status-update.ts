@@ -8,7 +8,7 @@ export default function listener(): WEventListener {
             try {
                 // [VC Joined]
                 if (previousState.channelId === null && newState.channelId !== null) {
-                    newState.channel?.send(`\`${newState.member?.displayName}\` has joined <#${newState.channelId}>.`);
+                    newState.channel?.send(`**${newState.member?.displayName}** has joined <#${newState.channelId}>.`);
                 }
 
                 // [VC Left]
