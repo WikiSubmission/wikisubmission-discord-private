@@ -62,7 +62,7 @@ export default function listener(): WEventListener {
                 await syncMember(member);
 
             } catch (error) {
-                logError(error, 'guildMemberRemove');
+                logError(error, __filename);
             }
         },
     };

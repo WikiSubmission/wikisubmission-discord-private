@@ -46,7 +46,7 @@ export default function listener(): WEventListener {
                     ]
                 })
             } catch (error) {
-                logError(error, 'guildScheduledEventCreate');
+                logError(error, __filename);
             }
         },
     };

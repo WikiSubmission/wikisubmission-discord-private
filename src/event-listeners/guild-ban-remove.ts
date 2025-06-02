@@ -61,7 +61,7 @@ export default function listener(): WEventListener {
                     ],
                 })
             } catch (error) {
-                logError(error, 'guildBanAdd')
+                logError(error, __filename)
             }
         },
     };

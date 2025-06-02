@@ -295,10 +295,10 @@ export default function listener(): WEventListener {
                     }
                 }
 
+                await syncMember(member);
             } catch (error) {
-                logError(error, 'guildMemberAdd')
+                logError(error, __filename)
             }
-            await syncMember(member);
         },
     };
 }
