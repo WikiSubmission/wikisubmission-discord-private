@@ -8,7 +8,7 @@ export default function listener(): WEventListener {
         handler: async (_, newRole) => {
             try {
                 await Promise.all(
-                    [...newRole.members.values()].map(member => syncMember(member))
+                    [...newRole.members.values()].map(member => syncMember(member, 'roleUpdate'))
                 );
             } catch (error) {
                 logError(error, __filename);

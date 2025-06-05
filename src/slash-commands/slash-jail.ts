@@ -156,7 +156,7 @@ export default function Command(): WSlashCommand {
           }
         }
         // [Update DB]
-        await syncMember(interaction.member as any);
+        await syncMember(interaction.member as any, __filename);
         // [Reply]
         await interaction.reply({
           content: `✅ Jailed <@${suspectID}>.`,
