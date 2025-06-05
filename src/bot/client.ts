@@ -11,7 +11,7 @@ import { logError } from '../utils/log-error';
 
 export class Bot {
     static instance = new Bot();
-    
+
     public static client = new Client({
         intents: [
             // [Non-privileged intents]
@@ -158,8 +158,12 @@ export class Bot {
             this.addEventListener(
                 eventListener.name,
                 async (...args) => {
-                    // @ts-ignore
-                    await eventListener.handler(...args);
+                    try {
+                        // @ts-ignore
+                        await eventListener.handler(...args);
+                    } catch (error) {
+                        logError(error, eventListener.name);
+                    }
                 },
                 eventListener.once ? true : false,
             );
