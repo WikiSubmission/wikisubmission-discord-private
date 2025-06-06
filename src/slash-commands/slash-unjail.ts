@@ -53,6 +53,15 @@ export default function Command(): WSlashCommand {
           return;
         }
 
+        // [Check if already unjailed]
+        if (!suspect.roles.cache.has(jailRole.id)) {
+          await interaction.reply({
+            content: `User "<@${suspectID}>" is already unjailed.`,
+            flags: ['Ephemeral']
+          });
+          return;
+        }
+
         // [Unjail the user]
         try {
           await suspect.roles.remove(jailRole);

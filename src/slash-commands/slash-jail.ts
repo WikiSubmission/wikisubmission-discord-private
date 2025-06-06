@@ -6,6 +6,7 @@ import { syncMember } from '../utils/discord/sync-member';
 import { getRole } from '../utils/discord/get-role';
 import { getChannel, getChannels } from '../utils/discord/get-channel';
 import { logError } from '../utils/log-error';
+import { authenticateMember } from '../utils/discord/authenticate-member';
 
 export default function Command(): WSlashCommand {
   return {
@@ -59,6 +60,24 @@ export default function Command(): WSlashCommand {
             content: `Jail role not found`,
             flags: ['Ephemeral']
           })
+          return;
+        }
+
+        // [Check if has unverified role]
+        if (suspect.roles.cache.has(getRole('Unverified', interaction)?.id || '')) {
+          await interaction.reply({
+            content: `User "<@${suspectID}>" is currently in verification. To move them out, use \`/verify\`.`,
+            flags: ['Ephemeral']
+          });
+          return;
+        }
+
+        // [No friendly fire]
+        if (authenticateMember(suspect, 'MOD_AND_ABOVE')) {
+          await interaction.reply({
+            content: `No friendly fire!`,
+            flags: ['Ephemeral']
+          });
           return;
         }
 
