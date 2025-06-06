@@ -42,7 +42,7 @@ export default function Command(): WSlashCommand {
 
                 if (!channels) {
                     await interaction.reply({
-                        content: `At least one channel is missing: verify, staff-log `,
+                        content: `At least one channel is missing: verify, staff-log`,
                         flags: ['Ephemeral']
                     })
                     return;
@@ -167,9 +167,9 @@ export default function Command(): WSlashCommand {
                 });
                 // [Move user out of VC, if they were in one]
                 if (suspect.voice.channel) {
-                    const JAIL_VC_CHANNEL = getChannel('Verify VC', 'voice', interaction);
-                    if (JAIL_VC_CHANNEL) {
-                        await suspect.voice.setChannel(JAIL_VC_CHANNEL, 'Automoved (verification)');
+                    const verifyVcChannel = getChannel('Verify VC', 'voice', interaction);
+                    if (verifyVcChannel) {
+                        await suspect.voice.setChannel(verifyVcChannel, 'Automoved (verification)');
                     }
                 }
                 // [Update DB]
@@ -184,7 +184,7 @@ export default function Command(): WSlashCommand {
                     content: `\`Internal Server Error\``,
                     flags: ['Ephemeral']
                 });
-                logError(error, 'slash-interrogate');
+                logError(error, __filename);
                 return;
             }
         },

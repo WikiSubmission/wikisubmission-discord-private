@@ -49,7 +49,7 @@ export default function Command(): WSlashCommand {
         const jailRole = getRole('Jail', interaction);
         if (!channels) {
           await interaction.reply({
-            content: `At least one channel is missing: jail, staff-log `,
+            content: `At least one channel is missing: jail, staff-log`,
             flags: ['Ephemeral']
           })
           return;
@@ -169,9 +169,9 @@ export default function Command(): WSlashCommand {
         }
         // [Move user out of VC, if they were in one]
         if (suspect.voice.channel) {
-          const JAIL_VC_CHANNEL = getChannel('Jail VC', 'voice', interaction);
-          if (JAIL_VC_CHANNEL) {
-            await suspect.voice.setChannel(JAIL_VC_CHANNEL, 'Automoved (jail)');
+          const jailVcChannel = getChannel('Jail VC', 'voice', interaction);
+          if (jailVcChannel) {
+            await suspect.voice.setChannel(jailVcChannel, 'Automoved (jail)');
           }
         }
         // [Update DB]
@@ -186,7 +186,7 @@ export default function Command(): WSlashCommand {
           content: `\`Internal Server Error\``,
           flags: ['Ephemeral']
         });
-        logError(error, 'slash-jail');
+        logError(error, __filename);
         return;
       }
     },

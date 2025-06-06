@@ -40,7 +40,7 @@ export default function Command(): WSlashCommand {
 
         if (!channels) {
           await interaction.reply({
-            content: `At least one channel is missing: verify, staff-log `,
+            content: `At least one channel is missing: verify, staff-log`,
             flags: ['Ephemeral']
           })
           return;
@@ -120,7 +120,7 @@ export default function Command(): WSlashCommand {
           content: `\`Internal Server Error\``,
           flags: ['Ephemeral']
         });
-        logError(error, 'slash-verify');
+        logError(error, __filename);
       }
     },
   };

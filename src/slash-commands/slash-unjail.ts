@@ -39,7 +39,7 @@ export default function Command(): WSlashCommand {
         const jailRole = getRole('Jail', interaction);
         if (!channels) {
           await interaction.reply({
-            content: `At least one channel is missing: jail, staff-log `,
+            content: `At least one channel is missing: jail, staff-log`,
             flags: ['Ephemeral']
           })
           return;
@@ -119,7 +119,7 @@ export default function Command(): WSlashCommand {
           content: `\`Internal Server Error\``,
           flags: ['Ephemeral']
         });
-        logError(error, 'slash-unjail');
+        logError(error, __filename);
       }
     },
   };
