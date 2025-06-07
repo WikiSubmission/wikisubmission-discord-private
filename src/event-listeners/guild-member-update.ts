@@ -12,7 +12,7 @@ export default function listener(): WEventListener {
                     ||
                     !oldMember.roles.cache.every(role => newMember.roles.cache.has(role.id))
                 ) {
-                    await syncMember(newMember, 'roleUpdate');
+                    await syncMember(newMember, 'guildMemberUpdate');
                 }
             } catch (error) {
                 logError(error, __filename);
