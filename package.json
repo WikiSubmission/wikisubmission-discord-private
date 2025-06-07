@@ -9,6 +9,9 @@
     "start": "npm run build && node build/index.js $*",
     "generate-types": "npx supabase gen types --lang=typescript --project-id uunhgbgnjwcdnhmgadra --schema public > src/types/generated/database.types.ts"
   },
+  "engines": {
+    "node": ">=20.18.1"
+  },
   "keywords": [],
   "author": "WikiSubmission",
   "license": "MIT",
