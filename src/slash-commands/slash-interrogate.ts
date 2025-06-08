@@ -172,8 +172,6 @@ export default function Command(): WSlashCommand {
                         await suspect.voice.setChannel(verifyVcChannel, 'Automoved (verification)');
                     }
                 }
-                // [Update DB]
-                await syncMember(suspect, __filename);
                 // [Reply]
                 await interaction.reply({
                     content: `✅ Unverified <@${suspectID}>. To add them back, use /verify command.`,

@@ -174,8 +174,6 @@ export default function Command(): WSlashCommand {
             await suspect.voice.setChannel(jailVcChannel, 'Automoved (jail)');
           }
         }
-        // [Update DB]
-        await syncMember(suspect, __filename);
         // [Reply]
         await interaction.reply({
           content: `✅ Jailed <@${suspectID}>.`,

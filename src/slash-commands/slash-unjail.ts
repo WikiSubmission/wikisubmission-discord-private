@@ -106,9 +106,6 @@ export default function Command(): WSlashCommand {
           ],
         });
 
-        // [Update DB]
-        await syncMember(suspect, __filename);
-
         // [Reply]
         await interaction.reply({
           content: `✅ Unjailed <@${suspectID}>.`,
