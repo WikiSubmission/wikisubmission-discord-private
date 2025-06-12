@@ -149,14 +149,12 @@ export default function listener(): WEventListener {
                                     },
                                     {
                                         name: 'Previous Roles',
-                                        value:
-                                            memberRecord.data.roles &&
-                                                memberRecord.data.roles.length > 0
-                                                ? memberRecord.data.roles
-                                                    .split(',')
-                                                    .map((r) => `<@&${r}>`)
-                                                    .join(', ')
-                                                : 'None',
+                                        value: memberRecord.data.roles && memberRecord.data.roles.trim().length > 0
+                                            ? memberRecord.data.roles
+                                                .split(',')
+                                                .map((r) => `<@&${r}>`)
+                                                .join(', ')
+                                            : 'No previous roles',
                                     },
                                 )
                         ]
