@@ -82,7 +82,7 @@ export const SelectableRoles: {
     },
     {
       category: 'Reminder Roles',
-      roleNames: ['Recitation Ping', 'Quran Study Ping'],
+      roleNames: ['Recitation Ping', 'Quran Study Ping', 'Meditation Ping', 'VC Ping', 'Bumper'],
       allowMultiple: true,
     },
   ];
