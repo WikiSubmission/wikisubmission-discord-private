@@ -22,7 +22,7 @@ export default function listener(): WEventListener {
                         new EmbedBuilder()
                             .setAuthor({
                                 name: `An event was created`,
-                                iconURL: scheduledEvent.creator?.displayAvatarURL(),
+                                iconURL: scheduledEvent.guild?.iconURL() || undefined,
                             })
                             .addFields(
                                 {
