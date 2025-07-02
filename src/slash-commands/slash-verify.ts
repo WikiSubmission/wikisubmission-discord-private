@@ -65,6 +65,10 @@ export default function Command(): WSlashCommand {
         // [Verify the user]
         try {
           await suspect.roles.remove(unverifiedRole);
+          const verifiedRole = getRole('Verified', interaction);
+          if (verifiedRole) {
+            await suspect.roles.add(verifiedRole);
+          }
         } catch (error) {
           await interaction.reply({
             content: `Failed to verify user "<@${suspectID}>" (permission/role error).`,
