@@ -1,8 +1,9 @@
+import { WikiSubmission } from 'wikisubmission-sdk';
 import { EmbedBuilder } from 'discord.js';
-import { Database } from '../types/generated/database.types';
 import { ScheduledTaskManager } from '../utils/discord/create-scheduled-action';
 import { getChannel } from '../utils/discord/get-channel';
 import { logError } from '../utils/log-error';
+import { ws } from '../utils/wikisubmission-sdk';
 
 export default function action(): ScheduledTaskManager {
   return new ScheduledTaskManager({
@@ -18,15 +19,12 @@ export default function action(): ScheduledTaskManager {
       }
 
       try {
-        const randomVerseRequest = await fetch(
-          `https://api.wikisubmission.org/quran/random-verse`,
-        );
-        const randomVerseResult: {
-          results: Database['public']['Tables']['DataQuran']['Row'][];
-          error?: { name: string; description: string };
-        } = await randomVerseRequest.json();
-        if (randomVerseResult.results && !randomVerseResult.error) {
-          const verse = randomVerseResult.results[0];
+        const randomVerseRequest = await ws.getRandomVerse();
+
+        if (randomVerseRequest instanceof ws.Error) {
+          logError(randomVerseRequest.message, 'daily-random-verse');
+        } else {
+          const verse = randomVerseRequest.response[0];
           await quranChannel.send({
             embeds: [
               new EmbedBuilder()
@@ -35,7 +33,7 @@ export default function action(): ScheduledTaskManager {
                   `**[${verse.verse_id}]** ${verse.verse_text_english}\n\n${verse.verse_text_arabic}`,
                 )
                 .setFooter({
-                  text: `Sura ${verse.chapter_number}, ${verse.chapter_title_english} (${verse.chapter_title_arabic_transliteration}) • Randomly Generated`,
+                  text: `${WikiSubmission.Quran.V1.Methods.formatDataToChapterTitle(randomVerseRequest.response, "english")} • Randomly Generated`,
                 })
                 .setColor('DarkButNotBlack'),
             ],
