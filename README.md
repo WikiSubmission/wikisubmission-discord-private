@@ -15,7 +15,7 @@ Our main bot, WikiSubmission, can be found [here](https://github.com/WikiSubmiss
 
 ## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for more information.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 ## Contact
 Email: developer@wikisubmission.org
