@@ -25,6 +25,7 @@
     "minimist": "^1.2.8",
     "node-cache": "^5.1.2",
     "rimraf": "^6.0.1",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "wikisubmission-sdk": "^1.0.5"
   }
 }
