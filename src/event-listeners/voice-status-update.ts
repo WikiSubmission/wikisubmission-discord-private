@@ -3,6 +3,7 @@ import {
   PermissionsBitField,
   GuildMember,
   VoiceBasedChannel,
+  GuildTextBasedChannel,
 } from "discord.js";
 import { logError } from "../utils/log-error";
 import { getChannel } from "../utils/discord/get-channel";
@@ -41,7 +42,7 @@ export default function listener(): WEventListener {
 }
 
 function canSendMessages(
-  channel: VoiceBasedChannel | null | undefined,
+  channel: GuildTextBasedChannel | null | undefined,
   botMember: GuildMember | null,
 ): boolean {
   if (!channel || !botMember) return false;
