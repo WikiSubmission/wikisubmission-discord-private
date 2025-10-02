@@ -5,11 +5,16 @@ import {
   NewsChannel,
   StageChannel,
   VoiceChannel,
+  PublicThreadChannel,
+  PrivateThreadChannel,
+  ChannelType,
+  DMChannel,
+  PartialDMChannel
 } from "discord.js";
 
 const SLOWMODE_ROLE_ID = "1423388115858489456"; // 🔹 delete+warning slowmode
-const BLOCKMODE_ROLE_ID = "1423388115858489457"; // 🔹 permission block slowmode
-const SLOWMODE_SECONDS = 3; // 🔹 adjust duration
+const BLOCKMODE_ROLE_ID = "1423395870933647504"; // 🔹 permission block slowmode
+const SLOWMODE_SECONDS = 10; // 🔹 adjust duration
 
 // Cache to track last message timestamps
 const lastMessageTimestamps = new Map<string, number>();
@@ -55,14 +60,14 @@ export default function listener(): WEventListener {
           if (diff < SLOWMODE_SECONDS) {
             await message.delete().catch(() => {});
 
-            // Make sure the channel actually supports overwrites
+            // Only apply permission overwrites for channels that support it
             if (
               message.channel instanceof TextChannel ||
               message.channel instanceof NewsChannel ||
               message.channel instanceof StageChannel ||
               message.channel instanceof VoiceChannel ||
-              message.channel instanceof PublicThreadChannel ||
-              message.channel instanceof PrivateThreadChannel
+              !(message.channel instanceof DMChannel)
+            
             ) {
               if (!lockedUsers.has(member.id)) {
                 lockedUsers.add(member.id);
