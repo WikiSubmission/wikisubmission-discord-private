@@ -61,29 +61,24 @@ export default function listener(): WEventListener {
             await message.delete().catch(() => {});
 
             // Only apply permission overwrites for channels that support it
-            if (
-              message.channel instanceof TextChannel ||
-              message.channel instanceof NewsChannel ||
-              message.channel instanceof StageChannel ||
-              message.channel instanceof VoiceChannel ||
-              !(message.channel instanceof DMChannel)
-            
-            ) {
-              if (!lockedUsers.has(member.id)) {
-                lockedUsers.add(member.id);
+            if ('permissionOverwrites' in message.channel) {
+                if (!lockedUsers.has(member.id)) {
+                    lockedUsers.add(member.id);
 
-                await message.channel.permissionOverwrites
-                  .edit(member.id, { SendMessages: false })
-                  .catch(() => {});
-
-                setTimeout(async () => {
-                  await message.channel.permissionOverwrites
-                    .delete(member.id)
+                    await message.channel.permissionOverwrites
+                    .edit(member.id, { SendMessages: false })
                     .catch(() => {});
-                  lockedUsers.delete(member.id);
-                }, SLOWMODE_SECONDS * 1000);
-              }
-            }
+
+                    setTimeout(async () => {
+                    if ('permissionOverwrites' in message.channel) {
+                        await message.channel.permissionOverwrites
+                        .delete(member.id)
+                        .catch(() => {});
+                    }
+                    lockedUsers.delete(member.id);
+                    }, SLOWMODE_SECONDS * 1000);
+                }
+                }
             return;
           }
 
