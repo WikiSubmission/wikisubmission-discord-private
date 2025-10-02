@@ -1,11 +1,20 @@
 import { WEventListener } from "../types/w-event-listener";
 import { logError } from "../utils/log-error";
+import {
+  TextChannel,
+  NewsChannel,
+  StageChannel,
+  VoiceChannel,
+} from "discord.js";
 
-const SLOWMODE_ROLE_ID = "1423388115858489456"; // 🔹 replace with your role ID
-const SLOWMODE_SECONDS = 3; // 🔹 adjust how long slowmode lasts
+const SLOWMODE_ROLE_ID = "1423388115858489456"; // 🔹 delete+warning slowmode
+const BLOCKMODE_ROLE_ID = "1423388115858489457"; // 🔹 permission block slowmode
+const SLOWMODE_SECONDS = 3; // 🔹 adjust duration
 
 // Cache to track last message timestamps
 const lastMessageTimestamps = new Map<string, number>();
+// Track users locked with permission overwrites
+const lockedUsers = new Set<string>();
 
 export default function listener(): WEventListener {
   return {
@@ -16,35 +25,68 @@ export default function listener(): WEventListener {
         if (!message.guild || !message.member) return;
 
         const member = message.member;
-
-        // Only apply to the one role
-        if (!member.roles.cache.has(SLOWMODE_ROLE_ID)) {
-          return; // everyone else = no slowmode
-        }
-
         const now = Date.now();
         const last = lastMessageTimestamps.get(member.id) ?? 0;
         const diff = (now - last) / 1000;
 
-        if (diff < SLOWMODE_SECONDS) {
-          // too soon → delete message
-          await message.delete().catch(() => {});
+        // Mode 1: Delete + warning (SLOWMODE_ROLE_ID)
+        if (member.roles.cache.has(SLOWMODE_ROLE_ID)) {
+          if (diff < SLOWMODE_SECONDS) {
+            await message.delete().catch(() => {});
 
-          // ephemeral-like warning (auto-delete after 5s)
-          const warning = await message.channel.send({
-            content: `${member}, you must wait **${Math.ceil(
-              SLOWMODE_SECONDS - diff
-            )}s** before sending another message.`,
-          });
+            const warning = await message.channel.send({
+              content: `${member}, you must wait **${Math.ceil(
+                SLOWMODE_SECONDS - diff
+              )}s** before sending another message.`,
+            });
 
-          setTimeout(() => {
-            warning.delete().catch(() => {});
-          }, 5000);
+            setTimeout(() => {
+              warning.delete().catch(() => {});
+            }, 5000);
+            return;
+          }
+
+          lastMessageTimestamps.set(member.id, now);
           return;
         }
 
-        // update timestamp
-        lastMessageTimestamps.set(member.id, now);
+        // Mode 2: Permission block (BLOCKMODE_ROLE_ID)
+        if (member.roles.cache.has(BLOCKMODE_ROLE_ID)) {
+          if (diff < SLOWMODE_SECONDS) {
+            await message.delete().catch(() => {});
+
+            // Make sure the channel actually supports overwrites
+            if (
+              message.channel instanceof TextChannel ||
+              message.channel instanceof NewsChannel ||
+              message.channel instanceof StageChannel ||
+              message.channel instanceof VoiceChannel ||
+              message.channel instanceof PublicThreadChannel ||
+              message.channel instanceof PrivateThreadChannel
+            ) {
+              if (!lockedUsers.has(member.id)) {
+                lockedUsers.add(member.id);
+
+                await message.channel.permissionOverwrites
+                  .edit(member.id, { SendMessages: false })
+                  .catch(() => {});
+
+                setTimeout(async () => {
+                  await message.channel.permissionOverwrites
+                    .delete(member.id)
+                    .catch(() => {});
+                  lockedUsers.delete(member.id);
+                }, SLOWMODE_SECONDS * 1000);
+              }
+            }
+            return;
+          }
+
+          lastMessageTimestamps.set(member.id, now);
+          return;
+        }
+
+        // Others → no slowmode
       } catch (err) {
         logError(err, __filename);
       }
