@@ -43,7 +43,7 @@ export async function getFileExports<T>(
 
     try {
       const mod = await import(filePath);
-      const exported = mod?.default;
+      const exported = mod?.default?.default;
 
       if (typeof exported === "function") {
         const result = await exported();
