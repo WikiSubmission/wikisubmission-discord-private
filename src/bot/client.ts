@@ -2,6 +2,7 @@ import {
   Awaitable,
   Client,
   ClientEvents,
+  Events,
   GatewayIntentBits,
   REST,
   Routes,
@@ -47,25 +48,35 @@ export class Bot {
   });
 
   async start() {
-    // [Login]
-    const { token } = await this.getCredentials();
-    await Bot.client.login(token);
-    console.log(
-      `Online as "${Bot.client.user?.username}". In ${Bot.client.guilds.cache.size} guilds.`,
-    );
-    Bot.client.guilds.cache.forEach((guild) => {
-      console.log(`- ${guild.name} (${guild.id})`);
+    // [Get credentials first]
+    const { token } =
+      process.env.NODE_ENV === "production"
+        ? await this.getCredentials()
+        : { token: process.env.BOT_TOKEN };
+
+    // [Set up ready event BEFORE logging in]
+    Bot.client.once(Events.ClientReady, async () => {
+      console.log(
+        `Online as "${Bot.client.user?.username}". In ${Bot.client.guilds.cache.size} guilds.`,
+      );
+      Bot.client.guilds.cache.forEach((guild) => {
+        console.log(`- ${guild.name} (${guild.id})`);
+      });
+
+      // [Now register everything after ready]
+      await this.registerSlashCommands();
+      await this.registerEventListeners();
+      await this.registerScheduledTasks();
+      await this.listenForSlashCommands();
     });
 
-    // [Slash commands]
-    await this.registerSlashCommands();
-    await this.listenForSlashCommands();
+    // [Set up error handlers]
+    Bot.client.on("error", console.error);
+    Bot.client.on("shardError", console.error);
+    Bot.client.on("warn", console.warn);
 
-    // [Event listeners]
-    await this.registerEventListeners();
-
-    // [Scheduled tasks]
-    await this.registerScheduledTasks();
+    // [Login last]
+    await Bot.client.login(token);
   }
 
   async getCredentials(): Promise<{
@@ -237,7 +248,11 @@ export class Bot {
               }
 
               // [Run handler]
-              await slashCommand.execute(interaction);
+              await slashCommand.execute(
+                interaction as import("discord.js").ChatInputCommandInteraction<
+                  import("discord.js").CacheType
+                >,
+              );
 
               // [Record ping]
               const endTime = Date.now();
