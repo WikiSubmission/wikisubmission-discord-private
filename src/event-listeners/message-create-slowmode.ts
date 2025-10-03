@@ -85,8 +85,6 @@ export default function listener(): WEventListener {
           lastMessageTimestamps.set(member.id, now);
           return;
         }
-
-        // Others → no slowmode
       } catch (err) {
         logError(err, __filename);
       }

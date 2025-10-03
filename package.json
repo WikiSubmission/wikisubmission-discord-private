@@ -7,7 +7,8 @@
     "clean": "rimraf ./build",
     "build": "npm run clean && tsc",
     "start": "npm run build && node build/index.js $*",
-    "generate-types": "npx supabase gen types --lang=typescript --project-id uunhgbgnjwcdnhmgadra --schema public > src/types/generated/database.types.ts"
+    "generate-types": "npx supabase gen types --lang=typescript --project-id uunhgbgnjwcdnhmgadra --schema public > src/types/generated/database.types.ts",
+    "dev": "tsx watch src/index.ts"
   },
   "engines": {
     "node": ">=20.18.1"
@@ -27,5 +28,9 @@
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "wikisubmission-sdk": "^1.0.5"
+  },
+  "devDependencies": {
+    "prettier": "^3.6.2",
+    "tsx": "^4.20.6"
   }
 }
