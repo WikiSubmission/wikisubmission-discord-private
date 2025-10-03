@@ -1,4 +1,5 @@
 import {
+  Guild,
   GuildBan,
   GuildBasedChannel,
   GuildMember,
@@ -20,7 +21,8 @@ type AcceptableContexts =
   | Message
   | GuildScheduledEvent
   | GuildBan
-  | VoiceState;
+  | VoiceState
+  | Guild;
 
 export function getChannel<K extends "text" | "voice">(
   name: string,
@@ -51,11 +53,19 @@ export function getChannel<K extends "text" | "voice">(
 
   // Try exact match first
   if (context && typeof context !== "string") {
-    const ch = context.guild?.channels.cache.find(matches);
-    if (ch) return ch as any;
-    // Fallback to includes match
-    const fallbackCh = context.guild?.channels.cache.find(fallbackMatches);
-    if (fallbackCh) return fallbackCh as any;
+    let ch: GuildBasedChannel | undefined;
+    if (context instanceof Guild) {
+      ch = context.channels.cache.find(matches);
+      if (ch) return ch as any;
+      ch = context.channels.cache.find(fallbackMatches);
+      if (ch) return ch as any;
+    } else {
+      ch = context.guild?.channels.cache.find(matches);
+      if (ch) return ch as any;
+      // Fallback to includes match
+      ch = context.guild?.channels.cache.find(fallbackMatches);
+      if (ch) return ch as any;
+    }
   }
 
   if (!context || typeof context === "string") {
