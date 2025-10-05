@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.0.2 (a4e00ff)"
+  }
   public: {
     Tables: {
       DataMocMedia: {
@@ -276,6 +281,21 @@ export type Database = {
         }
         Relationships: []
       }
+      DataQuranWordByWordMeanings: {
+        Row: {
+          meanings: string
+          root_word: string
+        }
+        Insert: {
+          meanings: string
+          root_word: string
+        }
+        Update: {
+          meanings?: string
+          root_word?: string
+        }
+        Relationships: []
+      }
       DiscordMembers: {
         Row: {
           avatar_url: string
@@ -312,6 +332,36 @@ export type Database = {
           roles?: string
           user_id?: string
           user_name?: string
+        }
+        Relationships: []
+      }
+      DiscordScheduleMessageDeletion: {
+        Row: {
+          channel_id: string
+          created_at: string
+          execute_at: string
+          id: number
+          is_executed: boolean
+          message_ids: string[]
+          request_by_id: string
+        }
+        Insert: {
+          channel_id: string
+          created_at?: string
+          execute_at: string
+          id?: number
+          is_executed?: boolean
+          message_ids: string[]
+          request_by_id: string
+        }
+        Update: {
+          channel_id?: string
+          created_at?: string
+          execute_at?: string
+          id?: number
+          is_executed?: boolean
+          message_ids?: string[]
+          request_by_id?: string
         }
         Relationships: []
       }
@@ -360,6 +410,465 @@ export type Database = {
         }
         Relationships: []
       }
+      "ws-bookmarks": {
+        Row: {
+          category: string | null
+          created_at: string
+          id: string
+          key: string
+          notes: string | null
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          key: string
+          notes?: string | null
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          id?: string
+          key?: string
+          notes?: string | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      "ws-chapter-of-the-day": {
+        Row: {
+          chapter_number: number
+          day: number
+          id: string | null
+          month: number
+          year: number
+        }
+        Insert: {
+          chapter_number: number
+          day: number
+          id?: string | null
+          month: number
+          year: number
+        }
+        Update: {
+          chapter_number?: number
+          day?: number
+          id?: string | null
+          month?: number
+          year?: number
+        }
+        Relationships: []
+      }
+      "ws-notifications": {
+        Row: {
+          created_at: string
+          daily_chapter_notifications: Json | null
+          daily_verse_notifications: Json | null
+          device_token: string | null
+          id: string
+          last_delivery_at: string | null
+          platform: string | null
+          prayer_time_notifications: Json | null
+        }
+        Insert: {
+          created_at?: string
+          daily_chapter_notifications?: Json | null
+          daily_verse_notifications?: Json | null
+          device_token?: string | null
+          id?: string
+          last_delivery_at?: string | null
+          platform?: string | null
+          prayer_time_notifications?: Json | null
+        }
+        Update: {
+          created_at?: string
+          daily_chapter_notifications?: Json | null
+          daily_verse_notifications?: Json | null
+          device_token?: string | null
+          id?: string
+          last_delivery_at?: string | null
+          platform?: string | null
+          prayer_time_notifications?: Json | null
+        }
+        Relationships: []
+      }
+      "ws-quran": {
+        Row: {
+          chapter_number: number
+          chapter_revelation_order: number
+          chapter_title_arabic: string
+          chapter_title_english: string
+          chapter_title_transliterated: string
+          chapter_verses: number | null
+          global_index: number
+          verse_footnote_english: string | null
+          verse_id: string
+          verse_id_arabic: string
+          verse_index: number
+          verse_number: number
+          verse_subtitle_english: string | null
+          verse_text_arabic: string
+          verse_text_arabic_clean: string
+          verse_text_english: string
+          verse_text_transliterated: string
+        }
+        Insert: {
+          chapter_number: number
+          chapter_revelation_order: number
+          chapter_title_arabic: string
+          chapter_title_english: string
+          chapter_title_transliterated: string
+          chapter_verses?: number | null
+          global_index?: number
+          verse_footnote_english?: string | null
+          verse_id: string
+          verse_id_arabic: string
+          verse_index: number
+          verse_number: number
+          verse_subtitle_english?: string | null
+          verse_text_arabic: string
+          verse_text_arabic_clean: string
+          verse_text_english: string
+          verse_text_transliterated: string
+        }
+        Update: {
+          chapter_number?: number
+          chapter_revelation_order?: number
+          chapter_title_arabic?: string
+          chapter_title_english?: string
+          chapter_title_transliterated?: string
+          chapter_verses?: number | null
+          global_index?: number
+          verse_footnote_english?: string | null
+          verse_id?: string
+          verse_id_arabic?: string
+          verse_index?: number
+          verse_number?: number
+          verse_subtitle_english?: string | null
+          verse_text_arabic?: string
+          verse_text_arabic_clean?: string
+          verse_text_english?: string
+          verse_text_transliterated?: string
+        }
+        Relationships: []
+      }
+      "ws-quran-chapters": {
+        Row: {
+          chapter_number: number
+          chapter_revelation_order: number
+          chapter_title_arabic: string
+          chapter_title_english: string
+          chapter_title_transliterated: string
+          chapter_verses: number
+        }
+        Insert: {
+          chapter_number?: number
+          chapter_revelation_order: number
+          chapter_title_arabic: string
+          chapter_title_english: string
+          chapter_title_transliterated: string
+          chapter_verses: number
+        }
+        Update: {
+          chapter_number?: number
+          chapter_revelation_order?: number
+          chapter_title_arabic?: string
+          chapter_title_english?: string
+          chapter_title_transliterated?: string
+          chapter_verses?: number
+        }
+        Relationships: []
+      }
+      "ws-quran-foreign": {
+        Row: {
+          chapter_title_bahasa: string | null
+          chapter_title_french: string | null
+          chapter_title_german: string | null
+          chapter_title_persian: string | null
+          chapter_title_russian: string | null
+          chapter_title_swedish: string | null
+          chapter_title_tamil: string | null
+          chapter_title_turkish: string | null
+          verse_footnote_bahasa: string | null
+          verse_footnote_french: string | null
+          verse_footnote_german: string | null
+          verse_footnote_persian: string | null
+          verse_footnote_russian: string | null
+          verse_footnote_swedish: string | null
+          verse_footnote_tamil: string | null
+          verse_footnote_turkish: string | null
+          verse_id: string
+          verse_subtitle_bahasa: string | null
+          verse_subtitle_french: string | null
+          verse_subtitle_german: string | null
+          verse_subtitle_persian: string | null
+          verse_subtitle_russian: string | null
+          verse_subtitle_swedish: string | null
+          verse_subtitle_tamil: string | null
+          verse_subtitle_turkish: string | null
+          verse_text_bahasa: string | null
+          verse_text_french: string | null
+          verse_text_german: string | null
+          verse_text_persian: string | null
+          verse_text_russian: string | null
+          verse_text_swedish: string | null
+          verse_text_tamil: string | null
+          verse_text_turkish: string | null
+        }
+        Insert: {
+          chapter_title_bahasa?: string | null
+          chapter_title_french?: string | null
+          chapter_title_german?: string | null
+          chapter_title_persian?: string | null
+          chapter_title_russian?: string | null
+          chapter_title_swedish?: string | null
+          chapter_title_tamil?: string | null
+          chapter_title_turkish?: string | null
+          verse_footnote_bahasa?: string | null
+          verse_footnote_french?: string | null
+          verse_footnote_german?: string | null
+          verse_footnote_persian?: string | null
+          verse_footnote_russian?: string | null
+          verse_footnote_swedish?: string | null
+          verse_footnote_tamil?: string | null
+          verse_footnote_turkish?: string | null
+          verse_id: string
+          verse_subtitle_bahasa?: string | null
+          verse_subtitle_french?: string | null
+          verse_subtitle_german?: string | null
+          verse_subtitle_persian?: string | null
+          verse_subtitle_russian?: string | null
+          verse_subtitle_swedish?: string | null
+          verse_subtitle_tamil?: string | null
+          verse_subtitle_turkish?: string | null
+          verse_text_bahasa?: string | null
+          verse_text_french?: string | null
+          verse_text_german?: string | null
+          verse_text_persian?: string | null
+          verse_text_russian?: string | null
+          verse_text_swedish?: string | null
+          verse_text_tamil?: string | null
+          verse_text_turkish?: string | null
+        }
+        Update: {
+          chapter_title_bahasa?: string | null
+          chapter_title_french?: string | null
+          chapter_title_german?: string | null
+          chapter_title_persian?: string | null
+          chapter_title_russian?: string | null
+          chapter_title_swedish?: string | null
+          chapter_title_tamil?: string | null
+          chapter_title_turkish?: string | null
+          verse_footnote_bahasa?: string | null
+          verse_footnote_french?: string | null
+          verse_footnote_german?: string | null
+          verse_footnote_persian?: string | null
+          verse_footnote_russian?: string | null
+          verse_footnote_swedish?: string | null
+          verse_footnote_tamil?: string | null
+          verse_footnote_turkish?: string | null
+          verse_id?: string
+          verse_subtitle_bahasa?: string | null
+          verse_subtitle_french?: string | null
+          verse_subtitle_german?: string | null
+          verse_subtitle_persian?: string | null
+          verse_subtitle_russian?: string | null
+          verse_subtitle_swedish?: string | null
+          verse_subtitle_tamil?: string | null
+          verse_subtitle_turkish?: string | null
+          verse_text_bahasa?: string | null
+          verse_text_french?: string | null
+          verse_text_german?: string | null
+          verse_text_persian?: string | null
+          verse_text_russian?: string | null
+          verse_text_swedish?: string | null
+          verse_text_tamil?: string | null
+          verse_text_turkish?: string | null
+        }
+        Relationships: []
+      }
+      "ws-quran-word-by-word": {
+        Row: {
+          arabic_text: string | null
+          chapter_index: number | null
+          english_text: string | null
+          global_index: number
+          root_word: string | null
+          transliterated_text: string | null
+          verse_id: string | null
+          verse_index: number | null
+          word_index: number | null
+        }
+        Insert: {
+          arabic_text?: string | null
+          chapter_index?: number | null
+          english_text?: string | null
+          global_index: number
+          root_word?: string | null
+          transliterated_text?: string | null
+          verse_id?: string | null
+          verse_index?: number | null
+          word_index?: number | null
+        }
+        Update: {
+          arabic_text?: string | null
+          chapter_index?: number | null
+          english_text?: string | null
+          global_index?: number
+          root_word?: string | null
+          transliterated_text?: string | null
+          verse_id?: string | null
+          verse_index?: number | null
+          word_index?: number | null
+        }
+        Relationships: []
+      }
+      "ws-quran-word-by-word_backup": {
+        Row: {
+          arabic_text: string
+          english_text: string
+          global_index: number
+          root_word: string
+          transliterated_text: string
+          verse_id: string
+          word_index: number
+        }
+        Insert: {
+          arabic_text: string
+          english_text: string
+          global_index?: number
+          root_word: string
+          transliterated_text: string
+          verse_id: string
+          word_index: number
+        }
+        Update: {
+          arabic_text?: string
+          english_text?: string
+          global_index?: number
+          root_word?: string
+          transliterated_text?: string
+          verse_id?: string
+          word_index?: number
+        }
+        Relationships: []
+      }
+      "ws-quran-word-by-word-old": {
+        Row: {
+          arabic_text: string | null
+          english_text: string | null
+          global_index: number
+          root_word: string | null
+          transliterated_text: string | null
+          verse_id: string | null
+          word_index: number | null
+        }
+        Insert: {
+          arabic_text?: string | null
+          english_text?: string | null
+          global_index: number
+          root_word?: string | null
+          transliterated_text?: string | null
+          verse_id?: string | null
+          word_index?: number | null
+        }
+        Update: {
+          arabic_text?: string | null
+          english_text?: string | null
+          global_index?: number
+          root_word?: string | null
+          transliterated_text?: string | null
+          verse_id?: string | null
+          word_index?: number | null
+        }
+        Relationships: []
+      }
+      "ws-quran-word-by-word-with-meaning": {
+        Row: {
+          arabic_text: string | null
+          english_text: string | null
+          global_index: number
+          id: number
+          meanings: string | null
+          root_word: string | null
+          transliterated_text: string | null
+          verse_id: string
+          word_index: number
+        }
+        Insert: {
+          arabic_text?: string | null
+          english_text?: string | null
+          global_index: number
+          id?: number
+          meanings?: string | null
+          root_word?: string | null
+          transliterated_text?: string | null
+          verse_id: string
+          word_index: number
+        }
+        Update: {
+          arabic_text?: string | null
+          english_text?: string | null
+          global_index?: number
+          id?: number
+          meanings?: string | null
+          root_word?: string | null
+          transliterated_text?: string | null
+          verse_id?: string
+          word_index?: number
+        }
+        Relationships: []
+      }
+      "ws-user-data": {
+        Row: {
+          quran_bookmarks: Json | null
+          quran_preferences: Json | null
+          user_id: string
+        }
+        Insert: {
+          quran_bookmarks?: Json | null
+          quran_preferences?: Json | null
+          user_id?: string
+        }
+        Update: {
+          quran_bookmarks?: Json | null
+          quran_preferences?: Json | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      "ws-verse-of-the-day": {
+        Row: {
+          day: number
+          id: string | null
+          month: number
+          verse_id: string
+          year: number
+        }
+        Insert: {
+          day: number
+          id?: string | null
+          month: number
+          verse_id: string
+          year: number
+        }
+        Update: {
+          day?: number
+          id?: string | null
+          month?: number
+          verse_id?: string
+          year?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -376,21 +885,25 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
-      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
@@ -408,14 +921,16 @@ export type Tables<
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
@@ -431,14 +946,16 @@ export type TablesInsert<
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+> = DefaultSchemaTableNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
@@ -454,14 +971,16 @@ export type TablesUpdate<
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
-> = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+> = DefaultSchemaEnumNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
@@ -469,14 +988,16 @@ export type Enums<
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof Database },
+    | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database
+    schema: keyof DatabaseWithoutInternals
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
-> = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+> = PublicCompositeTypeNameOrOptions extends {
+  schema: keyof DatabaseWithoutInternals
+}
+  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
