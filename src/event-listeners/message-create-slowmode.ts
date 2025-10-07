@@ -24,7 +24,7 @@ export default function listener(): WEventListener {
         const hushRole = getRole('Hush')
         const slowRole = getRole('Slow')
         if (!slowRole) {
-          console.error('Cannot find Slow role. Please contact a dev')
+          // console.error('Cannot find Slow role. Please contact a dev')
           return
         }
         if (!hushRole) {
