@@ -1,61 +1,65 @@
-import { WSlashCommand } from "../types/w-slash-command";
-import { getSupabaseClient } from "../utils/get-supabase-client";
+import { WSlashCommand } from '../types/w-slash-command'
+import { getSupabaseClient } from '../utils/get-supabase-client'
 
 export default function Command(): WSlashCommand {
   return {
-    name: "set-logs-autodelete-days",
-    description: "Set number of days before purging logs.",
-    access_control: "ADMIN",
+    name: 'set-logs-autodelete-days',
+    description: 'Set number of days before automatically purging stored message logs.',
+    access_control: 'ADMIN',
     options: [
       {
-        name: "days",
-        description: "Number of days before purging logs",
+        name: 'days',
+        description: 'Number of days before purging logs',
         type: 4, // INTEGER
         required: true,
       },
     ],
     execute: async (interaction) => {
       try {
-        const daysString = interaction.options.get("days")?.value as string;
-        const days = parseInt(daysString);
-        if (days <= 0) {
-          interaction.reply({
-            content: "Days must be greater than 0.",
-            ephemeral: true,
-          });
-          return;
+        interaction.deferReply()
+        const days = Number(interaction.options.get('days')?.value)
+
+        if (!Number.isFinite(days) || days <= 0) {
+          interaction.editReply({
+            content: '❌ Days must be a positive number greater than 0.',
+          })
+          return
         }
 
-        const supaClient = getSupabaseClient();
+        const supaClient = getSupabaseClient()
+        const timestamp = new Date().toISOString()
 
-        // Upsert the key-value pair
-        const { error } = await supaClient.from("DiscordSecrets").upsert({
-          key: "DISCORD_AUTO_DELETE_LOGS_AFTER",
-          value: days.toString(),
-        });
+        // Upsert both: duration and timestamp
+        const { error } = await supaClient.from('DiscordSecrets').upsert([
+          {
+            key: 'DISCORD_AUTO_DELETE_LOGS_AFTER',
+            value: days.toString(),
+          },
+          {
+            key: 'DISCORD_AUTO_DELETE_LOGS_AFTER_LAST_TIMESTAMP',
+            value: timestamp,
+          },
+        ])
 
         if (error) {
-          console.error("[set-logs-autodelete-days] DB error:", error);
-          interaction.reply({
-            content: "Failed to update setting. Check logs.",
-            ephemeral: true,
-          });
-          return;
+          console.error('[set-logs-autodelete-days] DB error:', error)
+          interaction.editReply({
+            content: '❌ Failed to update setting. Check logs for details.',
+          })
+          return
         }
 
-        await interaction.reply({
-          content: `Log auto-delete period has been set to **${days} day(s)**.`,
-          ephemeral: true,
-        });
-        return;
-      } catch (error) {
-        console.error("[set-logs-autodelete-days] Error:", error);
-        await interaction.reply({
-          content: "Something went wrong.",
-          ephemeral: true,
-        });
-        return;
+        await interaction.editReply({
+          content: `✅ Log auto-delete period set to **${days} day(s)**.\n🕓 Last updated: <t:${Math.floor(
+            Date.now() / 1000
+          )}:F>`,
+        })
+      } catch (err) {
+        console.error('[set-logs-autodelete-days] Unexpected error:', err)
+        await interaction.editReply({
+          content: '⚠️ Something went wrong while updating the setting.',
+        })
       }
     },
-  };
+  }
 }
