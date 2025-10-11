@@ -11,7 +11,7 @@ export default function Command(): WSlashCommand {
     description: 'Displays the privacy policy for SubmissionMod',
     execute: async (interaction) => {
       try {
-        interaction.deferReply()
+        await interaction.deferReply()
         let retentionDays: number = 30
         let updatedTimestamp = 'N/A'
 
