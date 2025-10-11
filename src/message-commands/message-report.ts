@@ -61,7 +61,7 @@ export default function Command(): WMessageCommand {
           }
           submission.reply({
             content: '❌ Reporting channel not found. Please contact staff.',
-            ephemeral: true,
+            flags: 'Ephemeral',
           })
           return
         }
@@ -121,7 +121,7 @@ export default function Command(): WMessageCommand {
         console.log('[ReportCommand] Sending confirmation to reporter...')
         await submission.reply({
           content: '✅ Report logged. A moderator will review it shortly.',
-          ephemeral: true,
+          flags: 'Ephemeral',
         })
         console.log('[ReportCommand] Done.')
       } catch (error) {
@@ -131,12 +131,12 @@ export default function Command(): WMessageCommand {
           if (interaction.replied || interaction.deferred) {
             await interaction.followUp({
               content: '❌ Failed to log report. Please contact a moderator.',
-              ephemeral: true,
+              flags: 'Ephemeral',
             })
           } else {
             await interaction.reply({
               content: '❌ Failed to log report. Please contact a moderator.',
-              ephemeral: true,
+              flags: 'Ephemeral',
             })
           }
         } catch (replyError) {
