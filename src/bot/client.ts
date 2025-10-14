@@ -4,6 +4,7 @@ import {
   ClientEvents,
   Events,
   GatewayIntentBits,
+  Partials,
   REST,
   Routes,
 } from 'discord.js'
@@ -33,10 +34,12 @@ export class Bot {
       GatewayIntentBits.GuildMessages,
       GatewayIntentBits.MessageContent,
       GatewayIntentBits.GuildModeration,
+      GatewayIntentBits.GuildMessageReactions,
     ],
     rest: {
       timeout: 50_000,
     },
+    partials: [Partials.Message, Partials.Channel, Partials.Reaction],
     // [Define presence]
     presence: {
       status: 'online',
