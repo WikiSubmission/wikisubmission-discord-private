@@ -4,7 +4,7 @@ import { getRole } from '../utils/discord/get-role'
 
 export default function Command(): WUserCommand {
   return {
-    name: 'jail',
+    name: 'unjail',
     type: ApplicationCommandType.User,
     execute: async (interaction) => {
       try {
@@ -13,7 +13,7 @@ export default function Command(): WUserCommand {
           console.error('Member not found when trying user jail.')
           await interaction.reply({
             content:
-              'Could not find member to jail. Please try again, if this persist contact a dev. ',
+              'Could not find member to unjail. Please try again, if this persist contact a dev. ',
             flags: 'Ephemeral',
           })
           return
@@ -28,19 +28,19 @@ export default function Command(): WUserCommand {
         }
         if (
           suspect.roles instanceof GuildMemberRoleManager &&
-          suspect.roles.cache.has(jailRole.id) &&
+          !suspect.roles.cache.has(jailRole.id) &&
           suspect instanceof GuildMember
         ) {
           await interaction.reply({
-            content: `User <@${suspect.id}> is already jailed`,
+            content: `User <@${suspect.id}> is not jailed`,
             flags: 'Ephemeral',
           })
           return
         }
         if (suspect.roles instanceof GuildMemberRoleManager && suspect instanceof GuildMember) {
-          suspect.roles.add(jailRole)
+          suspect.roles.remove(jailRole)
           await interaction.reply({
-            content: `User <@${suspect.id}> has been jailed!`,
+            content: `User <@${suspect.id}> has been unjailed!`,
             flags: 'Ephemeral',
           })
           return
