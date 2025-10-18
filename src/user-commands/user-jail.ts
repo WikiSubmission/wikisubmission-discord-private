@@ -1,6 +1,15 @@
-import { ApplicationCommandType, GuildMember, GuildMemberRoleManager } from 'discord.js'
+import {
+  ApplicationCommandType,
+  EmbedBuilder,
+  GuildMember,
+  GuildMemberRoleManager,
+} from 'discord.js'
 import { WUserCommand } from '../types/w-user-command'
 import { getRole } from '../utils/discord/get-role'
+import { authenticateMember } from '../utils/discord/authenticate-member'
+import { getChannel } from '../utils/discord/get-channel'
+import { DateUtils } from '../utils/date-utils'
+import { stringifyName } from '../utils/discord/stringify-name'
 
 export default function Command(): WUserCommand {
   return {
@@ -18,6 +27,14 @@ export default function Command(): WUserCommand {
           })
           return
         }
+        // [No friendly fire]
+        if (authenticateMember(suspect, 'MOD_AND_ABOVE')) {
+          await interaction.reply({
+            content: `No friendly fire!`,
+            flags: ['Ephemeral'],
+          })
+          return
+        }
         const jailRole = getRole('Jail', interaction)
         if (!jailRole) {
           await interaction.reply({
@@ -26,6 +43,7 @@ export default function Command(): WUserCommand {
           })
           return
         }
+
         if (
           suspect.roles instanceof GuildMemberRoleManager &&
           suspect.roles.cache.has(jailRole.id) &&
@@ -43,6 +61,76 @@ export default function Command(): WUserCommand {
             content: `User <@${suspect.id}> has been jailed!`,
             flags: 'Ephemeral',
           })
+          const jailChannel = getChannel('jail', 'text', interaction)
+          const staffChannel = getChannel('staff-log', 'text', interaction)
+          if (!jailChannel) {
+            console.error('No jail channel. Please create one. ')
+          } else {
+            await jailChannel.send({
+              content: `<@${suspect.user.id}> **You have been jailed.** Please wait for a moderator to review the incident.`,
+              embeds: [
+                new EmbedBuilder()
+                  // .setDescription(reason || 'No reason provided')
+                  .addFields(
+                    {
+                      name: 'User',
+                      value: stringifyName(suspect),
+                    },
+                    {
+                      name: 'Account Created',
+                      value: DateUtils.distanceFromNow(suspect.user.createdTimestamp),
+                    },
+                    {
+                      name: 'Joined',
+                      value: DateUtils.distanceFromNow(suspect.joinedTimestamp),
+                    }
+                  )
+                  .setFooter({
+                    text: `${interaction.user.username}`,
+                    iconURL: interaction.user.displayAvatarURL(),
+                  })
+                  .setTimestamp(Date.now())
+                  .setThumbnail(suspect.displayAvatarURL())
+                  .setColor('DarkRed'),
+              ],
+            })
+          }
+
+          if (!staffChannel) {
+            console.error('No staff channel. Please create one. ')
+          } else {
+            await staffChannel.send({
+              embeds: [
+                new EmbedBuilder()
+                  .setAuthor({
+                    name: `${suspect.user.username} was jailed`,
+                    iconURL: suspect.displayAvatarURL(),
+                  })
+                  // .setDescription(reason || 'No reason provided')
+                  .addFields(
+                    {
+                      name: 'User',
+                      value: stringifyName(suspect),
+                    },
+                    {
+                      name: 'Account Created',
+                      value: DateUtils.distanceFromNow(suspect.user.createdTimestamp),
+                    },
+                    {
+                      name: 'Joined',
+                      value: DateUtils.distanceFromNow(suspect.joinedTimestamp),
+                    }
+                  )
+                  .setFooter({
+                    text: `${interaction.user.username}`,
+                    iconURL: interaction.user.displayAvatarURL(),
+                  })
+                  .setThumbnail(suspect.displayAvatarURL())
+                  .setTimestamp(Date.now())
+                  .setColor('DarkButNotBlack'),
+              ],
+            })
+          }
           return
         } else {
           await interaction.reply({

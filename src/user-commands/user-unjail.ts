@@ -1,6 +1,12 @@
-import { ApplicationCommandType, GuildMember, GuildMemberRoleManager } from 'discord.js'
+import {
+  ApplicationCommandType,
+  EmbedBuilder,
+  GuildMember,
+  GuildMemberRoleManager,
+} from 'discord.js'
 import { WUserCommand } from '../types/w-user-command'
 import { getRole } from '../utils/discord/get-role'
+import { getChannel } from '../utils/discord/get-channel'
 
 export default function Command(): WUserCommand {
   return {
@@ -43,6 +49,26 @@ export default function Command(): WUserCommand {
             content: `User <@${suspect.id}> has been unjailed!`,
             flags: 'Ephemeral',
           })
+          const staffChannel = getChannel('staff-log', 'text', interaction)
+          if (!staffChannel) {
+            console.error('No staff channel. please create one. ')
+          } else {
+            staffChannel.send({
+              embeds: [
+                new EmbedBuilder()
+                  .setAuthor({
+                    name: `${suspect.user.username} released`,
+                    iconURL: suspect.displayAvatarURL(),
+                  })
+                  .setFooter({
+                    text: `${interaction.user.username}`,
+                    iconURL: interaction.user.displayAvatarURL(),
+                  })
+                  .setTimestamp(Date.now())
+                  .setColor('DarkGreen'),
+              ],
+            })
+          }
           return
         } else {
           await interaction.reply({
