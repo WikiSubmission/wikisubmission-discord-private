@@ -100,27 +100,6 @@ export default function listener(): WEventListener {
 
         // [Case: member found i.e. rejoined]
         else {
-          // [Welcome message]
-          await channels["welcome"].send({
-            content: `<@${member.user.id}>`,
-            embeds: [
-              new EmbedBuilder()
-                .setTitle("Peace be upon you!")
-                .setThumbnail(member.displayAvatarURL())
-                .setColor("DarkBlue")
-                .setTimestamp(Date.now())
-                .setDescription(
-                  `**Welcome back,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`,
-                )
-                .setFooter({
-                  text:
-                    member.guild.memberCount % 19 === 0
-                      ? `Members: ${member.guild.memberCount} (19 x ${Math.floor(member.guild.memberCount / 19)}) • ${member.user.username}`
-                      : `Members: ${member.guild.memberCount} • ${member.user.username}`,
-                }),
-            ],
-          });
-
           // [Staff notice]
           await channels["admissions"].send({
             embeds: [
