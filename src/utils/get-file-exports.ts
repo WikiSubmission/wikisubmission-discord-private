@@ -10,7 +10,7 @@ export async function getFileExports<T>(
     enforcePrefix?: string;
     ignoreChildrenDirectories?: boolean;
     ignoreIfNotFound?: boolean;
-  },
+  }
 ): Promise<T[]> {
   const cached = fileExportCache.get<T[]>(directoryPath);
   if (cached) return cached;
@@ -18,7 +18,7 @@ export async function getFileExports<T>(
   const targetDirectory = path.join(
     __dirname,
     `../../${process.versions?.tsnode ? "src" : "build"}`,
-    directoryPath.startsWith("/") ? directoryPath.slice(1) : directoryPath,
+    directoryPath.startsWith("/") ? directoryPath.slice(1) : directoryPath
   );
 
   if (!fs.existsSync(targetDirectory)) {

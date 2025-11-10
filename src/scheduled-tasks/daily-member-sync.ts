@@ -1,21 +1,20 @@
-import { Bot } from '../bot/client';
-import { SupportedGuilds } from '../constants/supported-guilds';
-import { ScheduledTaskManager } from '../utils/create-scheduled-action';
-import { getSupabaseClient } from '../utils/get-supabase-client';
-import { logError } from '../utils/log-error';
-
+import { Bot } from "../bot/client";
+import { SupportedGuilds } from "../constants/supported-guilds";
+import { ScheduledTaskManager } from "../utils/create-scheduled-action";
+import { getSupabaseClient } from "../utils/get-supabase-client";
+import { logError } from "../utils/log-error";
 
 export default function action(): ScheduledTaskManager {
   return new ScheduledTaskManager({
-    id: 'DAILY_MEMBER_SYNC',
-    description: 'Syncs necessary member data',
-    interval: 'EVERY_DAY',
+    id: "DAILY_MEMBER_SYNC",
+    description: "Syncs necessary member data",
+    interval: "EVERY_DAY",
     action: async () => {
       try {
         const guild = await Bot.client.guilds.fetch(
-          process.env.NODE_ENV === 'production'
+          process.env.NODE_ENV === "production"
             ? SupportedGuilds.Production.id
-            : SupportedGuilds.Development.id,
+            : SupportedGuilds.Development.id
         );
 
         const members = await guild.members.fetch();
@@ -23,15 +22,15 @@ export default function action(): ScheduledTaskManager {
 
         const rows = Array.from(members.values()).map((member) => {
           const rolesString = member.roles.cache
-            .filter((role) => role.name !== '@everyone')
+            .filter((role) => role.name !== "@everyone")
             .map((role) => role.id)
-            .join(',');
+            .join(",");
 
           return {
             id: `${member.user.id}*${member.guild.id}`,
             user_id: member.user.id,
             user_name: member.user.username,
-            display_name: member.displayName || member.user.username || '--',
+            display_name: member.displayName || member.user.username || "--",
             guild_id: member.guild.id,
             joined_timestamp: now,
             created_timestamp: member.user.createdTimestamp,
@@ -44,8 +43,8 @@ export default function action(): ScheduledTaskManager {
         for (let i = 0; i < rows.length; i += BATCH_SIZE) {
           const chunk = rows.slice(i, i + BATCH_SIZE);
           const result = await getSupabaseClient()
-              .from("ws_discord_members")
-              .upsert(chunk, { onConflict: 'id' });
+            .from("ws_discord_members")
+            .upsert(chunk, { onConflict: "id" });
 
           if (result.error) {
             logError(result.error, __filename);

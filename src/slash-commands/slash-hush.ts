@@ -1,61 +1,61 @@
-import { EmbedBuilder } from 'discord.js'
-import { WSlashCommand } from '../types/w-slash-command'
-import { getChannel } from '../utils/get-channel'
-import { getRole } from '../utils/get-role'
-import { stringifyName } from '../utils/stringify-name'
+import { EmbedBuilder } from "discord.js";
+import { WSlashCommand } from "../types/w-slash-command";
+import { getChannel } from "../utils/get-channel";
+import { getRole } from "../utils/get-role";
+import { stringifyName } from "../utils/stringify-name";
 
 export default function Command(): WSlashCommand {
   return {
-    name: 'hush',
-    description: 'Applies slowdown to a user',
+    name: "hush",
+    description: "Applies slowdown to a user",
     options: [
       {
-        name: 'user',
-        description: 'User to slow',
+        name: "user",
+        description: "User to slow",
         type: 6,
         required: true,
       },
     ],
-    access_control: 'MOD_AND_ABOVE',
+    access_control: "MOD_AND_ABOVE",
     execute: async (interaction) => {
       try {
         // [Fetch suspect]
-        const suspectID = interaction.options.get('user')?.value
-        if (typeof suspectID !== 'string') {
-          console.error('Cannot find user to hush')
+        const suspectID = interaction.options.get("user")?.value;
+        if (typeof suspectID !== "string") {
+          console.error("Cannot find user to hush");
           interaction.reply({
-            content: 'Cannot find user to hush.',
-            flags: ['Ephemeral'],
-          })
-          return
+            content: "Cannot find user to hush.",
+            flags: ["Ephemeral"],
+          });
+          return;
         }
 
-        let suspect = interaction.guild?.members.cache.get(suspectID)
+        let suspect = interaction.guild?.members.cache.get(suspectID);
         if (!suspect) {
-          console.error('Cannot find user to hush')
+          console.error("Cannot find user to hush");
           interaction.reply({
-            content: 'Cannot find user to hush.',
-            flags: ['Ephemeral'],
-          })
-          return
+            content: "Cannot find user to hush.",
+            flags: ["Ephemeral"],
+          });
+          return;
         }
 
-        const staffLog = getChannel('staff-log', 'text', interaction)
-        const hushRole = getRole('Hush')
+        const staffLog = getChannel("staff-log", "text", interaction);
+        const hushRole = getRole("Hush");
         if (!hushRole) {
-          console.error('Cannot find Hush role')
+          console.error("Cannot find Hush role");
           interaction.reply({
-            content: 'Cannot find Hush role. Please contact a developer.',
-            flags: ['Ephemeral'],
-          })
-          return
+            content: "Cannot find Hush role. Please contact a developer.",
+            flags: ["Ephemeral"],
+          });
+          return;
         }
         if (suspect.roles.cache.has(hushRole.id)) {
           interaction.reply({
-            content: 'User is already hushed.',
-            flags: 'Ephemeral',
-          })
-          return
+            content: "User is already hushed.",
+            flags: "Ephemeral",
+          });
+          return;
         }
         // [Yes to friendly fire ;)]
         // if (authenticateMember(suspect, "MOD_AND_ABOVE")) {
@@ -65,32 +65,32 @@ export default function Command(): WSlashCommand {
         //   });
         //   return;
         // }
-        suspect.roles.add(hushRole)
+        suspect.roles.add(hushRole);
         if (!staffLog) {
-          console.error('staff-log channel does not exist. Please recreate.')
-          const dev = getRole('Developer', interaction)
+          console.error("staff-log channel does not exist. Please recreate.");
+          const dev = getRole("Developer", interaction);
           interaction.reply({
             content: dev
               ? `<@&${dev.id}> The \`staff-log\` channel does not exist. hush command logging failed, command succeded.`
-              : 'The `staff-log` channel does not exist. User hushed, cannot log it. Please contact a Developer (Developer role not found).',
-          })
-          return
+              : "The `staff-log` channel does not exist. User hushed, cannot log it. Please contact a Developer (Developer role not found).",
+          });
+          return;
         } else {
           interaction.reply({
-            content: 'User has been hushed!',
-            flags: 'Ephemeral',
-          })
+            content: "User has been hushed!",
+            flags: "Ephemeral",
+          });
           staffLog.send({
             content: `<@${suspect.user.id}> has been hushed.`,
             embeds: [
               new EmbedBuilder()
                 .addFields(
                   {
-                    name: 'User',
+                    name: "User",
                     value: stringifyName(suspect),
                   },
                   {
-                    name: 'Hushed by',
+                    name: "Hushed by",
                     value: stringifyName(interaction.user),
                   }
                 )
@@ -100,11 +100,11 @@ export default function Command(): WSlashCommand {
                 })
                 .setTimestamp(Date.now())
                 .setThumbnail(suspect.displayAvatarURL())
-                .setColor('DarkRed'),
+                .setColor("DarkRed"),
             ],
-          })
+          });
         }
       } catch (error) {}
     },
-  }
+  };
 }

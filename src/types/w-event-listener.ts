@@ -1,4 +1,4 @@
-import { Awaitable, ClientEvents } from 'discord.js';
+import { Awaitable, ClientEvents } from "discord.js";
 
 export type WEventListener = {
   [E in keyof ClientEvents]: {

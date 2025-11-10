@@ -27,7 +27,7 @@ type AcceptableContexts =
 export function getChannel<K extends "text" | "voice">(
   name: string,
   type: K = "text" as K,
-  context?: string | AcceptableContexts,
+  context?: string | AcceptableContexts
 ):
   | (K extends "text"
       ? GuildTextBasedChannel
@@ -105,7 +105,7 @@ export function getChannels<
 >(
   names: readonly T[],
   type: K = "text" as K,
-  context?: string | AcceptableContexts,
+  context?: string | AcceptableContexts
 ): Record<
   T,
   K extends "text"

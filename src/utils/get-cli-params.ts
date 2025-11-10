@@ -1,4 +1,4 @@
-import minimist from 'minimist';
+import minimist from "minimist";
 
 export function getCliParams(forKey?: string): string[] {
   const argv = minimist(process.argv.slice(2));

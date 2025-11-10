@@ -1,11 +1,11 @@
-import { GuildMember, APIInteractionGuildMember } from 'discord.js';
-import { Bot } from '../bot/client';
-import { WAccessControlCategories } from '../types/w-access-control-categories';
+import { GuildMember, APIInteractionGuildMember } from "discord.js";
+import { Bot } from "../bot/client";
+import { WAccessControlCategories } from "../types/w-access-control-categories";
 
 // Simplified authentication as it is only used in trusted guilds. May enhance later.
 export function authenticateMember(
   member: GuildMember | APIInteractionGuildMember | null,
-  accessControlList: WAccessControlCategories,
+  accessControlList: WAccessControlCategories
 ): boolean {
   if (!member || !member.roles) return false;
 
@@ -20,37 +20,37 @@ export function authenticateMember(
 
   // Determine required roles
   switch (accessControlList) {
-    case 'VERIFIED_AND_ABOVE':
-      requiredRoles.add('Verified');
-      requiredRoles.add('Insider');
-      requiredRoles.add('Mod');
-      requiredRoles.add('Moderator');
-      requiredRoles.add('Admin');
-      requiredRoles.add('Administrator');
-      requiredRoles.add('Developer');
+    case "VERIFIED_AND_ABOVE":
+      requiredRoles.add("Verified");
+      requiredRoles.add("Insider");
+      requiredRoles.add("Mod");
+      requiredRoles.add("Moderator");
+      requiredRoles.add("Admin");
+      requiredRoles.add("Administrator");
+      requiredRoles.add("Developer");
       break;
 
-    case 'INSIDER_AND_ABOVE':
-      requiredRoles.add('Insider');
-      requiredRoles.add('Mod');
-      requiredRoles.add('Moderator');
-      requiredRoles.add('Admin');
-      requiredRoles.add('Administrator');
-      requiredRoles.add('Developer');
+    case "INSIDER_AND_ABOVE":
+      requiredRoles.add("Insider");
+      requiredRoles.add("Mod");
+      requiredRoles.add("Moderator");
+      requiredRoles.add("Admin");
+      requiredRoles.add("Administrator");
+      requiredRoles.add("Developer");
       break;
 
-    case 'MOD_AND_ABOVE':
-      requiredRoles.add('Mod');
-      requiredRoles.add('Moderator');
-      requiredRoles.add('Admin');
-      requiredRoles.add('Administrator');
-      requiredRoles.add('Developer');
+    case "MOD_AND_ABOVE":
+      requiredRoles.add("Mod");
+      requiredRoles.add("Moderator");
+      requiredRoles.add("Admin");
+      requiredRoles.add("Administrator");
+      requiredRoles.add("Developer");
       break;
 
-    case 'ADMIN':
-      requiredRoles.add('Admin');
-      requiredRoles.add('Administrator');
-      requiredRoles.add('Developer');
+    case "ADMIN":
+      requiredRoles.add("Admin");
+      requiredRoles.add("Administrator");
+      requiredRoles.add("Developer");
       break;
 
     default:

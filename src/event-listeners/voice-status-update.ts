@@ -19,7 +19,7 @@ export default function listener(): WEventListener {
           const vc_logs = getChannel("vc-logs", "text", newState);
           if (vc_logs && canSendMessages(vc_logs, botMember)) {
             await vc_logs.send(
-              `**${newState.member?.displayName}** has joined <#${newState.channelId}>.`,
+              `**${newState.member?.displayName}** has joined <#${newState.channelId}>.`
             );
           }
         }
@@ -29,7 +29,7 @@ export default function listener(): WEventListener {
           const vc_logs = getChannel("vc-logs", "text", previousState);
           if (vc_logs && canSendMessages(vc_logs, botMember)) {
             await vc_logs.send(
-              `\`${newState.member?.displayName}\` has left <#${previousState.channelId}>.`,
+              `\`${newState.member?.displayName}\` has left <#${previousState.channelId}>.`
             );
           }
         }
@@ -42,7 +42,7 @@ export default function listener(): WEventListener {
 
 function canSendMessages(
   channel: GuildTextBasedChannel | null | undefined,
-  botMember: GuildMember | null,
+  botMember: GuildMember | null
 ): boolean {
   if (!channel || !botMember) return false;
 

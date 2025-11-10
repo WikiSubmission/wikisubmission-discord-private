@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
-import { Database } from '../types/generated/database.types';
+import { createClient } from "@supabase/supabase-js";
+import { Database } from "../types/generated/database.types";
 
 export function getSupabaseClient() {
   return createClient<Database, "internal">(
@@ -7,8 +7,8 @@ export function getSupabaseClient() {
     process.env.SUPABASE_ANON_KEY!,
     {
       db: {
-        schema: 'internal'
-      }
+        schema: "internal",
+      },
     }
   );
 }

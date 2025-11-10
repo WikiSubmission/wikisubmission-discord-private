@@ -1,233 +1,197 @@
-import { Collection, EmbedBuilder, Message } from 'discord.js'
-import { Bot } from '../bot/client'
-import { SupportedGuilds } from '../constants/supported-guilds'
-import { ScheduledTaskManager } from '../utils/create-scheduled-action'
-import { getChannel } from '../utils/get-channel'
-import { getRole } from '../utils/get-role'
-import { getSupabaseClient } from '../utils/get-supabase-client'
+import { Collection, EmbedBuilder, Message } from "discord.js";
+import { Bot } from "../bot/client";
+import { SupportedGuilds } from "../constants/supported-guilds";
+import { ScheduledTaskManager } from "../utils/create-scheduled-action";
+import { getChannel } from "../utils/get-channel";
+import { getRole } from "../utils/get-role";
+import { getSupabaseClient } from "../utils/get-supabase-client";
+import { logError } from "../utils/log-error";
 
 export default function action(): ScheduledTaskManager {
   return new ScheduledTaskManager({
-    id: 'AUTO_DELETE_LOGS',
-    description: 'Auto delete logs that are older than X days',
-    interval: 'EVERY_WEEK',
+    id: "AUTO_DELETE_LOGS",
+    description: "Auto delete logs that are older than X days",
+    interval: "EVERY_WEEK",
     action: async () => {
-      console.log('[AUTO_DELETE_LOGS] Task started')
-
       try {
-        console.log('[AUTO_DELETE_LOGS] Bot logged in?', Bot.client.isReady())
-
         const guild = await Bot.client.guilds.fetch(
-          process.env.NODE_ENV === 'production'
+          process.env.NODE_ENV === "production"
             ? SupportedGuilds.Production.id
             : SupportedGuilds.Development.id
-        )
-        console.log(`[AUTO_DELETE_LOGS] Using guild: ${guild.name} (${guild.id})`)
+        );
 
-        const messageLogs = getChannel('message-logs', 'text', guild)
+        const messageLogs = getChannel("message-logs", "text", guild);
         if (!messageLogs) {
-          console.warn("[AUTO_DELETE_LOGS] 'message_logs' channel does not exist, skipping")
-          const staffLog = getChannel('staff-log', 'text', guild)
+          const staffLog = getChannel("staff-log", "text", guild);
           if (staffLog?.isTextBased()) {
-            const dev = getRole('Developer', guild)
+            const dev = getRole("Developer", guild);
             staffLog.send({
               content: dev
                 ? `<@&${dev.id}> The \`message_logs\` channel does not exist. Auto-delete cron job skipped.`
-                : 'The `message_logs` channel does not exist. Auto-delete cron job skipped. (Developer role not found)',
-            })
+                : "The `message_logs` channel does not exist. Auto-delete cron job skipped. (Developer role not found)",
+            });
           }
-          return
+          return;
         }
-        console.log(`[AUTO_DELETE_LOGS] Operating in #${messageLogs.name}`)
 
-        const supaClient = getSupabaseClient()
-        const { data, error, status } = await supaClient
-          .from('DiscordSecrets')
-          .select('*')
-          .in('key', ['DISCORD_AUTO_DELETE_LOGS_AFTER'])
+        const supaClient = getSupabaseClient();
+        const { data, error } = await supaClient
+          .from("ws_discord_constants")
+          .select("*")
+          .eq("key", "AUTO_DELETE_LOGS_AFTER");
 
         if (error) {
-          console.error('[AUTO_DELETE_LOGS] Error fetching secrets:', error)
-          return
+          logError(error, __filename);
         }
 
-        const secrets =
-          status === 200 && data ? Object.fromEntries(data.map((row) => [row.key, row.value])) : {}
-        const DELETE_AFTER_DAYS = parseInt(secrets['DISCORD_AUTO_DELETE_LOGS_AFTER'] ?? '0')
+        const DELETE_AFTER_DAYS = data?.[0]?.value ? Number(data[0].value) : -1;
 
-        const deleteBefore = Date.now() - DELETE_AFTER_DAYS * 24 * 60 * 60 * 1000
-        console.log(
-          `[AUTO_DELETE_LOGS] DELETE_AFTER_DAYS=${DELETE_AFTER_DAYS}, deleteBefore=${new Date(deleteBefore).toISOString()}`
-        )
+        const deleteBefore =
+          Date.now() - DELETE_AFTER_DAYS * 24 * 60 * 60 * 1000;
 
         if (messageLogs?.isTextBased()) {
-          let lastId: string | undefined
-          let totalDeleted = 0
+          let lastId: string | undefined;
+          let totalDeleted = 0;
 
           while (true) {
-            const fetched: Collection<string, Message> = await messageLogs.messages.fetch({
-              limit: 100,
-              before: lastId,
-            })
-            console.log(`[AUTO_DELETE_LOGS] Fetched ${fetched.size} messages (before=${lastId})`)
+            const fetched: Collection<string, Message> =
+              await messageLogs.messages.fetch({
+                limit: 100,
+                before: lastId,
+              });
 
-            if (fetched.size === 0) break
+            if (fetched.size === 0) break;
 
-            const oldMessages = fetched.filter((msg) => msg.createdTimestamp < deleteBefore)
-            console.log(
-              `[AUTO_DELETE_LOGS] Found ${oldMessages.size} old messages out of ${fetched.size}`
-            )
+            const oldMessages = fetched.filter(
+              (msg) => msg.createdTimestamp < deleteBefore
+            );
 
-            if (oldMessages.size === 0) break
+            if (oldMessages.size === 0) break;
 
-            const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000
-            const bulkDeletable = oldMessages.filter((msg) => msg.createdTimestamp > twoWeeksAgo)
-            const tooOld = oldMessages.filter((msg) => msg.createdTimestamp <= twoWeeksAgo)
+            const twoWeeksAgo = Date.now() - 14 * 24 * 60 * 60 * 1000;
+            const bulkDeletable = oldMessages.filter(
+              (msg) => msg.createdTimestamp > twoWeeksAgo
+            );
+            const tooOld = oldMessages.filter(
+              (msg) => msg.createdTimestamp <= twoWeeksAgo
+            );
 
             if (bulkDeletable.size > 0) {
-              console.log(
-                `[AUTO_DELETE_LOGS] Bulk deleting ${bulkDeletable.size} messages: [${[
-                  ...bulkDeletable.keys(),
-                ].join(', ')}]`
-              )
-              await messageLogs.bulkDelete(bulkDeletable, true).catch(console.error)
-              totalDeleted += bulkDeletable.size
+              await messageLogs
+                .bulkDelete(bulkDeletable, true)
+                .catch(console.error);
+              totalDeleted += bulkDeletable.size;
             }
 
             for (const msg of tooOld.values()) {
-              console.log(
-                `[AUTO_DELETE_LOGS] Individually deleting message ${msg.id} (${new Date(
-                  msg.createdTimestamp
-                ).toISOString()})`
-              )
-              await msg.delete().catch(console.error)
-              totalDeleted++
+              await msg.delete().catch(console.error);
+              totalDeleted++;
             }
 
-            console.log(`[AUTO_DELETE_LOGS] Deleted ${totalDeleted} messages so far`)
-
-            lastId = fetched.last()?.id
+            lastId = fetched.last()?.id;
           }
 
-          console.log(`[AUTO_DELETE_LOGS] Task finished, deleted ${totalDeleted}`)
-
-          // After finishing age-based deletes
-          console.log('[AUTO_DELETE_LOGS] Checking scheduled deletions...')
-
-          const { data: scheduled, error: scheduledError } = await supaClient
-            .from('DiscordScheduleMessageDeletion')
-            .select('*')
-            .eq('is_executed', false)
-            .lte('execute_at', new Date().toISOString())
+          const { data: scheduled, error: scheduledError } =
+            await getSupabaseClient()
+              .from("ws_discord_message_deletion_schedule")
+              .select("*")
+              .eq("is_executed", false)
+              .lte("execute_at", new Date().toISOString());
 
           if (scheduledError) {
-            console.error('[AUTO_DELETE_LOGS] Error fetching scheduled deletions:', scheduledError)
+            logError(scheduledError, __filename);
           } else if (scheduled && scheduled.length > 0) {
-            console.log(
-              `[AUTO_DELETE_LOGS] Found ${scheduled.length} scheduled deletions to process`
-            )
-
             for (const task of scheduled) {
               try {
-                const channel = await Bot.client.channels.fetch(task.channel_id).catch(() => null)
+                const channel = await Bot.client.channels
+                  .fetch(task.channel_id)
+                  .catch(() => null);
                 if (!channel?.isTextBased()) {
-                  console.warn(
-                    `[AUTO_DELETE_LOGS] Channel ${task.channel_id} not found or not text-based`
-                  )
-                  continue
+                  continue;
                 }
 
-                let deletedCount = 0
+                let deletedCount = 0;
                 for (const msgId of task.message_ids) {
                   try {
-                    const msg = await channel.messages.fetch(msgId).catch(() => null)
+                    const msg = await channel.messages
+                      .fetch(msgId)
+                      .catch(() => null);
                     if (msg) {
-                      await msg.delete()
-                      deletedCount++
-                      console.log(
-                        `[AUTO_DELETE_LOGS] Deleted message ${msg.id} for request ${task.id}`
-                      )
+                      await msg.delete();
+                      deletedCount++;
                     }
                   } catch (err) {
-                    console.error(
-                      `[AUTO_DELETE_LOGS] Failed deleting message ${msgId} for request ${task.id}`,
-                      err
-                    )
+                    logError(err, __filename);
                   }
                 }
 
                 // Mark as executed in Supabase
-                await supaClient
-                  .from('DiscordScheduleMessageDeletion')
+                await getSupabaseClient()
+                  .from("ws_discord_message_deletion_schedule")
                   .update({ is_executed: true })
-                  .eq('id', task.id)
+                  .eq("id", task.id);
 
                 console.log(
-                  `[AUTO_DELETE_LOGS] Finished scheduled deletion ${task.id}, deleted ${deletedCount} messages`
-                )
+                  `[AUTO_DELETE_LOGS] Finished scheduled deletion ${task.id}, deleted ${deletedCount} messages.`
+                );
 
                 // Try DM first
-                let userNotified = false
-                let user: any = null
+                let userNotified = false;
+                let user: any = null;
                 try {
-                  user = await Bot.client.users.fetch(task.request_by_id)
+                  user = await Bot.client.users.fetch(task.request_by_id);
                   if (user) {
                     await user.send({
                       content: `✅ Your log deletion request (ID: ${task.id}) has been processed. I deleted **${deletedCount}** messages related to you.`,
-                    })
-                    userNotified = true
-                    console.log(
-                      `[AUTO_DELETE_LOGS] Sent DM to ${user.tag} about deletion request ${task.id}`
-                    )
+                    });
+                    userNotified = true;
                   }
                 } catch (err) {
-                  console.warn(
-                    `[AUTO_DELETE_LOGS] Could not DM user ${task.request_by_id}, falling back to staff-log.`
-                  )
+                  logError(err, __filename);
                 }
 
                 // Build embed with stats
                 const embed = new EmbedBuilder()
-                  .setTitle('🗑️ Log Deletion Request Processed')
+                  .setTitle("🗑️ Log Deletion Request Processed")
                   .setColor(0xff5555)
                   .addFields(
                     {
-                      name: 'Request ID',
+                      name: "Request ID",
                       value: task.id.toString(),
                       inline: true,
                     },
                     {
-                      name: 'Requested By',
+                      name: "Requested By",
                       value: `<@${task.request_by_id}>`,
                       inline: true,
                     },
                     {
-                      name: 'Deleted Logs',
+                      name: "Deleted Logs",
                       value: deletedCount.toString(),
                       inline: true,
                     }
                   )
-                  .setTimestamp()
+                  .setTimestamp();
 
                 // Always log to staff-log
-                const staffLog = getChannel('staff-log', 'text', guild)
+                const staffLog = getChannel("staff-log", "text", guild);
                 if (staffLog?.isTextBased()) {
                   await staffLog.send({
                     content: userNotified
-                      ? 'User was successfully notified via DM.'
+                      ? "User was successfully notified via DM."
                       : `<@${task.request_by_id}> could not be DM’d. Informing here instead.`,
                     embeds: [embed],
-                  })
+                  });
                 }
               } catch (err) {
-                console.error(`[AUTO_DELETE_LOGS] Error processing scheduled task ${task.id}:`, err)
+                logError(err, __filename);
               }
             }
           }
         }
       } catch (error) {
-        console.error('[AUTO_DELETE_LOGS] Task error:', error)
+        logError(error, __filename);
       }
     },
-  })
+  });
 }

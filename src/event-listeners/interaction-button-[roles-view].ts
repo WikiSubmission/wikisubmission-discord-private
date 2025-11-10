@@ -1,27 +1,27 @@
-import { EmbedBuilder } from 'discord.js';
-import { WEventListener } from '../types/w-event-listener';
-import { stringifyName } from '../utils/stringify-name';
-import { stringifyRoles } from '../utils/stringify-roles';
-import { logError } from '../utils/log-error';
+import { EmbedBuilder } from "discord.js";
+import { WEventListener } from "../types/w-event-listener";
+import { stringifyName } from "../utils/stringify-name";
+import { stringifyRoles } from "../utils/stringify-roles";
+import { logError } from "../utils/log-error";
 
 export default function listener(): WEventListener {
   return {
-    name: 'interactionCreate',
+    name: "interactionCreate",
     handler: async (interaction) => {
       if (!interaction.guildId) return;
       if (!interaction.member) return;
       if (!interaction.isButton()) return;
-      if (interaction.customId === 'view_roles') {
+      if (interaction.customId === "view_roles") {
         try {
           const guild = interaction.client.guilds.cache.find(
-            (g) => g.id === interaction.guildId,
+            (g) => g.id === interaction.guildId
           );
           const member = await guild?.members.fetch(interaction.user.id);
           if (!member) return;
           await interaction.reply({
             embeds: [
               new EmbedBuilder()
-                .setTitle('View Roles')
+                .setTitle("View Roles")
                 .addFields(
                   {
                     name: `User`,
@@ -30,12 +30,12 @@ export default function listener(): WEventListener {
                   {
                     name: `Roles`,
                     value: stringifyRoles(member),
-                  },
+                  }
                 )
                 .setThumbnail(member.displayAvatarURL())
-                .setColor('DarkButNotBlack'),
+                .setColor("DarkButNotBlack"),
             ],
-            flags: ['Ephemeral'],
+            flags: ["Ephemeral"],
           });
         } catch (error) {
           logError(error, __filename);

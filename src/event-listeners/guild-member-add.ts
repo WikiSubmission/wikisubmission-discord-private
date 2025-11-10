@@ -14,7 +14,7 @@ export default function listener(): WEventListener {
     name: "guildMemberAdd",
     handler: async (member) => {
       console.log(
-        `Member "${member.user.username} (${member.user.displayName})" joined ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`,
+        `Member "${member.user.username} (${member.user.displayName})" joined ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`
       );
 
       try {
@@ -22,7 +22,7 @@ export default function listener(): WEventListener {
         const channels = getChannels(
           ["admissions", "staff-log", "welcome", "choose-roles"],
           "text",
-          member,
+          member
         );
         if (!channels) {
           console.warn(`At least one channel not found: staff-log / welcome.`);
@@ -48,7 +48,7 @@ export default function listener(): WEventListener {
                 .setColor("DarkBlue")
                 .setTimestamp(Date.now())
                 .setDescription(
-                  `**Welcome to the Submission Server,** ${member.user.displayName || member.user.username}. Feel free to look around and check out the different channels.\n\nThis server is most active with voice chat activity. Join <#${getChannel("VC1", "voice", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${channels["choose-roles"].id}>.`,
+                  `**Welcome to the Submission Server,** ${member.user.displayName || member.user.username}. Feel free to look around and check out the different channels.\n\nThis server is most active with voice chat activity. Join <#${getChannel("VC1", "voice", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${channels["choose-roles"].id}>.`
                 )
                 .setFooter({
                   text:
@@ -82,7 +82,7 @@ export default function listener(): WEventListener {
                   {
                     name: "Account Created",
                     value: DateUtils.distanceFromNow(
-                      member.user.createdTimestamp,
+                      member.user.createdTimestamp
                     ),
                   },
                   ...(rolesString !== "None"
@@ -92,7 +92,7 @@ export default function listener(): WEventListener {
                           value: rolesString,
                         },
                       ]
-                    : []),
+                    : [])
                 ),
             ],
           });
@@ -110,7 +110,7 @@ export default function listener(): WEventListener {
                 .setColor("DarkBlue")
                 .setTimestamp(Date.now())
                 .setDescription(
-                  `**Welcome back,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`,
+                  `**Welcome back,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`
                 )
                 .setFooter({
                   text:
@@ -139,14 +139,14 @@ export default function listener(): WEventListener {
                   {
                     name: "Account Created",
                     value: DateUtils.distanceFromNow(
-                      member.user.createdTimestamp,
+                      member.user.createdTimestamp
                     ),
                   },
                   {
                     name: "Last Joined",
                     value:
                       DateUtils.distanceFromNow(
-                        memberRecord.data.joined_timestamp,
+                        memberRecord.data.joined_timestamp
                       ) || "Not available",
                   },
                   {
@@ -165,7 +165,7 @@ export default function listener(): WEventListener {
                             .map((r) => `<@&${r}>`)
                             .join(", ")
                         : "No previous roles",
-                  },
+                  }
                 ),
             ],
           });

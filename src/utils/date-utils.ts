@@ -1,4 +1,4 @@
-import { formatDistance, add, sub } from 'date-fns';
+import { formatDistance, add, sub } from "date-fns";
 
 export class DateUtils {
   static distanceFromNow(targetDate: Date | number | string | null): string {
@@ -10,18 +10,18 @@ export class DateUtils {
 
     const distance = formatDistance(target, now, { addSuffix: true });
 
-    return distance || '--';
+    return distance || "--";
   }
 
   static getSpecificDate(
     value: number,
-    metric: 'minute' | 'hour' | 'day' | 'week',
-    direction: 'future' | 'past',
+    metric: "minute" | "hour" | "day" | "week",
+    direction: "future" | "past"
   ): Date {
     const now = new Date();
     let resultDate;
 
-    if (direction === 'future') {
+    if (direction === "future") {
       resultDate = add(now, { [`${metric}s`]: value });
     } else {
       resultDate = sub(now, { [`${metric}s`]: value });

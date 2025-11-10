@@ -6,7 +6,7 @@ type AcceptableContexts = Interaction | GuildMember | Message | Guild;
 
 export function getRole(
   name: string,
-  context?: string | AcceptableContexts,
+  context?: string | AcceptableContexts
 ): Role | null {
   const matches = (role: Role) => role.name === name;
 
@@ -42,7 +42,7 @@ export function getRole(
 
 export function getRoles<T extends string>(
   names: readonly T[],
-  context?: string | AcceptableContexts,
+  context?: string | AcceptableContexts
 ): Record<T, Role> | null {
   const result = {} as Record<T, Role>;
 

@@ -8,62 +8,63 @@ import { stringifyRoles } from "../utils/stringify-roles";
 import { syncMember } from "../utils/sync-member";
 
 export default function listener(): WEventListener {
-    return {
-        name: "guildMemberRemove",
-        handler: async (member) => {
-            console.log(`Member "${member.user.username} (${member.user.displayName})" left ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`)
+  return {
+    name: "guildMemberRemove",
+    handler: async (member) => {
+      console.log(
+        `Member "${member.user.username} (${member.user.displayName})" left ${member.guild.name} (${member.guild.id}). Members: ${member.guild.memberCount}.`
+      );
 
-            try {
-                // [Staff log]
-                const staffLog = getChannel('staff-log', 'text', member);
-                if (!staffLog) {
-                    console.warn(`Staff log channel not found`);
-                    return;
+      try {
+        // [Staff log]
+        const staffLog = getChannel("staff-log", "text", member);
+        if (!staffLog) {
+          console.warn(`Staff log channel not found`);
+          return;
+        }
+
+        // [Send alert]
+        await staffLog.send({
+          embeds: [
+            new EmbedBuilder()
+              .setAuthor({
+                name: `${member.user.username} has left`,
+                iconURL: member.displayAvatarURL(),
+              })
+              .addFields(
+                {
+                  name: "User",
+                  value: stringifyName(member),
+                },
+                {
+                  name: "Roles",
+                  value: stringifyRoles(member),
+                },
+                {
+                  name: "Joined Server",
+                  value: DateUtils.distanceFromNow(member.joinedTimestamp),
+                },
+                {
+                  name: "Account Created",
+                  value: DateUtils.distanceFromNow(
+                    member.user.createdTimestamp
+                  ),
                 }
+              )
+              .setFooter({
+                text: `Member count: ${member.guild.memberCount}`,
+              })
+              .setThumbnail(member.displayAvatarURL())
+              .setColor("DarkRed")
+              .setTimestamp(Date.now()),
+          ],
+        });
 
-                // [Send alert]
-                await staffLog.send({
-                    embeds: [
-                        new EmbedBuilder()
-                            .setAuthor({
-                                name: `${member.user.username} has left`,
-                                iconURL: member.displayAvatarURL(),
-                            })
-                            .addFields(
-                                {
-                                    name: 'User',
-                                    value: stringifyName(member),
-                                },
-                                {
-                                    name: 'Roles',
-                                    value: stringifyRoles(member),
-                                },
-                                {
-                                    name: 'Joined Server',
-                                    value:
-                                        DateUtils.distanceFromNow(member.joinedTimestamp),
-                                },
-                                {
-                                    name: 'Account Created',
-                                    value:
-                                        DateUtils.distanceFromNow(member.user.createdTimestamp),
-                                },
-                            )
-                            .setFooter({
-                                text: `Member count: ${member.guild.memberCount}`,
-                            })
-                            .setThumbnail(member.displayAvatarURL())
-                            .setColor('DarkRed')
-                            .setTimestamp(Date.now()),
-                    ],
-                });
-
-                // [Sync member to DB]
-                await syncMember(member);
-
-            } catch (error) {
-                logError(error, __filename);
-            }
-        },
-    };
+        // [Sync member to DB]
+        await syncMember(member);
+      } catch (error) {
+        logError(error, __filename);
+      }
+    },
+  };
 }

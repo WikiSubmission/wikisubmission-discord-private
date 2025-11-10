@@ -15,7 +15,7 @@ export type WSlashCommand = RESTPostAPIChatInputApplicationCommandsJSONBody & {
     interaction:
       | ChatInputCommandInteraction<CacheType>
       | MessageContextMenuCommandInteraction<CacheType>
-      | UserContextMenuCommandInteraction,
+      | UserContextMenuCommandInteraction
   ) => Promise<void>;
   access_control?: WAccessControlCategories;
   disabled_in_dm?: boolean;

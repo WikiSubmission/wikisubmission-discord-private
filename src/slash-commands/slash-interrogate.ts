@@ -106,13 +106,13 @@ export default function Command(): WSlashCommand {
                 {
                   name: "Account Created",
                   value: DateUtils.distanceFromNow(
-                    suspect.user.createdTimestamp,
+                    suspect.user.createdTimestamp
                   ),
                 },
                 {
                   name: "Joined",
                   value: DateUtils.distanceFromNow(suspect.joinedTimestamp),
-                },
+                }
               )
               .setFooter({
                 text: `${interaction.user.username}`,
@@ -138,13 +138,13 @@ export default function Command(): WSlashCommand {
                 {
                   name: "Account Created",
                   value: DateUtils.distanceFromNow(
-                    suspect.user.createdTimestamp,
+                    suspect.user.createdTimestamp
                   ),
                 },
                 {
                   name: "Joined",
                   value: DateUtils.distanceFromNow(suspect.joinedTimestamp),
-                },
+                }
               )
               .setFooter({
                 text: `${interaction.user.username}`,
@@ -161,7 +161,7 @@ export default function Command(): WSlashCommand {
           if (verifyVcChannel) {
             await suspect.voice.setChannel(
               verifyVcChannel,
-              "Automoved (verification)",
+              "Automoved (verification)"
             );
           }
         }
