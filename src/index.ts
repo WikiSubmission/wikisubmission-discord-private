@@ -20,7 +20,8 @@ import { Bot } from "./bot/client";
     );
   }
 
-  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+  if (!process.env.SUPABASE_URL ||
+    (!process.env.SUPABASE_SERVICE_ROLE_KEY && !process.env.SUPABASE_ANON_KEY)) {
     console.warn(`No Supabase keys found in environment variables!`);
   }
 
