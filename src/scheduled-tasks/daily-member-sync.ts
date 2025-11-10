@@ -1,6 +1,6 @@
 import { Bot } from '../bot/client';
 import { SupportedGuilds } from '../constants/supported-guilds';
-import { ScheduledTaskManager } from '../utils/discord/create-scheduled-action';
+import { ScheduledTaskManager } from '../utils/create-scheduled-action';
 import { getSupabaseClient } from '../utils/get-supabase-client';
 import { logError } from '../utils/log-error';
 
@@ -43,12 +43,16 @@ export default function action(): ScheduledTaskManager {
         const BATCH_SIZE = 200;
         for (let i = 0; i < rows.length; i += BATCH_SIZE) {
           const chunk = rows.slice(i, i + BATCH_SIZE);
-          await getSupabaseClient()
-            .from('DiscordMembers')
-            .upsert(chunk, { onConflict: 'id' });
+          const result = await getSupabaseClient()
+              .from("ws_discord_members")
+              .upsert(chunk, { onConflict: 'id' });
+
+          if (result.error) {
+            logError(result.error, __filename);
+          }
         }
       } catch (error) {
-        logError(error, 'hourly-member-sync');
+        logError(error, __filename);
       }
     },
   });

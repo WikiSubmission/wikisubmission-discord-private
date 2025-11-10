@@ -2,8 +2,8 @@ import { EmbedBuilder } from 'discord.js';
 import { WEventListener } from '../types/w-event-listener';
 import { SelectableRoles } from '../constants/selectable-roles';
 import { logError } from '../utils/log-error';
-import { getChannel } from '../utils/discord/get-channel';
-import { stringifyName } from '../utils/discord/stringify-name';
+import { getChannel } from '../utils/get-channel';
+import { stringifyName } from '../utils/stringify-name';
 
 export default function listener(): WEventListener {
     return {

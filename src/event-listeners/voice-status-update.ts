@@ -2,11 +2,10 @@ import { WEventListener } from "../types/w-event-listener";
 import {
   PermissionsBitField,
   GuildMember,
-  VoiceBasedChannel,
   GuildTextBasedChannel,
 } from "discord.js";
 import { logError } from "../utils/log-error";
-import { getChannel } from "../utils/discord/get-channel";
+import { getChannel } from "../utils/get-channel";
 
 export default function listener(): WEventListener {
   return {

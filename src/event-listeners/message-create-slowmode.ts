@@ -1,5 +1,5 @@
 import { WEventListener } from '../types/w-event-listener'
-import { getRole } from '../utils/discord/get-role'
+import { getRole } from '../utils/get-role'
 import { getSupabaseClient } from '../utils/get-supabase-client'
 import { logError } from '../utils/log-error'
 

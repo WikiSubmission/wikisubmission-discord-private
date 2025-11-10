@@ -1,11 +1,11 @@
 import { EmbedBuilder } from "discord.js";
 import { WEventListener } from "../types/w-event-listener";
-import { getChannel } from "../utils/discord/get-channel";
+import { getChannel } from "../utils/get-channel";
 import { logError } from "../utils/log-error";
-import { stringifyName } from "../utils/discord/stringify-name";
+import { stringifyName } from "../utils/stringify-name";
 import { DateUtils } from "../utils/date-utils";
-import { stringifyRoles } from "../utils/discord/stringify-roles";
-import { syncMember } from "../utils/discord/sync-member";
+import { stringifyRoles } from "../utils/stringify-roles";
+import { syncMember } from "../utils/sync-member";
 
 export default function listener(): WEventListener {
     return {

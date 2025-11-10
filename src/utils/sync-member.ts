@@ -1,6 +1,6 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { getSupabaseClient } from "../get-supabase-client";
-import { logError } from "../log-error";
+import { getSupabaseClient } from "./get-supabase-client";
+import { logError } from "./log-error";
 
 export async function syncMember(context: GuildMember | PartialGuildMember | null, trigger?: string) {
     try {
@@ -11,7 +11,7 @@ export async function syncMember(context: GuildMember | PartialGuildMember | nul
             ?.map(role => role.id) || [];
 
         await getSupabaseClient()
-            .from('DiscordMembers')
+            .from('ws_discord_members')
             .upsert({
                 id: `${context.user.id}*${context.guild.id}`,
                 user_id: context.user.id,

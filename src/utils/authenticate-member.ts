@@ -1,6 +1,6 @@
 import { GuildMember, APIInteractionGuildMember } from 'discord.js';
-import { Bot } from '../../bot/client';
-import { WAccessControlCategories } from '../../types/w-access-control-categories';
+import { Bot } from '../bot/client';
+import { WAccessControlCategories } from '../types/w-access-control-categories';
 
 // Simplified authentication as it is only used in trusted guilds. May enhance later.
 export function authenticateMember(

@@ -1,4 +1,4 @@
-import { WScheduledTask } from "../../types/w-scheduled-task";
+import { WScheduledTask } from "../types/w-scheduled-task";
 
 export class ScheduledTaskManager {
     public static actions: Map<

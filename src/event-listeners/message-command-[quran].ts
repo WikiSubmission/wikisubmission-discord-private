@@ -3,7 +3,6 @@ import { WEventListener } from "../types/w-event-listener";
 import { stimulateDelay } from "../utils/stimulate-delay";
 import { logError } from "../utils/log-error";
 import { ws } from "../utils/wikisubmission-sdk";
-import { WikiSubmission } from "wikisubmission-sdk";
 
 export default function listener(): WEventListener {
     return {
@@ -29,11 +28,18 @@ export default function listener(): WEventListener {
                     )
                     .join(',');
 
-                const request = await ws.query(formattedVerses, {
-                    normalize_god_casing: true
+                const request = await ws.Quran.query(formattedVerses, {
+                    adjustments: {
+                        index: true,
+                        chapters: false,
+                        text: false,
+                        subtitles: false,
+                        footnotes: false,
+                        wordByWord: false,
+                    }
                 });
 
-                if (request instanceof ws.Error) {
+                if (request.status === "error") {
                     const msg = await message.reply(
                         `\`No verse/(s) found with "${verses}"\``,
                     );
@@ -43,27 +49,17 @@ export default function listener(): WEventListener {
                         } catch (_) { }
                     }, 3000);
                     return;
-                } else {
+                } else if (request.type === "verse" || request.type === "multiple_verses") {
                     let description = '';
                     let [iteration, maxVerses, reachedLimit] = [0, 30, false];
-                    for (const i of request.response) {
+                    for (const i of request.data) {
                         if (iteration < maxVerses) {
-                            if (i.verse_subtitle_english) {
-                                description += `${safeMarkdown(`\`${i.verse_subtitle_english}\``)}\n\n`;
+                            if (i.ws_quran_subtitles?.english) {
+                                description += `${safeMarkdown(`\`${i.ws_quran_subtitles.english}\``)}\n\n`;
                             }
-                            description += `**[${i.verse_id}]** ${safeMarkdown(`${i.verse_text_english}\n\n`)}`;
-                            if (
-                                /\beq\d{1,3}:\d{1,3}(-\d{1,3})?/i.test(
-                                    message.content.replace(/\s*/g, ''),
-                                )
-                            ) {
-                                description += `(${i.verse_id_arabic}) ${i.verse_text_arabic}\n\n`;
-                            }
-                            if (message.content.toLowerCase().includes('-t')) {
-                                description += `${i.verse_text_transliterated}\n\n`;
-                            }
-                            if (i.verse_footnote_english) {
-                                description += `*${safeMarkdown(i.verse_footnote_english)}*\n\n`;
+                            description += `**[${i.verse_id}]** ${safeMarkdown(`${i.ws_quran_text.english}\n\n`)}`;
+                            if (i.ws_quran_footnotes?.english) {
+                                description += `*${safeMarkdown(i.ws_quran_footnotes.english)}*\n\n`;
                             }
                         } else if (!reachedLimit) {
                             description += `----- You have reached the maximum verse limit per single request (${maxVerses}) -----`;
@@ -83,7 +79,7 @@ export default function listener(): WEventListener {
                             embeds: [
                                 new EmbedBuilder()
                                     .setTitle(
-                                        `${WikiSubmission.Quran.V1.Methods.formatDataToChapterTitle(request.response, "english")}${i > 1 ? ` (cont'd)` : ``}`,
+                                        `${request.metadata.formattedChapterTitle}${i > 1 ? ` (cont'd)` : ``}`,
                                     )
                                     .setDescription(chunk)
                                     .setFooter({ text: `Quran: The Final Testament` })

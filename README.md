@@ -1,4 +1,6 @@
-A minimalistic, private bot designed for the Submission Server. While not available for public use, its source code is publicly available as part of a commitment to transparency and open source.
+# Submission Mod Bot
+
+A moderation bot designed specifically for the 19 Server. While not available for public use, its source code is publicly available as part of a commitment to transparency and open source.
 
 ## Running
 
@@ -18,6 +20,5 @@ Our main bot, WikiSubmission, can be found [here](https://github.com/WikiSubmiss
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 ## Contact
-Email: developer@wikisubmission.org
 
-Community Discord: https://discord.gg/submissionserver
+Email: [developer@wikisubmission.org](mailto:developer@wikisubmission.org)

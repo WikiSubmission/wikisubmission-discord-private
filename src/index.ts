@@ -8,15 +8,14 @@ import { Bot } from "./bot/client";
     console.log(
         `NODE_ENV: ${process.env.NODE_ENV || 'development (default)'}`,
     );
-    if (process.env.SUPABASE_URL && process.env.SUPABASE_API_KEY) {
-        console.log(`Environment variables loaded (supabase keys found)\n`);
-    } else if (process.env.BOT_TOKEN || process.env.BOT_CLIENT_ID) {
+    if (process.env.BOT_TOKEN || process.env.BOT_CLIENT_ID) {
         console.log(`Environment variables loaded (using token/client ID from .env)\n`)
-    } else {
-        console.error(
-            `Missing environment variables (BOT_TOKEN, BOT_CLIENT_ID) or (SUPABASE_URL, SUPABASE_API_KEY)`,
-        );
-        process.exit(1);
+    } else if ((process.env.DISCORD_TOKEN_SUBMISSIONMOD && process.env.DISCORD_CLIENTID_SUBMISSIONMOD) || (process.env.DISCORD_TOKEN_SUBMISSIONMOD && process.env.DISCORD_CLIENTID_SUBMISSIONMOD)) {
+        console.log(`Environment variables loaded (using SubmissionMod ${process.env.NODE_ENV === 'production' ? 'production' : 'development'} credentials)\n`)
+    }
+
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
+        console.warn(`No Supabase keys found in environment variables!`);
     }
 
     // [Server]

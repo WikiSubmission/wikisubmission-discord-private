@@ -1,6 +1,7 @@
 import { Guild, GuildMember, Interaction, Message, Role } from "discord.js";
-import { Bot } from "../../bot/client";
-import { SupportedGuilds } from "../../constants/supported-guilds";
+import { Bot } from "../bot/client";
+import { SupportedGuilds } from "../constants/supported-guilds";
+
 type AcceptableContexts = Interaction | GuildMember | Message | Guild;
 
 export function getRole(

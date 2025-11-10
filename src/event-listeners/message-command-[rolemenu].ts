@@ -1,9 +1,9 @@
 import { BaseMessageOptions } from "discord.js";
 import { WEventListener } from "../types/w-event-listener";
 import { stimulateDelay } from "../utils/stimulate-delay";
-import { authenticateMember } from "../utils/discord/authenticate-member";
+import { authenticateMember } from "../utils/authenticate-member";
 import { SelectableRoles } from "../constants/selectable-roles";
-import { getChannel } from "../utils/discord/get-channel";
+import { getChannel } from "../utils/get-channel";
 import { logError } from "../utils/log-error";
 
 export default function listener(): WEventListener {

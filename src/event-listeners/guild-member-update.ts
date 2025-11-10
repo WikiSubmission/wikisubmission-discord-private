@@ -1,6 +1,6 @@
 import { WEventListener } from "../types/w-event-listener";
 import { logError } from "../utils/log-error";
-import { syncMember } from "../utils/discord/sync-member";
+import { syncMember } from "../utils/sync-member";
 
 export default function listener(): WEventListener {
     return {

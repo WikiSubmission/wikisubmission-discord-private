@@ -1,11 +1,11 @@
 import { EmbedBuilder } from "discord.js";
 import { WSlashCommand } from "../types/w-slash-command";
 import { DateUtils } from "../utils/date-utils";
-import { stringifyName } from "../utils/discord/stringify-name";
-import { getRole } from "../utils/discord/get-role";
-import { getChannel, getChannels } from "../utils/discord/get-channel";
+import { stringifyName } from "../utils/stringify-name";
+import { getRole } from "../utils/get-role";
+import { getChannel, getChannels } from "../utils/get-channel";
 import { logError } from "../utils/log-error";
-import { authenticateMember } from "../utils/discord/authenticate-member";
+import { authenticateMember } from "../utils/authenticate-member";
 
 export default function Command(): WSlashCommand {
   return {

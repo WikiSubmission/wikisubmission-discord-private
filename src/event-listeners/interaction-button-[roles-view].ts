@@ -1,7 +1,7 @@
 import { EmbedBuilder } from 'discord.js';
 import { WEventListener } from '../types/w-event-listener';
-import { stringifyName } from '../utils/discord/stringify-name';
-import { stringifyRoles } from '../utils/discord/stringify-roles';
+import { stringifyName } from '../utils/stringify-name';
+import { stringifyRoles } from '../utils/stringify-roles';
 import { logError } from '../utils/log-error';
 
 export default function listener(): WEventListener {

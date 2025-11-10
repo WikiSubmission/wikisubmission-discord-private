@@ -1,12 +1,12 @@
 import { EmbedBuilder } from "discord.js";
 import { WEventListener } from "../types/w-event-listener";
-import { getChannel, getChannels } from "../utils/discord/get-channel";
+import { getChannel, getChannels } from "../utils/get-channel";
 import { getSupabaseClient } from "../utils/get-supabase-client";
-import { stringifyName } from "../utils/discord/stringify-name";
+import { stringifyName } from "../utils/stringify-name";
 import { DateUtils } from "../utils/date-utils";
-import { stringifyRoles } from "../utils/discord/stringify-roles";
-import { syncMember } from "../utils/discord/sync-member";
-import { getRole } from "../utils/discord/get-role";
+import { stringifyRoles } from "../utils/stringify-roles";
+import { syncMember } from "../utils/sync-member";
+import { getRole } from "../utils/get-role";
 import { logError } from "../utils/log-error";
 
 export default function listener(): WEventListener {
@@ -31,7 +31,7 @@ export default function listener(): WEventListener {
 
         // [Check DB]
         const memberRecord = await getSupabaseClient()
-          .from("DiscordMembers")
+          .from("ws_discord_members")
           .select("*")
           .eq("id", `${member.user.id}*${member.guild.id}`)
           .single();

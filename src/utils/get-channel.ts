@@ -11,8 +11,8 @@ import {
   VoiceChannel,
   VoiceState,
 } from "discord.js";
-import { Bot } from "../../bot/client";
-import { SupportedGuilds } from "../../constants/supported-guilds";
+import { Bot } from "../bot/client";
+import { SupportedGuilds } from "../constants/supported-guilds";
 
 type AcceptableContexts =
   | Interaction

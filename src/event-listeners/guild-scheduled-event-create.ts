@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { WEventListener } from "../types/w-event-listener";
-import { getChannel } from "../utils/discord/get-channel";
+import { getChannel } from "../utils/get-channel";
 import { logError } from "../utils/log-error";
 
 export default function listener(): WEventListener {
