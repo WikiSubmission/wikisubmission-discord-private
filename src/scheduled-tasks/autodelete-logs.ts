@@ -1,9 +1,9 @@
 import { Collection, EmbedBuilder, Message } from 'discord.js'
 import { Bot } from '../bot/client'
 import { SupportedGuilds } from '../constants/supported-guilds'
-import { ScheduledTaskManager } from '../utils/discord/create-scheduled-action'
-import { getChannel } from '../utils/discord/get-channel'
-import { getRole } from '../utils/discord/get-role'
+import { ScheduledTaskManager } from '../utils/create-scheduled-action'
+import { getChannel } from '../utils/get-channel'
+import { getRole } from '../utils/get-role'
 import { getSupabaseClient } from '../utils/get-supabase-client'
 
 export default function action(): ScheduledTaskManager {

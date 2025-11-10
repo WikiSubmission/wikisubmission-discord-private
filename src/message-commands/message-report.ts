@@ -8,8 +8,8 @@ import {
   TextInputStyle,
 } from 'discord.js'
 import { WMessageCommand } from '../types/w-message-command'
-import { getChannel } from '../utils/discord/get-channel'
-import { getRole } from '../utils/discord/get-role'
+import { getChannel } from '../utils/get-channel'
+import { getRole } from '../utils/get-role'
 
 export default function Command(): WMessageCommand {
   return {

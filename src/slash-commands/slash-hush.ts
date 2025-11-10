@@ -1,8 +1,8 @@
 import { EmbedBuilder } from 'discord.js'
 import { WSlashCommand } from '../types/w-slash-command'
-import { getChannel } from '../utils/discord/get-channel'
-import { getRole } from '../utils/discord/get-role'
-import { stringifyName } from '../utils/discord/stringify-name'
+import { getChannel } from '../utils/get-channel'
+import { getRole } from '../utils/get-role'
+import { stringifyName } from '../utils/stringify-name'
 
 export default function Command(): WSlashCommand {
   return {

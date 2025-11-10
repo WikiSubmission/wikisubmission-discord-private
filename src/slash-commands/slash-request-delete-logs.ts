@@ -1,6 +1,6 @@
 import { WSlashCommand } from '../types/w-slash-command'
-import { getChannel } from '../utils/discord/get-channel'
-import { getRole } from '../utils/discord/get-role'
+import { getChannel } from '../utils/get-channel'
+import { getRole } from '../utils/get-role'
 import { Collection, Message } from 'discord.js'
 import { getSupabaseClient } from '../utils/get-supabase-client'
 
