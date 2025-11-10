@@ -2,7 +2,7 @@ import { WSlashCommand } from "../types/w-slash-command";
 import { getChannel } from "../utils/get-channel";
 import { getRole } from "../utils/get-role";
 import { Collection, Message } from "discord.js";
-import { getSupabaseClient } from "../utils/get-supabase-client";
+import { getSupabaseInternalClient } from "../utils/get-supabase-client";
 
 export default function Command(): WSlashCommand {
   return {
@@ -77,7 +77,7 @@ export default function Command(): WSlashCommand {
           return;
         }
 
-        const supaClient = getSupabaseClient();
+        const supaClient = getSupabaseInternalClient();
 
         await supaClient.from("ws_discord_message_deletion_schedule").insert([
           {

@@ -4,7 +4,7 @@ import { SupportedGuilds } from "../constants/supported-guilds";
 import { ScheduledTaskManager } from "../utils/create-scheduled-action";
 import { getChannel } from "../utils/get-channel";
 import { getRole } from "../utils/get-role";
-import { getSupabaseClient } from "../utils/get-supabase-client";
+import { getSupabaseInternalClient } from "../utils/get-supabase-client";
 import { logError } from "../utils/log-error";
 
 export default function action(): ScheduledTaskManager {
@@ -34,7 +34,7 @@ export default function action(): ScheduledTaskManager {
           return;
         }
 
-        const supaClient = getSupabaseClient();
+        const supaClient = getSupabaseInternalClient();
         const { data, error } = await supaClient
           .from("ws_discord_constants")
           .select("*")
@@ -92,7 +92,7 @@ export default function action(): ScheduledTaskManager {
           }
 
           const { data: scheduled, error: scheduledError } =
-            await getSupabaseClient()
+            await getSupabaseInternalClient()
               .from("ws_discord_message_deletion_schedule")
               .select("*")
               .eq("is_executed", false)
@@ -126,7 +126,7 @@ export default function action(): ScheduledTaskManager {
                 }
 
                 // Mark as executed in Supabase
-                await getSupabaseClient()
+                await getSupabaseInternalClient()
                   .from("ws_discord_message_deletion_schedule")
                   .update({ is_executed: true })
                   .eq("id", task.id);

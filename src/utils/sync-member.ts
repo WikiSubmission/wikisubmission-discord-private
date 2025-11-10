@@ -1,5 +1,5 @@
 import { GuildMember, PartialGuildMember } from "discord.js";
-import { getSupabaseClient } from "./get-supabase-client";
+import { getSupabaseInternalClient } from "./get-supabase-client";
 import { logError } from "./log-error";
 
 export async function syncMember(
@@ -14,7 +14,7 @@ export async function syncMember(
         ?.filter((role) => role.name !== "@everyone")
         ?.map((role) => role.id) || [];
 
-    await getSupabaseClient()
+    await getSupabaseInternalClient()
       .from("ws_discord_members")
       .upsert({
         id: `${context.user.id}*${context.guild.id}`,

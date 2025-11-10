@@ -1,6 +1,6 @@
 import { EmbedBuilder } from "discord.js";
 import { WSlashCommand } from "../types/w-slash-command";
-import { getSupabaseClient } from "../utils/get-supabase-client";
+import { getSupabaseInternalClient } from "../utils/get-supabase-client";
 import NodeCache from "node-cache";
 
 const cache = new NodeCache({ stdTTL: 60 * 60 * 6 }); // cache for 6 hour
@@ -25,7 +25,7 @@ export default function Command(): WSlashCommand {
           updatedTimestamp = cached.updatedTimestamp;
         } else {
           // Fetch the log retention setting and timestamp from database
-          const supaClient = getSupabaseClient();
+          const supaClient = getSupabaseInternalClient();
           const { data, error } = await supaClient
             .from("ws_discord_constants")
             .select("*");

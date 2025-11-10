@@ -1,5 +1,5 @@
 import { WSlashCommand } from "../types/w-slash-command";
-import { getSupabaseClient } from "../utils/get-supabase-client";
+import { getSupabaseInternalClient } from "../utils/get-supabase-client";
 
 export default function Command(): WSlashCommand {
   return {
@@ -27,7 +27,7 @@ export default function Command(): WSlashCommand {
           return;
         }
 
-        const supaClient = getSupabaseClient();
+        const supaClient = getSupabaseInternalClient();
         const timestamp = new Date().toISOString();
 
         // Upsert both: duration and timestamp

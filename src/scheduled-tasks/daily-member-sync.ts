@@ -1,7 +1,7 @@
 import { Bot } from "../bot/client";
 import { SupportedGuilds } from "../constants/supported-guilds";
 import { ScheduledTaskManager } from "../utils/create-scheduled-action";
-import { getSupabaseClient } from "../utils/get-supabase-client";
+import { getSupabaseInternalClient } from "../utils/get-supabase-client";
 import { logError } from "../utils/log-error";
 
 export default function action(): ScheduledTaskManager {
@@ -42,7 +42,7 @@ export default function action(): ScheduledTaskManager {
         const BATCH_SIZE = 200;
         for (let i = 0; i < rows.length; i += BATCH_SIZE) {
           const chunk = rows.slice(i, i + BATCH_SIZE);
-          const result = await getSupabaseClient()
+          const result = await getSupabaseInternalClient()
             .from("ws_discord_members")
             .upsert(chunk, { onConflict: "id" });
 
