@@ -4,6 +4,7 @@ import {
   ClientEvents,
   Events,
   GatewayIntentBits,
+  Partials,
   REST,
   Routes,
 } from "discord.js";
@@ -31,9 +32,11 @@ export class Bot {
       // [Privileged intents]
       GatewayIntentBits.GuildMembers,
       GatewayIntentBits.GuildMessages,
+      GatewayIntentBits.GuildMessageReactions,
       GatewayIntentBits.MessageContent,
       GatewayIntentBits.GuildModeration,
     ],
+    partials: [Partials.Message, Partials.Reaction, Partials.User],
     rest: {
       timeout: 50_000,
     },
