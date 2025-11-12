@@ -12,8 +12,10 @@ export default function listener(): WEventListener {
         if (message.author.bot) return;
 
         const lowerContent = message.content.toLowerCase();
-        if (!lowerContent.match(/(eq|q)(\s+|\d)/i)) return;
+        const commandMatch = lowerContent.match(/(eq|q)(\s+|\d)/i);
+        if (!commandMatch) return;
 
+        const isEqCommand = commandMatch[1].toLowerCase() === "eq";
         const verses = detectQuranicVerses(message.content);
         if (verses.length === 0) return;
 
@@ -61,9 +63,13 @@ export default function listener(): WEventListener {
                 description += `${safeMarkdown(`\`${i.ws_quran_subtitles.english}\``)}\n\n`;
               }
               description += `**[${i.verse_id}]** ${safeMarkdown(`${i.ws_quran_text.english}\n\n`)}`;
+              if (isEqCommand) {
+                description += `${i.ws_quran_text.arabic}\n\n`;
+              }
               if (i.ws_quran_footnotes?.english) {
                 description += `*${safeMarkdown(i.ws_quran_footnotes.english)}*\n\n`;
               }
+              
             } else if (!reachedLimit) {
               description += `----- You have reached the maximum verse limit per single request (${maxVerses}) -----`;
               reachedLimit = true;
