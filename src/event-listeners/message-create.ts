@@ -40,7 +40,6 @@ export default function listener(): WEventListener {
 You currently have the **New Member** role, so sending **images, videos, attachments, embeds, or links** is temporarily disabled.
 
 Once a staff member approves you or you become verified, these restrictions will be lifted.`,
-            flags: ["Ephemeral"],
           })
           .catch(() => null); // user DMs closed
       } catch (err) {
