@@ -7,7 +7,7 @@ import { logError } from "../utils/log-error";
 export default function action(): ScheduledTaskManager {
   return new ScheduledTaskManager({
     id: "DAILY_MEMBER_SYNC",
-    description: "Syncs necessary member data",
+    description: "Syncs necessary member data (and removes new member role after 3 days)",
     interval: "EVERY_DAY",
     action: async () => {
       try {
@@ -19,6 +19,23 @@ export default function action(): ScheduledTaskManager {
 
         const members = await guild.members.fetch();
         const now = Date.now();
+        const threeDaysAgo = now - (3 * 24 * 60 * 60 * 1000); // 3 days in milliseconds
+
+        // Remove "New Member" role from members who joined more than 3 days ago
+        for (const member of members.values()) {
+          const newMemberRole = member.roles.cache.find(
+            (role) => role.name.startsWith("New Member")
+          );
+          
+          if (newMemberRole && member.joinedTimestamp && member.joinedTimestamp < threeDaysAgo) {
+            try {
+              await member.roles.remove(newMemberRole);
+              console.log(`Removed "New Member" role from ${member.user.username} (${member.user.id})`);
+            } catch (error) {
+              logError(error, __filename);
+            }
+          }
+        }
 
         const rows = Array.from(members.values()).map((member) => {
           const rolesString = member.roles.cache
