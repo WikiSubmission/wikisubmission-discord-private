@@ -36,10 +36,12 @@ export default function listener(): WEventListener {
         // ---- WARN THE USER ----
         await message.author
           .send({
-            content: `Hi **${message.author.username}**,
-You currently have the **New Member** role, so sending **images, videos, attachments, embeds, or links** is temporarily disabled.
+            content: `Peace **${message.author.username}**,
+You currently have the **New Member** role, sending **images, videos, attachments, embeds, or links** is temporarily disabled.
 
-Once a staff member approves you or you become verified, these restrictions will be lifted.`,
+These restrictions will be lifted automatically 3 days after joining. Please be patient. Thank you.
+
+Contact a mod if you have any questions.`,
           })
           .catch(() => null); // user DMs closed
       } catch (err) {
