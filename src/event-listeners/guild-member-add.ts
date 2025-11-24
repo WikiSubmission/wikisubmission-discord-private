@@ -38,6 +38,12 @@ export default function listener(): WEventListener {
 
         // [Case: member not found i.e. newly joined]
         if (!memberRecord.data) {
+          // [Add new member role]
+          const newMemberRole = member.guild.roles.cache.find(role => role.name.startsWith("New Member"));
+          if (newMemberRole) {
+            await member.roles.add(newMemberRole.id);
+          }
+          
           // [Staff notice]
           const rolesString = stringifyRoles(member);
           channels["admissions"].send({
