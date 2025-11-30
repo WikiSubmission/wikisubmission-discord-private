@@ -20,7 +20,7 @@ export default function listener(): WEventListener {
       try {
         // [Required channels]
         const channels = getChannels(
-          ["admissions", "staff-log", "welcome", "choose-roles"],
+          ["admissions", "staff-log"],
           "text",
           member
         );
@@ -46,7 +46,7 @@ export default function listener(): WEventListener {
           
           // [Staff notice]
           const rolesString = stringifyRoles(member);
-          channels["admissions"].send({
+          channels["staff-log"].send({
             embeds: [
               new EmbedBuilder()
                 .setAuthor({
@@ -81,12 +81,32 @@ export default function listener(): WEventListener {
                 ),
             ],
           });
+
+          await channels["admissions"].send({
+            content: `<@${member.user.id}>`,
+            embeds: [
+              new EmbedBuilder()
+                .setTitle("Peace be upon you!")
+                .setThumbnail(member.displayAvatarURL())
+                .setColor("DarkBlue")
+                .setTimestamp(Date.now())
+                .setDescription(
+                  `**Welcome to 19,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`,
+                )
+                .setFooter({
+                  text:
+                    member.guild.memberCount % 19 === 0
+                      ? `Members: ${member.guild.memberCount} (19 x ${Math.floor(member.guild.memberCount / 19)}) • ${member.user.username}`
+                      : `Members: ${member.guild.memberCount} • ${member.user.username}`,
+                }),
+            ],
+          });
         }
 
         // [Case: member found i.e. rejoined]
         else {
           // [Staff notice]
-          await channels["admissions"].send({
+          await channels["staff-log"].send({
             embeds: [
               new EmbedBuilder()
                 .setColor("DarkButNotBlack")
@@ -131,6 +151,26 @@ export default function listener(): WEventListener {
                         : "No previous roles",
                   }
                 ),
+            ],
+          });
+
+          await channels["admissions"].send({
+            content: `<@${member.user.id}>`,
+            embeds: [
+              new EmbedBuilder()
+                .setTitle("Peace be upon you!")
+                .setThumbnail(member.displayAvatarURL())
+                .setColor("DarkBlue")
+                .setTimestamp(Date.now())
+                .setDescription(
+                  `**Welcome back,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`,
+                )
+                .setFooter({
+                  text:
+                    member.guild.memberCount % 19 === 0
+                      ? `Members: ${member.guild.memberCount} (19 x ${Math.floor(member.guild.memberCount / 19)}) • ${member.user.username}`
+                      : `Members: ${member.guild.memberCount} • ${member.user.username}`,
+                }),
             ],
           });
 
