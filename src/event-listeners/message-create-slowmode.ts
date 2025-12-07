@@ -2,9 +2,7 @@ import { WEventListener } from "../types/w-event-listener";
 import { getRole } from "../utils/get-role";
 import { logError } from "../utils/log-error";
 
-// Cache to track last message timestamps
 const lastMessageTimestamps = new Map<string, number>();
-// Track users locked with permission overwrites
 const lockedUsers = new Set<string>();
 
 export default function listener(): WEventListener {
@@ -22,10 +20,7 @@ export default function listener(): WEventListener {
 
         const hushRole = getRole("Hush");
         const slowRole = getRole("Slow");
-        if (!slowRole) {
-          // console.error('Cannot find Slow role. Please contact a dev')
-          return;
-        }
+        if (!slowRole) return;
         if (!hushRole) {
           console.error("Cannot find Hush role. Please contact a dev");
           return;
@@ -33,20 +28,27 @@ export default function listener(): WEventListener {
 
         const DISCORD_HUSH_DURATION_SECONDS = 10;
 
-        // Mode 1: Delete + warning (slowRole.id)
+        // Function to send ephemeral-style warning
+        async function sendWarning(content: string) {
+          // Try DM first
+          try {
+            await member.send(content);
+          } catch {
+            // fallback: send temporary message in channel
+            const warningMsg = await message.channel.send(content);
+            setTimeout(() => warningMsg.delete().catch(() => {}), 5000);
+          }
+        }
+
+        // --- Slow Role ---
         if (member.roles.cache.has(slowRole.id)) {
           if (diff < DISCORD_HUSH_DURATION_SECONDS) {
             await message.delete().catch(() => {});
-
-            const warning = await message.channel.send({
-              content: `${member}, you must wait **${Math.ceil(
+            await sendWarning(
+              `${member}, you must wait **${Math.ceil(
                 DISCORD_HUSH_DURATION_SECONDS - diff
-              )}s** before sending another message.`,
-            });
-
-            setTimeout(() => {
-              warning.delete().catch(() => {});
-            }, 5000);
+              )}s** before sending another message.`
+            );
             return;
           }
 
@@ -54,35 +56,40 @@ export default function listener(): WEventListener {
           return;
         }
 
-        // Mode 2: Permission block (hushRole.id)
+        // --- Hush Role ---
         if (member.roles.cache.has(hushRole.id)) {
           if (diff < DISCORD_HUSH_DURATION_SECONDS) {
             await message.delete().catch(() => {});
 
-            // Only apply permission overwrites for channels that support it
-            if ("permissionOverwrites" in message.channel) {
-              if (!lockedUsers.has(member.id)) {
-                lockedUsers.add(member.id);
+            if (
+              "permissionOverwrites" in message.channel &&
+              !lockedUsers.has(member.id)
+            ) {
+              lockedUsers.add(member.id);
+              await message.channel.permissionOverwrites
+                .edit(member.id, {
+                  SendMessages: false,
+                  CreatePublicThreads: false,
+                  CreatePrivateThreads: false,
+                  SendMessagesInThreads: false,
+                })
+                .catch(() => {});
 
-                await message.channel.permissionOverwrites
-                  .edit(member.id, {
-                    SendMessages: false,
-                    CreatePublicThreads: false,
-                    CreatePrivateThreads: false,
-                    SendMessagesInThreads: false,
-                  })
-                  .catch(() => {});
-
-                setTimeout(async () => {
-                  if ("permissionOverwrites" in message.channel) {
-                    await message.channel.permissionOverwrites
-                      .delete(member.id)
-                      .catch(() => {});
-                  }
-                  lockedUsers.delete(member.id);
-                }, DISCORD_HUSH_DURATION_SECONDS * 1000);
-              }
+              setTimeout(async () => {
+                if ("permissionOverwrites" in message.channel) {
+                  await message.channel.permissionOverwrites
+                    .delete(member.id)
+                    .catch(() => {});
+                }
+                lockedUsers.delete(member.id);
+              }, DISCORD_HUSH_DURATION_SECONDS * 1000);
             }
+
+            await sendWarning(
+              `${member}, you are currently hushed. **${Math.ceil(
+                DISCORD_HUSH_DURATION_SECONDS - diff
+              )}s**. Please contact a moderator for further action.`
+            );
             return;
           }
 

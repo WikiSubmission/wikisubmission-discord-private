@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { ApplicationCommandOptionType, EmbedBuilder } from "discord.js";
 import { WSlashCommand } from "../types/w-slash-command";
 import { getChannel } from "../utils/get-channel";
 import { getRole } from "../utils/get-role";
@@ -12,8 +12,14 @@ export default function Command(): WSlashCommand {
       {
         name: "user",
         description: "User to slow",
-        type: 6,
+        type: ApplicationCommandOptionType.User,
         required: true,
+      },
+      {
+        name: "reason",
+        description: "Why is the user being hushed? ",
+        type: ApplicationCommandOptionType.String,
+        required: false,
       },
     ],
     access_control: "MOD_AND_ABOVE",
@@ -21,6 +27,10 @@ export default function Command(): WSlashCommand {
       try {
         // [Fetch suspect]
         const suspectID = interaction.options.get("user")?.value;
+        const reason: string = String(
+          interaction.options.get("reason")?.value ?? "No reason provided."
+        );
+
         if (typeof suspectID !== "string") {
           console.error("Cannot find user to hush");
           interaction.reply({
@@ -66,6 +76,13 @@ export default function Command(): WSlashCommand {
         //   return;
         // }
         suspect.roles.add(hushRole);
+        try {
+          await suspect.send({
+            content: `You have been placed in slowdown by the Wikisubmission moderation team.\nReason: ${reason}\nA temporary cooldown has been applied to your interactions on the server.`,
+          });
+        } catch (err) {
+          console.warn(`Cannot DM user ${suspect.user.tag}.`);
+        }
         if (!staffLog) {
           console.error("staff-log channel does not exist. Please recreate.");
           const dev = getRole("Developer", interaction);
@@ -92,7 +109,8 @@ export default function Command(): WSlashCommand {
                   {
                     name: "Hushed by",
                     value: stringifyName(interaction.user),
-                  }
+                  },
+                  { name: "Reason", value: reason.toString() }
                 )
                 .setFooter({
                   text: `${interaction.user.username}`,
