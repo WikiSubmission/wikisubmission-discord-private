@@ -1,3 +1,4 @@
+import { EmbedBuilder } from "discord.js";
 import { WEventListener } from "../types/w-event-listener";
 import { getRole } from "../utils/get-role";
 import { logError } from "../utils/log-error";
@@ -85,13 +86,27 @@ export default function listener(): WEventListener {
               }, DISCORD_HUSH_DURATION_SECONDS * 1000);
             }
 
-            await sendWarning(
-              `
-              Peace ${member}, You are currently hushed.\n\nA hush means that slow mode has been applied specifically to you: you must wait **${Math.ceil(
-                DISCORD_HUSH_DURATION_SECONDS - diff
-              )}** seconds between sending messages.\n\nThis is usually done by a moderator to help keep the chat organized or calm.\n\nIf you believe this was a mistake or wish to have your hush removed, please contact a moderator.`
+            const remainingTime = Math.ceil(
+              DISCORD_HUSH_DURATION_SECONDS - diff
             );
-            return;
+
+            const warningEmbed = new EmbedBuilder()
+              .setTitle("You are currently hushed")
+              .setDescription(
+                `Peace ${member},\n\nA hush means that slow mode has been applied specifically to you: you must wait **${remainingTime} seconds** between sending messages.\n\nThis is usually done by a moderator to help keep the chat organized or calm.\n\nIf you believe this was a mistake or wish to have your hush removed, please contact a moderator.`
+              )
+              .setColor("Red")
+              .setTimestamp();
+
+            try {
+              await member.send({ embeds: [warningEmbed] });
+            } catch {
+              // fallback to temporary channel message if DMs are closed
+              const warningMsg = await message.channel.send({
+                embeds: [warningEmbed],
+              });
+              setTimeout(() => warningMsg.delete().catch(() => {}), 5000);
+            }
           }
 
           lastMessageTimestamps.set(member.id, now);
