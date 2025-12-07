@@ -31,33 +31,37 @@ export default function Command(): WSlashCommand {
         );
 
         if (typeof userID !== "string") {
-          return interaction.reply({
+          interaction.reply({
             content: "Cannot find the user to unhush.",
             flags: ["Ephemeral"],
           });
+          return;
         }
 
         const member = interaction.guild?.members.cache.get(userID);
         if (!member) {
-          return interaction.reply({
+          interaction.reply({
             content: "Cannot find the user in this server.",
             flags: ["Ephemeral"],
           });
+          return;
         }
 
         const hushRole = getRole("Hush");
         if (!hushRole) {
-          return interaction.reply({
+          interaction.reply({
             content: "Cannot find Hush role. Please contact a developer.",
             flags: ["Ephemeral"],
           });
+          return;
         }
 
         if (!member.roles.cache.has(hushRole.id)) {
-          return interaction.reply({
+          interaction.reply({
             content: "User is not in slowdown mode.",
             flags: ["Ephemeral"],
           });
+          return;
         }
 
         // Remove hush role
@@ -84,12 +88,13 @@ export default function Command(): WSlashCommand {
         const staffLog = getChannel("staff-log", "text", interaction);
         if (!staffLog) {
           const dev = getRole("Developer", interaction);
-          return interaction.reply({
+          interaction.reply({
             content: dev
               ? `<@&${dev.id}> The \`staff-log\` channel does not exist. Unhush command logging failed, command succeeded.`
               : "The `staff-log` channel does not exist. User unhushed, cannot log it. Please contact a Developer (Developer role not found).",
             flags: ["Ephemeral"],
           });
+          return;
         }
 
         // Confirm to moderator
@@ -99,24 +104,29 @@ export default function Command(): WSlashCommand {
         });
 
         // Log in staff channel
-        await staffLog.send({
-          content: `<@${member.user.id}> has been unhushed.`,
-          embeds: [
-            new EmbedBuilder()
-              .addFields(
-                { name: "User", value: stringifyName(member) },
-                { name: "Released by", value: stringifyName(interaction.user) },
-                { name: "Reason", value: reason }
-              )
-              .setThumbnail(member.displayAvatarURL())
-              .setFooter({
-                text: interaction.user.username,
-                iconURL: interaction.user.displayAvatarURL(),
-              })
-              .setTimestamp()
-              .setColor("DarkGreen"),
-          ],
-        });
+        if (staffLog != null) {
+          await staffLog?.send({
+            content: `<@${member.user.id}> has been unhushed.`,
+            embeds: [
+              new EmbedBuilder()
+                .addFields(
+                  { name: "User", value: stringifyName(member) },
+                  {
+                    name: "Released by",
+                    value: stringifyName(interaction.user),
+                  },
+                  { name: "Reason", value: reason }
+                )
+                .setThumbnail(member.displayAvatarURL())
+                .setFooter({
+                  text: interaction.user.username,
+                  iconURL: interaction.user.displayAvatarURL(),
+                })
+                .setTimestamp()
+                .setColor("DarkGreen"),
+            ],
+          });
+        }
       } catch (err) {
         console.error(err);
         interaction.reply({
