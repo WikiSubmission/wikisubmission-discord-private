@@ -53,11 +53,12 @@ export default function Command(): WSlashCommand {
 
         let limit = interaction.options.get("limit")?.value || "50";
         if (limit !== "all") limit = Number(limit);
-
+        await interaction.guild.members.fetch();
         // Filter members with Submitter role but without Community role
         let membersWithoutCommunity = interaction.guild.members.cache
           .filter(
             (member) =>
+              !member.user.bot &&
               member.roles.cache.has(submitterRole.id) &&
               !member.roles.cache.has(communityRole.id)
           )
