@@ -62,7 +62,7 @@ export default function listener(): WEventListener {
           if (diff < DISCORD_HUSH_DURATION_SECONDS) {
             await message.delete().catch(() => {});
             await message.channel.send({
-              content: `[${member}'s Message removed: You are hushed by moderation — wait 10s between messages]`,
+              content: `[${member} Message removed: You are hushed by moderation — wait 10s between messages]`,
             });
             if (
               "permissionOverwrites" in message.channel &&
