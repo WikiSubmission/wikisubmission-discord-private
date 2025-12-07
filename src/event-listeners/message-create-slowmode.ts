@@ -86,14 +86,10 @@ export default function listener(): WEventListener {
             }
 
             await sendWarning(
-              `Peace ${member}, You are currently hushed.
-
-              A hush means that slow mode has been applied specifically to you: you must wait **${Math.ceil(
+              `
+              Peace ${member}, You are currently hushed.\nA hush means that slow mode has been applied specifically to you: you must wait **${Math.ceil(
                 DISCORD_HUSH_DURATION_SECONDS - diff
-              )}** seconds between sending messages.
-
-              This is usually done by a moderator to help keep the chat organized or calm.
-              If you believe this was a mistake or wish to have your hush removed, please contact a moderator.`
+              )}** seconds between sending messages.\nThis is usually done by a moderator to help keep the chat organized or calm.\nIf you believe this was a mistake or wish to have your hush removed, please contact a moderator.`
             );
             return;
           }
