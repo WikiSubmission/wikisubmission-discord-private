@@ -77,9 +77,17 @@ export default function Command(): WSlashCommand {
         // }
         suspect.roles.add(hushRole);
         try {
-          await suspect.send({
-            content: `Peace ${suspect},\n\nYou have been hushed by the Wikisubmission moderation team.\n\n${reason ? `Reason: ${reason}` : ""}\n\nThis is usually done by a moderator to help keep the chat organized or calm.\n\nIf you believe this was a mistake or wish to have your hush removed, please contact a moderator.`,
-          });
+          const warningEmbed = new EmbedBuilder()
+            .setTitle("You have been hushed")
+            .setDescription(
+              `Peace ${suspect},\n\nYou have been hushed by the Wikisubmission moderation team.\n\n${
+                reason ? `**Reason:** ${reason}\n\n` : ""
+              }This is usually done by a moderator to help keep the chat organized or calm.\n\nIf you believe this was a mistake or wish to have your hush removed, please contact a moderator.`
+            )
+            .setColor("Red")
+            .setTimestamp();
+
+          await suspect.send({ embeds: [warningEmbed] });
         } catch (err) {
           console.warn(`Cannot DM user ${suspect.user.tag}.`);
         }
