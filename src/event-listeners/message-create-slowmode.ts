@@ -60,7 +60,16 @@ export default function listener(): WEventListener {
         // --- Hush Role ---
         if (member.roles.cache.has(hushRole.id)) {
           if (diff < DISCORD_HUSH_DURATION_SECONDS) {
-            await message.delete().catch(() => {});
+            try {
+              await message.edit({
+                content: `[Message removed: You are hushed]`,
+              });
+            } catch {
+              // Editing may fail if the message is not editable (e.g., embeds), ignore
+            }
+            setTimeout(() => {
+              message.delete().catch(() => {});
+            }, 500);
 
             if (
               "permissionOverwrites" in message.channel &&
