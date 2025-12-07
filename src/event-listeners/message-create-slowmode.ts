@@ -86,7 +86,7 @@ export default function listener(): WEventListener {
             }
 
             await sendWarning(
-              `${member}, you are currently hushed. **${Math.ceil(
+              `${member}, you are currently hushed for **${Math.ceil(
                 DISCORD_HUSH_DURATION_SECONDS - diff
               )}s**. Please contact a moderator for further action.`
             );
