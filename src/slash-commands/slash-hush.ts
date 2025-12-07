@@ -78,7 +78,7 @@ export default function Command(): WSlashCommand {
         suspect.roles.add(hushRole);
         try {
           await suspect.send({
-            content: `You have been placed in slowdown by the Wikisubmission moderation team.\nReason: ${reason}\nA temporary cooldown has been applied to your interactions on the server.`,
+            content: `Peace ${suspect},\n\nYou have been hushed by the Wikisubmission moderation team.\n\n${reason ? `Reason: ${reason}` : ""}\n\nThis is usually done by a moderator to help keep the chat organized or calm.\n\nIf you believe this was a mistake or wish to have your hush removed, please contact a moderator.`,
           });
         } catch (err) {
           console.warn(`Cannot DM user ${suspect.user.tag}.`);
