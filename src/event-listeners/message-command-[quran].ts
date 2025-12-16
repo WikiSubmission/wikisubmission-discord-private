@@ -39,6 +39,7 @@ export default function listener(): WEventListener {
             footnotes: false,
             wordByWord: false,
           },
+          normalizeGodCasing: true
         });
 
         if (request.status === "error") {
