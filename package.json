@@ -26,7 +26,7 @@
     "node-cache": "^5.1.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
-    "wikisubmission-sdk": "^2.0.4"
+    "wikisubmission-sdk": "^2.0.5"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.5",
