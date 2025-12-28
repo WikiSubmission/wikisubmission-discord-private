@@ -4,6 +4,7 @@ import { SelectableRoles } from "../constants/selectable-roles";
 import { getChannel } from "../utils/get-channel";
 import { stringifyName } from "../utils/stringify-name";
 import { logError } from "../utils/log-error";
+import { getActualRoleName } from "../utils/get-role";
 
 export default function listener(): WEventListener {
   return {
@@ -20,27 +21,28 @@ export default function listener(): WEventListener {
 
         const userRoleNames = member.roles.cache
           .filter((role) => role.name !== "@everyone")
-          .map((role) => role.name);
+          .map((role) => role.name.toLowerCase());
 
         const choosableRoleNames = SelectableRoles.flatMap(
           (category) => category.roleNames
         );
 
         const rolesNamesToRemove = choosableRoleNames.filter((roleName) =>
-          userRoleNames.includes(roleName)
+          userRoleNames.includes(getActualRoleName(roleName).toLowerCase())
         );
 
         const rolesToRemove = guild.roles.cache.filter((i) =>
-          rolesNamesToRemove.includes(i.name)
+          rolesNamesToRemove
+            .map((name) => getActualRoleName(name).toLowerCase())
+            .includes(i.name.toLowerCase())
         );
 
         if (rolesToRemove && rolesToRemove.size > 0) {
           try {
             await member.roles.remove(rolesToRemove, "Self cleared roles");
             await interaction.reply({
-              content: `\`Success\` – cleared role${
-                rolesToRemove.size > 1 ? "s" : ""
-              } "${rolesToRemove.map((i) => `<@&${i.id}>`).join(", ")}"`,
+              content: `\`Success\` – cleared role${rolesToRemove.size > 1 ? "s" : ""
+                } "${rolesToRemove.map((i) => `<@&${i.id}>`).join(", ")}"`,
               flags: ["Ephemeral"],
             });
             const STAFF_LOG_CHANNEL = getChannel(

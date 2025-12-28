@@ -3,6 +3,7 @@ import { SupportedGuilds } from "../constants/supported-guilds";
 import { ScheduledTaskManager } from "../utils/create-scheduled-action";
 import { getSupabaseInternalClient } from "../utils/get-supabase-client";
 import { logError } from "../utils/log-error";
+import { getActualRoleName } from "../utils/get-role";
 
 export default function action(): ScheduledTaskManager {
   return new ScheduledTaskManager({
@@ -23,10 +24,10 @@ export default function action(): ScheduledTaskManager {
 
         // Remove "New Member" role from members who joined more than 3 days ago
         for (const member of members.values()) {
-          const newMemberRole = member.roles.cache.find(
-            (role) => role.name.startsWith("New Member")
+          const newMemberRole = member.roles.cache.find((role) =>
+            role.name.startsWith(getActualRoleName("New Member"))
           );
-          
+
           if (newMemberRole && member.joinedTimestamp && member.joinedTimestamp < threeDaysAgo) {
             try {
               await member.roles.remove(newMemberRole);

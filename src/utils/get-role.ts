@@ -4,11 +4,16 @@ import { SupportedGuilds } from "../constants/supported-guilds";
 
 type AcceptableContexts = Interaction | GuildMember | Message | Guild;
 
+export function getActualRoleName(name: string): string {
+  return process.env.NODE_ENV === "production" ? name : `Test:${name}`;
+}
+
 export function getRole(
   name: string,
   context?: string | AcceptableContexts
 ): Role | null {
-  const matches = (role: Role) => role.name === name;
+  const actualName = getActualRoleName(name);
+  const matches = (role: Role) => role.name === actualName;
 
   if (context && typeof context !== "string") {
     if (context instanceof Guild) {

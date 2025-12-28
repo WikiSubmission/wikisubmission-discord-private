@@ -4,6 +4,7 @@ import { SelectableRoles } from "../constants/selectable-roles";
 import { logError } from "../utils/log-error";
 import { getChannel } from "../utils/get-channel";
 import { stringifyName } from "../utils/stringify-name";
+import { getActualRoleName } from "../utils/get-role";
 
 export default function listener(): WEventListener {
   return {
@@ -28,7 +29,9 @@ export default function listener(): WEventListener {
         requestedRoles.forEach((role) => {
           if (
             !member.roles.cache.find(
-              (i) => i.name.toLowerCase() === role.roleName.toLowerCase()
+              (i) =>
+                i.name.toLowerCase() ===
+                getActualRoleName(role.roleName).toLowerCase()
             )
           ) {
             canAddRoles = true;
@@ -60,7 +63,8 @@ export default function listener(): WEventListener {
           if (internalReferenceRoleName && internalReferenceObject) {
             const actualRoleId = guild.roles.cache.find(
               (i) =>
-                i.name.toLowerCase() === internalReferenceRoleName.toLowerCase()
+                i.name.toLowerCase() ===
+                getActualRoleName(internalReferenceRoleName).toLowerCase()
             );
 
             if (actualRoleId) {
@@ -80,7 +84,7 @@ export default function listener(): WEventListener {
                   if (rolesNamesToRemove) {
                     const rolesToRemove = guild.roles.cache.filter((r) =>
                       rolesNamesToRemove
-                        .map((i) => i.toLowerCase())
+                        .map((i) => getActualRoleName(i).toLowerCase())
                         .includes(r.name.toLowerCase())
                     );
                     try {
@@ -114,11 +118,10 @@ export default function listener(): WEventListener {
           });
         } else if (addedRoles.length > 0) {
           await interaction.reply({
-            content: `\`Success\` – added ${addedRoles.map((id) => `<@&${id}>`).join(", ")} role${
-              removedRoles.length > 0
+            content: `\`Success\` – added ${addedRoles.map((id) => `<@&${id}>`).join(", ")} role${removedRoles.length > 0
                 ? ` (replacing: ${removedRoles.map((i) => `<@&${i}>`).join(", ")})`
                 : ""
-            }`,
+              }`,
             flags: ["Ephemeral"],
           });
 
@@ -140,11 +143,11 @@ export default function listener(): WEventListener {
                 .addFields(
                   ...(removedRoles.length > 0
                     ? [
-                        {
-                          name: "Replaced",
-                          value: `– ${removedRoles.map((i) => `<@&${i}>`).join(", ")}`,
-                        },
-                      ]
+                      {
+                        name: "Replaced",
+                        value: `– ${removedRoles.map((i) => `<@&${i}>`).join(", ")}`,
+                      },
+                    ]
                     : [])
                 )
                 .addFields({

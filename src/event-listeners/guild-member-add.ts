@@ -6,7 +6,7 @@ import { stringifyName } from "../utils/stringify-name";
 import { DateUtils } from "../utils/date-utils";
 import { stringifyRoles } from "../utils/stringify-roles";
 import { syncMember } from "../utils/sync-member";
-import { getRole } from "../utils/get-role";
+import { getRole, getActualRoleName } from "../utils/get-role";
 import { logError } from "../utils/log-error";
 
 export default function listener(): WEventListener {
@@ -39,11 +39,13 @@ export default function listener(): WEventListener {
         // [Case: member not found i.e. newly joined]
         if (!memberRecord.data) {
           // [Add new member role]
-          const newMemberRole = member.guild.roles.cache.find(role => role.name.startsWith("New Member"));
+          const newMemberRole = member.guild.roles.cache.find((role) =>
+            role.name.startsWith(getActualRoleName("New Member"))
+          );
           if (newMemberRole) {
             await member.roles.add(newMemberRole.id);
           }
-          
+
           // [Staff notice]
           const rolesString = stringifyRoles(member);
           channels["staff-log"].send({
@@ -72,11 +74,11 @@ export default function listener(): WEventListener {
                   },
                   ...(rolesString !== "None"
                     ? [
-                        {
-                          name: "Roles",
-                          value: rolesString,
-                        },
-                      ]
+                      {
+                        name: "Roles",
+                        value: rolesString,
+                      },
+                    ]
                     : [])
                 ),
             ],
@@ -143,11 +145,11 @@ export default function listener(): WEventListener {
                     name: "Previous Roles",
                     value:
                       memberRecord.data.roles &&
-                      memberRecord.data.roles.trim().length > 0
+                        memberRecord.data.roles.trim().length > 0
                         ? memberRecord.data.roles
-                            .split(",")
-                            .map((r) => `<@&${r}>`)
-                            .join(", ")
+                          .split(",")
+                          .map((r) => `<@&${r}>`)
+                          .join(", ")
                         : "No previous roles",
                   }
                 ),
