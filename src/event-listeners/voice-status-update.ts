@@ -18,8 +18,21 @@ export default function listener(): WEventListener {
 
         if (!member || member.user.bot) return;
 
-        // === VC Role Handling ===
         const inVcRole = getRole("IN VC", newState.guild);
+
+        if (
+          previousState.channel?.name.startsWith("Jail") ||
+          newState.channel?.name.startsWith("Jail") ||
+          previousState.channel?.name.startsWith("Verify") ||
+          newState.channel?.name.startsWith("Verify")
+        ) {
+          if (inVcRole && member.roles.cache.has(inVcRole.id)) {
+            await member.roles.remove(inVcRole?.id);
+          }
+          return;
+        }
+
+        // === VC Role Handling ===
         if (inVcRole) {
           const communityRole = getRole("Community", newState.guild);
           if (!communityRole || !member.roles.cache.has(communityRole.id)) {
