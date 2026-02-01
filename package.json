@@ -18,19 +18,19 @@
   "license": "MIT",
   "type": "commonjs",
   "dependencies": {
-    "@supabase/supabase-js": "^2.49.8",
+    "@supabase/supabase-js": "^2.93.3",
     "date-fns": "^4.1.0",
-    "discord.js": "^14.19.3",
-    "dotenv": "^16.5.0",
+    "discord.js": "^14.25.1",
+    "dotenv": "^16.6.1",
     "minimist": "^1.2.8",
     "node-cache": "^5.1.2",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.8.3",
+    "rimraf": "^6.1.2",
+    "typescript": "^5.9.3",
     "wikisubmission-sdk": "^2.0.8"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.5",
-    "supabase": "^2.54.11",
-    "tsx": "^4.20.6"
+    "supabase": "^2.74.5",
+    "tsx": "^4.21.0"
   }
 }
