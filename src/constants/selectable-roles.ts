@@ -53,7 +53,7 @@ export const SelectableRoles: {
   },
   {
     category: "Marital Status",
-    roleNames: ["Single", "Married"],
+    roleNames: ["Single", "Engaged", "Married"],
   },
   {
     category: "Other Languages",
