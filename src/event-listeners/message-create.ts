@@ -15,12 +15,15 @@ export default function listener(): WEventListener {
         const newMemberRole =
           getRole("New Member", member) ||
           member.guild.roles.cache.find((r) => r.name.startsWith("New Member"));
-
         if (!newMemberRole) return;
 
         // Check if member has the role
         const isNewMember = member.roles.cache.has(newMemberRole.id);
         if (!isNewMember) return;
+
+        // Ignore if has "verified" role
+        const verifiedRole = getRole("Verified", member);
+        if (verifiedRole && member.roles.cache.has(verifiedRole.id)) return;
 
         // ---- RULES TO BLOCK ----
 
