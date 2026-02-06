@@ -97,7 +97,7 @@ export default function Command(): WSlashCommand {
 
           // Confirm to the user that it was sent
           await i.reply({
-            content: "✅ Resource sent to chat.",
+            content: "Resource sent to chat.",
             ephemeral: true,
           });
         });
