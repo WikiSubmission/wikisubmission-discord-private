@@ -84,15 +84,23 @@ export default function Command(): WSlashCommand {
             embed.setDescription(
               `**[Click here to view PDF](${fullUrl})**\nThis document is a visual reference for the current debate.`
             );
+            // Send to the channel (publicly)
+            if (interaction.channel && "send" in interaction.channel) {
+              await interaction.channel.send({
+                embeds: [embed],
+              });
+            }
           } else {
             embed
               .setDescription("Visual reference for the current debate.")
               .setImage(fullUrl);
-          }
-
-          // Send to the channel (publicly)
-          if (interaction.channel && "send" in interaction.channel) {
-            await interaction.channel.send({ embeds: [embed] });
+            // Send to the channel (publicly)
+            if (interaction.channel && "send" in interaction.channel) {
+              await interaction.channel.send({
+                embeds: [embed],
+                content: fullUrl,
+              });
+            }
           }
 
           // Confirm to the user that it was sent
