@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import { WSlashCommand } from "../types/w-slash-command";
 
-const BASE_URL = "https://library.wikisubmission.org/file/discord/debate/";
+const BASE_URL = "https://library.wikisubmission.org/file/discord/debate";
 const DEBATE_MAP: Record<string, string> = {
   "Venn Diagram Submission": "/venndiagramsubmission.png",
   "Prayer Times Diagram": "/prayertimesdiagram.png",
