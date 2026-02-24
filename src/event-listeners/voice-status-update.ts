@@ -19,51 +19,39 @@ export default function listener(): WEventListener {
         if (!member || member.user.bot) return;
 
         const inVcRole = getRole("IN VC", newState.guild);
+        if (!inVcRole) return;
 
-        if (
-          previousState.channel?.name.startsWith("Jail") ||
-          newState.channel?.name.startsWith("Jail") ||
-          previousState.channel?.name.startsWith("Verify") ||
-          newState.channel?.name.startsWith("Verify")
-        ) {
-          if (inVcRole && member.roles.cache.has(inVcRole.id)) {
-            await member.roles.remove(inVcRole?.id);
+        const newChannel = newState.channel;
+        const isInRestrictedChannel =
+          newChannel?.name.startsWith("Jail") ||
+          newChannel?.name.startsWith("Verify");
+
+        const shouldHaveRole = newChannel !== null && !isInRestrictedChannel;
+
+        if (shouldHaveRole) {
+          if (!member.roles.cache.has(inVcRole.id)) {
+            await member.roles.add(inVcRole).catch(console.error);
           }
-          return;
-        }
-
-        // === VC Role Handling ===
-        if (inVcRole) {
-          const communityRole = getRole("Community", newState.guild);
-          if (!communityRole || !member.roles.cache.has(communityRole.id)) {
-            const oldChannel = previousState.channel;
-            const newChannel = newState.channel;
-
-            if (!oldChannel && newChannel) {
-              // Joined VC → add role
-              await member.roles.add(inVcRole).catch(console.error);
-            } else if (oldChannel && !newChannel) {
-              // Left VC → remove role
-              await member.roles.remove(inVcRole).catch(console.error);
-            }
+        } else {
+          if (member.roles.cache.has(inVcRole.id)) {
+            await member.roles.remove(inVcRole).catch(console.error);
           }
         }
 
         // === VC Logging ===
-        if (previousState.channelId === null && newState.channelId !== null) {
-          const vc_logs = getChannel("vc-logs", "text", newState);
-          if (vc_logs && canSendMessages(vc_logs, botMember)) {
+        const vc_logs = getChannel("vc-logs", "text", newState.guild); // Simplified lookup
+        if (vc_logs && canSendMessages(vc_logs, botMember)) {
+          if (!previousState.channelId && newState.channelId) {
             await vc_logs.send(
-              `**${member.displayName}** has joined <#${newState.channelId}>.`
+              `**${member.displayName}** joined <#${newState.channelId}>.`
             );
-          }
-        }
-
-        if (previousState.channelId !== null && newState.channelId === null) {
-          const vc_logs = getChannel("vc-logs", "text", previousState);
-          if (vc_logs && canSendMessages(vc_logs, botMember)) {
+          } else if (previousState.channelId && !newState.channelId) {
             await vc_logs.send(
-              `\`${member.displayName}\` has left <#${previousState.channelId}>.`
+              `\`${member.displayName}\` left <#${previousState.channelId}>.`
+            );
+          } else if (previousState.channelId !== newState.channelId) {
+            await vc_logs.send(
+              `**${member.displayName}** moved: <#${previousState.channelId}> ➔ <#${newState.channelId}>.`
             );
           }
         }
