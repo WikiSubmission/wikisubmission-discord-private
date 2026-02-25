@@ -21,6 +21,7 @@ export default function listener(): WEventListener {
         const inVcRole = getRole("IN VC", newState.guild);
         const jail = getRole("Jail", newState.guild);
         if (!inVcRole) return;
+        if (!jail) return;
 
         const newChannel = newState.channel;
         const isInRestrictedChannel =
@@ -30,7 +31,7 @@ export default function listener(): WEventListener {
         const shouldHaveRole =
           newChannel !== null &&
           !isInRestrictedChannel &&
-          !member.roles.cache.has(jail.id);
+          member.roles.cache.has(jail.id);
 
         if (shouldHaveRole) {
           if (!member.roles.cache.has(inVcRole.id)) {
