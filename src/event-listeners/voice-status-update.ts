@@ -13,52 +13,100 @@ export default function listener(): WEventListener {
     name: "voiceStateUpdate",
     handler: async (previousState, newState) => {
       try {
-        const botMember = newState.guild.members.me;
+        const guild = newState.guild;
+        const botMember = guild.members.me;
         const member = newState.member;
 
+        // 1. Basic Validation
         if (!member || member.user.bot) return;
 
-        const inVcRole = getRole("IN VC", newState.guild);
-        const jail = getRole("Jail", newState.guild);
-        if (!inVcRole) return;
-        if (!jail) return;
+        // 2. Resource Resolution & Logging
+        const inVcRole = getRole("IN VC", guild);
+        const jailRole = getRole("Jail", guild);
+
+        if (!inVcRole || !jailRole) {
+          console.warn(
+            `[VC Update] Missing configuration in ${guild.name}: ${!inVcRole ? ' "IN VC" role' : ""}${!jailRole ? ' "Jail" role' : ""}`
+          );
+          return;
+        }
 
         const newChannel = newState.channel;
+        const oldChannel = previousState.channel;
+
         const isInRestrictedChannel =
           newChannel?.name.startsWith("Jail") ||
           newChannel?.name.startsWith("Verify");
 
+        // Logic: Should have "IN VC" if in a non-restricted channel AND has the "Jail" role (assuming Jail role is a prerequisite for this logic)
         const shouldHaveRole =
           newChannel !== null &&
           !isInRestrictedChannel &&
-          member.roles.cache.has(jail.id);
+          member.roles.cache.has(jailRole.id);
 
-        if (shouldHaveRole) {
-          if (!member.roles.cache.has(inVcRole.id)) {
-            await member.roles.add(inVcRole).catch(console.error);
-          }
-        } else {
-          if (member.roles.cache.has(inVcRole.id)) {
-            await member.roles.remove(inVcRole).catch(console.error);
-          }
+        // 3. Role Management Logging
+        if (shouldHaveRole && !member.roles.cache.has(inVcRole.id)) {
+          await member.roles
+            .add(inVcRole)
+            .then(() =>
+              console.log(
+                `[Role Add] Added "IN VC" to ${member.user.tag} in ${guild.name}`
+              )
+            )
+            .catch((err) =>
+              console.error(
+                `[Role Error] Failed to add "IN VC" to ${member.user.tag}:`,
+                err
+              )
+            );
+        } else if (!shouldHaveRole && member.roles.cache.has(inVcRole.id)) {
+          await member.roles
+            .remove(inVcRole)
+            .then(() =>
+              console.log(
+                `[Role Remove] Removed "IN VC" from ${member.user.tag} in ${guild.name}`
+              )
+            )
+            .catch((err) =>
+              console.error(
+                `[Role Error] Failed to remove "IN VC" from ${member.user.tag}:`,
+                err
+              )
+            );
         }
 
-        // === VC Logging ===
-        const vc_logs = getChannel("vc-logs", "text", newState.guild); // Simplified lookup
-        if (vc_logs && canSendMessages(vc_logs, botMember)) {
-          if (!previousState.channelId && newState.channelId) {
-            await vc_logs.send(
-              `**${member.displayName}** joined <#${newState.channelId}>.`
-            );
-          } else if (previousState.channelId && !newState.channelId) {
-            await vc_logs.send(
-              `\`${member.displayName}\` left <#${previousState.channelId}>.`
-            );
-          } else if (previousState.channelId !== newState.channelId) {
-            await vc_logs.send(
-              `**${member.displayName}** moved: <#${previousState.channelId}> ➔ <#${newState.channelId}>.`
-            );
-          }
+        // 4. VC Movement Logging
+        const vc_logs = getChannel("vc-logs", "text", guild);
+
+        if (!vc_logs) {
+          // Optional: Only log this once to avoid spamming console
+          return;
+        }
+
+        if (!canSendMessages(vc_logs, botMember)) {
+          console.error(
+            `[Permission Error] Cannot send messages in #vc-logs in ${guild.name}`
+          );
+          return;
+        }
+
+        // Join
+        if (!previousState.channelId && newState.channelId) {
+          await vc_logs.send(
+            `📥 **${member.displayName}** joined <#${newState.channelId}>.`
+          );
+        }
+        // Leave
+        else if (previousState.channelId && !newState.channelId) {
+          await vc_logs.send(
+            `📤 \`${member.displayName}\` left <#${previousState.channelId}>.`
+          );
+        }
+        // Move
+        else if (previousState.channelId !== newState.channelId) {
+          await vc_logs.send(
+            `🔄 **${member.displayName}** moved: <#${previousState.channelId}> ➔ <#${newState.channelId}>.`
+          );
         }
       } catch (error) {
         logError(error, __filename);
@@ -79,5 +127,6 @@ function canSendMessages(
   return permissions.has([
     PermissionsBitField.Flags.SendMessages,
     PermissionsBitField.Flags.ViewChannel,
+    PermissionsBitField.Flags.EmbedLinks, // Good to have for cleaner logs
   ]);
 }
