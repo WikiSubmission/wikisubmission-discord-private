@@ -19,6 +19,7 @@ export default function listener(): WEventListener {
         if (!member || member.user.bot) return;
 
         const inVcRole = getRole("IN VC", newState.guild);
+        const jail = getRole("Jail", newState.guild);
         if (!inVcRole) return;
 
         const newChannel = newState.channel;
@@ -26,7 +27,10 @@ export default function listener(): WEventListener {
           newChannel?.name.startsWith("Jail") ||
           newChannel?.name.startsWith("Verify");
 
-        const shouldHaveRole = newChannel !== null && !isInRestrictedChannel;
+        const shouldHaveRole =
+          newChannel !== null &&
+          !isInRestrictedChannel &&
+          !member.roles.cache.has(jail.id);
 
         if (shouldHaveRole) {
           if (!member.roles.cache.has(inVcRole.id)) {
