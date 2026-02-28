@@ -23,8 +23,9 @@ export default function listener(): WEventListener {
         // 2. Resource Resolution & Logging
         const inVcRole = getRole("IN VC", guild);
         const jailRole = getRole("Jail", guild);
+        const unverified = getRole("UNverified", guild);
 
-        if (!inVcRole || !jailRole) {
+        if (!inVcRole || !jailRole || !unverified) {
           console.warn(
             `[VC Update] Missing configuration in ${guild.name}: ${!inVcRole ? ' "IN VC" role' : ""}${!jailRole ? ' "Jail" role' : ""}`
           );
@@ -37,14 +38,13 @@ export default function listener(): WEventListener {
         const isInRestrictedChannel =
           newChannel?.name.startsWith("Jail") ||
           newChannel?.name.startsWith("Verify");
-
-        // Logic: Should have "IN VC" if in a non-restricted channel AND has the "Jail" role (assuming Jail role is a prerequisite for this logic)
+        // conditions: there's a new channel, the new channel is not restricted and does not have jail role nor the unverified role
         const shouldHaveRole =
           newChannel !== null &&
           !isInRestrictedChannel &&
-          member.roles.cache.has(jailRole.id);
+          !member.roles.cache.has(jailRole.id) &&
+          !member.roles.cache.has(unverified.id);
 
-        // 3. Role Management Logging
         if (shouldHaveRole && !member.roles.cache.has(inVcRole.id)) {
           await member.roles
             .add(inVcRole)
@@ -53,7 +53,7 @@ export default function listener(): WEventListener {
                 `[Role Add] Added "IN VC" to ${member.user.tag} in ${guild.name}`
               )
             )
-            .catch((err) =>
+            .catch((err: any) =>
               console.error(
                 `[Role Error] Failed to add "IN VC" to ${member.user.tag}:`,
                 err
@@ -67,7 +67,7 @@ export default function listener(): WEventListener {
                 `[Role Remove] Removed "IN VC" from ${member.user.tag} in ${guild.name}`
               )
             )
-            .catch((err) =>
+            .catch((err: any) =>
               console.error(
                 `[Role Error] Failed to remove "IN VC" from ${member.user.tag}:`,
                 err
