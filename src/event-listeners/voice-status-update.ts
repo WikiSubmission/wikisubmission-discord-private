@@ -45,6 +45,8 @@ export default function listener(): WEventListener {
           newChannel !== null &&
           !isInRestrictedChannel &&
           !member.roles.cache.has(jailRole.id) &&
+          !member.roles.cache.has(community.id) &&
+          !member.roles.cache.has(insider.id) &&
           !member.roles.cache.has(unverified.id);
 
         if (shouldHaveRole && !member.roles.cache.has(inVcRole.id)) {
