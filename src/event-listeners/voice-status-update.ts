@@ -24,8 +24,10 @@ export default function listener(): WEventListener {
         const inVcRole = getRole("IN VC", guild);
         const jailRole = getRole("Jail", guild);
         const unverified = getRole("Unverified", guild);
+        const insider = getRole("Insider", guild);
+        const community = getRole("Community", guild);
 
-        if (!inVcRole || !jailRole || !unverified) {
+        if (!inVcRole || !jailRole || !unverified || !insider || !community) {
           console.warn(
             `[VC Update] Missing configuration in ${guild.name}: ${!inVcRole ? ' "IN VC" role' : ""}${!jailRole ? ' "Jail" role' : ""}`
           );
