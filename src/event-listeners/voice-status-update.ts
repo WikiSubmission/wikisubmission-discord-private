@@ -23,7 +23,7 @@ export default function listener(): WEventListener {
         // 2. Resource Resolution & Logging
         const inVcRole = getRole("IN VC", guild);
         const jailRole = getRole("Jail", guild);
-        const unverified = getRole("UNverified", guild);
+        const unverified = getRole("Unverified", guild);
 
         if (!inVcRole || !jailRole || !unverified) {
           console.warn(
