@@ -7,21 +7,31 @@ import { stimulateDelay } from "../utils/stimulate-delay";
 // ─── Translation registry ─────────────────────────────────────────────────────
 
 const TRANSLATION_CODES = [
-  "sct", "kjv", "asv", "bbe", "web", "webbe",
-  "ylt", "dra", "darby", "oeb-us", "oeb-cw", "nrsvue",
+  "sct",
+  "kjv",
+  "asv",
+  "bbe",
+  "web",
+  "webbe",
+  "ylt",
+  "dra",
+  "darby",
+  "oeb-us",
+  "oeb-cw",
+  "nrsvue",
 ] as const;
 type Translation = (typeof TRANSLATION_CODES)[number];
 
 const TRANSLATION_LABELS: Record<Translation, string> = {
-  sct:    "Submitters Community Translation",
-  kjv:    "King James Version",
-  asv:    "American Standard Version",
-  bbe:    "Bible in Basic English",
-  web:    "World English Bible",
-  webbe:  "World English Bible (British Edition)",
-  ylt:    "Young's Literal Translation",
-  dra:    "Douay-Rheims 1899",
-  darby:  "Darby Bible",
+  sct: "Submitters Community Translation",
+  kjv: "King James Version",
+  asv: "American Standard Version",
+  bbe: "Bible in Basic English",
+  web: "World English Bible",
+  webbe: "World English Bible (British Edition)",
+  ylt: "Young's Literal Translation",
+  dra: "Douay-Rheims 1899",
+  darby: "Darby Bible",
   "oeb-us": "Open English Bible (US Edition)",
   "oeb-cw": "Open English Bible (Commonwealth Edition)",
   nrsvue: "New Revised Standard Version Updated",
@@ -35,90 +45,254 @@ const NRSVUE_BIBLE_ID = "8509845dc5e4f1ea-01";
 
 const BIBLE_BOOK_MAP: Record<string, number> = {
   // Old Testament
-  genesis: 1, gen: 1, ge: 1,
-  exodus: 2, exod: 2, ex: 2,
-  leviticus: 3, lev: 3, le: 3,
-  numbers: 4, num: 4, nu: 4,
-  deuteronomy: 5, deut: 5, dt: 5,
-  joshua: 6, josh: 6, jos: 6,
-  judges: 7, judg: 7, jdg: 7,
-  ruth: 8, rut: 8,
-  "1 samuel": 9, "1sam": 9, "1sa": 9,
-  "2 samuel": 10, "2sam": 10, "2sa": 10,
-  "1 kings": 11, "1kgs": 11, "1ki": 11,
-  "2 kings": 12, "2kgs": 12, "2ki": 12,
-  "1 chronicles": 13, "1chr": 13, "1ch": 13,
-  "2 chronicles": 14, "2chr": 14, "2ch": 14,
-  ezra: 15, ezr: 15,
-  nehemiah: 16, neh: 16,
-  esther: 17, esth: 17, est: 17,
-  job: 18, jb: 18,
-  psalms: 19, psalm: 19, ps: 19, psa: 19,
-  proverbs: 20, prov: 20, pr: 20,
-  ecclesiastes: 21, eccl: 21, ec: 21,
-  "song of solomon": 22, "song of songs": 22, song: 22, sos: 22, ss: 22,
-  isaiah: 23, isa: 23,
-  jeremiah: 24, jer: 24,
-  lamentations: 25, lam: 25,
-  ezekiel: 26, ezek: 26, eze: 26,
-  daniel: 27, dan: 27, da: 27,
-  hosea: 28, hos: 28,
-  joel: 29, joe: 29,
-  amos: 30, am: 30,
-  obadiah: 31, obad: 31, ob: 31,
-  jonah: 32, jon: 32,
-  micah: 33, mic: 33,
-  nahum: 34, nah: 34,
-  habakkuk: 35, hab: 35,
-  zephaniah: 36, zeph: 36, zep: 36,
-  haggai: 37, hag: 37,
-  zechariah: 38, zech: 38, zec: 38,
-  malachi: 39, mal: 39,
+  genesis: 1,
+  gen: 1,
+  ge: 1,
+  exodus: 2,
+  exod: 2,
+  ex: 2,
+  leviticus: 3,
+  lev: 3,
+  le: 3,
+  numbers: 4,
+  num: 4,
+  nu: 4,
+  deuteronomy: 5,
+  deut: 5,
+  dt: 5,
+  joshua: 6,
+  josh: 6,
+  jos: 6,
+  judges: 7,
+  judg: 7,
+  jdg: 7,
+  ruth: 8,
+  rut: 8,
+  "1 samuel": 9,
+  "1sam": 9,
+  "1sa": 9,
+  "2 samuel": 10,
+  "2sam": 10,
+  "2sa": 10,
+  "1 kings": 11,
+  "1kgs": 11,
+  "1ki": 11,
+  "2 kings": 12,
+  "2kgs": 12,
+  "2ki": 12,
+  "1 chronicles": 13,
+  "1chr": 13,
+  "1ch": 13,
+  "2 chronicles": 14,
+  "2chr": 14,
+  "2ch": 14,
+  ezra: 15,
+  ezr: 15,
+  nehemiah: 16,
+  neh: 16,
+  esther: 17,
+  esth: 17,
+  est: 17,
+  job: 18,
+  jb: 18,
+  psalms: 19,
+  psalm: 19,
+  ps: 19,
+  psa: 19,
+  proverbs: 20,
+  prov: 20,
+  pr: 20,
+  ecclesiastes: 21,
+  eccl: 21,
+  ec: 21,
+  "song of solomon": 22,
+  "song of songs": 22,
+  song: 22,
+  sos: 22,
+  ss: 22,
+  isaiah: 23,
+  isa: 23,
+  jeremiah: 24,
+  jer: 24,
+  lamentations: 25,
+  lam: 25,
+  ezekiel: 26,
+  ezek: 26,
+  eze: 26,
+  daniel: 27,
+  dan: 27,
+  da: 27,
+  hosea: 28,
+  hos: 28,
+  joel: 29,
+  joe: 29,
+  amos: 30,
+  am: 30,
+  obadiah: 31,
+  obad: 31,
+  ob: 31,
+  jonah: 32,
+  jon: 32,
+  micah: 33,
+  mic: 33,
+  nahum: 34,
+  nah: 34,
+  habakkuk: 35,
+  hab: 35,
+  zephaniah: 36,
+  zeph: 36,
+  zep: 36,
+  haggai: 37,
+  hag: 37,
+  zechariah: 38,
+  zech: 38,
+  zec: 38,
+  malachi: 39,
+  mal: 39,
   // New Testament
-  matthew: 40, matt: 40, mt: 40,
-  mark: 41, mk: 41, mr: 41,
-  luke: 42, lk: 42, lu: 42,
-  john: 43, jn: 43, joh: 43,
-  acts: 44, act: 44, ac: 44,
-  romans: 45, rom: 45, ro: 45,
-  "1 corinthians": 46, "1cor": 46, "1co": 46,
-  "2 corinthians": 47, "2cor": 47, "2co": 47,
-  galatians: 48, gal: 48, ga: 48,
-  ephesians: 49, eph: 49,
-  philippians: 50, phil: 50, php: 50,
-  colossians: 51, col: 51,
-  "1 thessalonians": 52, "1thess": 52, "1th": 52,
-  "2 thessalonians": 53, "2thess": 53, "2th": 53,
-  "1 timothy": 54, "1tim": 54, "1ti": 54,
-  "2 timothy": 55, "2tim": 55, "2ti": 55,
-  titus: 56, tit: 56,
-  philemon: 57, phlm: 57, phm: 57,
-  hebrews: 58, heb: 58,
-  james: 59, jas: 59,
-  "1 peter": 60, "1pet": 60, "1pe": 60,
-  "2 peter": 61, "2pet": 61, "2pe": 61,
-  "1 john": 62, "1jn": 62, "1jo": 62,
-  "2 john": 63, "2jn": 63, "2jo": 63,
-  "3 john": 64, "3jn": 64, "3jo": 64,
-  jude: 65, jud: 65,
-  revelation: 66, rev: 66, re: 66,
+  matthew: 40,
+  matt: 40,
+  mt: 40,
+  mark: 41,
+  mk: 41,
+  mr: 41,
+  luke: 42,
+  lk: 42,
+  lu: 42,
+  john: 43,
+  jn: 43,
+  joh: 43,
+  acts: 44,
+  act: 44,
+  ac: 44,
+  romans: 45,
+  rom: 45,
+  ro: 45,
+  "1 corinthians": 46,
+  "1cor": 46,
+  "1co": 46,
+  "2 corinthians": 47,
+  "2cor": 47,
+  "2co": 47,
+  galatians: 48,
+  gal: 48,
+  ga: 48,
+  ephesians: 49,
+  eph: 49,
+  philippians: 50,
+  phil: 50,
+  php: 50,
+  colossians: 51,
+  col: 51,
+  "1 thessalonians": 52,
+  "1thess": 52,
+  "1th": 52,
+  "2 thessalonians": 53,
+  "2thess": 53,
+  "2th": 53,
+  "1 timothy": 54,
+  "1tim": 54,
+  "1ti": 54,
+  "2 timothy": 55,
+  "2tim": 55,
+  "2ti": 55,
+  titus: 56,
+  tit: 56,
+  philemon: 57,
+  phlm: 57,
+  phm: 57,
+  hebrews: 58,
+  heb: 58,
+  james: 59,
+  jas: 59,
+  "1 peter": 60,
+  "1pet": 60,
+  "1pe": 60,
+  "2 peter": 61,
+  "2pet": 61,
+  "2pe": 61,
+  "1 john": 62,
+  "1jn": 62,
+  "1jo": 62,
+  "2 john": 63,
+  "2jn": 63,
+  "2jo": 63,
+  "3 john": 64,
+  "3jn": 64,
+  "3jo": 64,
+  jude: 65,
+  jud: 65,
+  revelation: 66,
+  rev: 66,
+  re: 66,
 };
 
 const CANONICAL_NAMES: Record<number, string> = {
-  1: "Genesis", 2: "Exodus", 3: "Leviticus", 4: "Numbers", 5: "Deuteronomy",
-  6: "Joshua", 7: "Judges", 8: "Ruth", 9: "1 Samuel", 10: "2 Samuel",
-  11: "1 Kings", 12: "2 Kings", 13: "1 Chronicles", 14: "2 Chronicles",
-  15: "Ezra", 16: "Nehemiah", 17: "Esther", 18: "Job", 19: "Psalms",
-  20: "Proverbs", 21: "Ecclesiastes", 22: "Song of Solomon", 23: "Isaiah",
-  24: "Jeremiah", 25: "Lamentations", 26: "Ezekiel", 27: "Daniel",
-  28: "Hosea", 29: "Joel", 30: "Amos", 31: "Obadiah", 32: "Jonah",
-  33: "Micah", 34: "Nahum", 35: "Habakkuk", 36: "Zephaniah", 37: "Haggai",
-  38: "Zechariah", 39: "Malachi", 40: "Matthew", 41: "Mark", 42: "Luke",
-  43: "John", 44: "Acts", 45: "Romans", 46: "1 Corinthians", 47: "2 Corinthians",
-  48: "Galatians", 49: "Ephesians", 50: "Philippians", 51: "Colossians",
-  52: "1 Thessalonians", 53: "2 Thessalonians", 54: "1 Timothy", 55: "2 Timothy",
-  56: "Titus", 57: "Philemon", 58: "Hebrews", 59: "James", 60: "1 Peter",
-  61: "2 Peter", 62: "1 John", 63: "2 John", 64: "3 John", 65: "Jude",
+  1: "Genesis",
+  2: "Exodus",
+  3: "Leviticus",
+  4: "Numbers",
+  5: "Deuteronomy",
+  6: "Joshua",
+  7: "Judges",
+  8: "Ruth",
+  9: "1 Samuel",
+  10: "2 Samuel",
+  11: "1 Kings",
+  12: "2 Kings",
+  13: "1 Chronicles",
+  14: "2 Chronicles",
+  15: "Ezra",
+  16: "Nehemiah",
+  17: "Esther",
+  18: "Job",
+  19: "Psalms",
+  20: "Proverbs",
+  21: "Ecclesiastes",
+  22: "Song of Solomon",
+  23: "Isaiah",
+  24: "Jeremiah",
+  25: "Lamentations",
+  26: "Ezekiel",
+  27: "Daniel",
+  28: "Hosea",
+  29: "Joel",
+  30: "Amos",
+  31: "Obadiah",
+  32: "Jonah",
+  33: "Micah",
+  34: "Nahum",
+  35: "Habakkuk",
+  36: "Zephaniah",
+  37: "Haggai",
+  38: "Zechariah",
+  39: "Malachi",
+  40: "Matthew",
+  41: "Mark",
+  42: "Luke",
+  43: "John",
+  44: "Acts",
+  45: "Romans",
+  46: "1 Corinthians",
+  47: "2 Corinthians",
+  48: "Galatians",
+  49: "Ephesians",
+  50: "Philippians",
+  51: "Colossians",
+  52: "1 Thessalonians",
+  53: "2 Thessalonians",
+  54: "1 Timothy",
+  55: "2 Timothy",
+  56: "Titus",
+  57: "Philemon",
+  58: "Hebrews",
+  59: "James",
+  60: "1 Peter",
+  61: "2 Peter",
+  62: "1 John",
+  63: "2 John",
+  64: "3 John",
+  65: "Jude",
   66: "Revelation",
 };
 
@@ -130,20 +304,72 @@ function testament(bookNumber: number): "OT" | "NT" {
 // ─── API.Bible book abbreviations (for NRSVue passage IDs) ───────────────────
 
 const API_BIBLE_BOOK_IDS: Record<number, string> = {
-  1: "GEN", 2: "EXO", 3: "LEV", 4: "NUM", 5: "DEU",
-  6: "JOS", 7: "JDG", 8: "RUT", 9: "1SA", 10: "2SA",
-  11: "1KI", 12: "2KI", 13: "1CH", 14: "2CH", 15: "EZR",
-  16: "NEH", 17: "EST", 18: "JOB", 19: "PSA", 20: "PRO",
-  21: "ECC", 22: "SNG", 23: "ISA", 24: "JER", 25: "LAM",
-  26: "EZK", 27: "DAN", 28: "HOS", 29: "JOL", 30: "AMO",
-  31: "OBA", 32: "JON", 33: "MIC", 34: "NAM", 35: "HAB",
-  36: "ZEP", 37: "HAG", 38: "ZEC", 39: "MAL",
-  40: "MAT", 41: "MRK", 42: "LUK", 43: "JHN", 44: "ACT",
-  45: "ROM", 46: "1CO", 47: "2CO", 48: "GAL", 49: "EPH",
-  50: "PHP", 51: "COL", 52: "1TH", 53: "2TH", 54: "1TI",
-  55: "2TI", 56: "TIT", 57: "PHM", 58: "HEB", 59: "JAS",
-  60: "1PE", 61: "2PE", 62: "1JN", 63: "2JN", 64: "3JN",
-  65: "JUD", 66: "REV",
+  1: "GEN",
+  2: "EXO",
+  3: "LEV",
+  4: "NUM",
+  5: "DEU",
+  6: "JOS",
+  7: "JDG",
+  8: "RUT",
+  9: "1SA",
+  10: "2SA",
+  11: "1KI",
+  12: "2KI",
+  13: "1CH",
+  14: "2CH",
+  15: "EZR",
+  16: "NEH",
+  17: "EST",
+  18: "JOB",
+  19: "PSA",
+  20: "PRO",
+  21: "ECC",
+  22: "SNG",
+  23: "ISA",
+  24: "JER",
+  25: "LAM",
+  26: "EZK",
+  27: "DAN",
+  28: "HOS",
+  29: "JOL",
+  30: "AMO",
+  31: "OBA",
+  32: "JON",
+  33: "MIC",
+  34: "NAM",
+  35: "HAB",
+  36: "ZEP",
+  37: "HAG",
+  38: "ZEC",
+  39: "MAL",
+  40: "MAT",
+  41: "MRK",
+  42: "LUK",
+  43: "JHN",
+  44: "ACT",
+  45: "ROM",
+  46: "1CO",
+  47: "2CO",
+  48: "GAL",
+  49: "EPH",
+  50: "PHP",
+  51: "COL",
+  52: "1TH",
+  53: "2TH",
+  54: "1TI",
+  55: "2TI",
+  56: "TIT",
+  57: "PHM",
+  58: "HEB",
+  59: "JAS",
+  60: "1PE",
+  61: "2PE",
+  62: "1JN",
+  63: "2JN",
+  64: "3JN",
+  65: "JUD",
+  66: "REV",
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -181,9 +407,10 @@ const REF_RE =
  *   kjv genesis 1:1-3    1 corinthians 13:1
  *   matthew 5:20\nmatthew 7:12\nmatthew 7:17
  */
-function detectAllBibleRefs(
-  text: string
-): { refs: BibleRef[]; translation: Translation } {
+function detectAllBibleRefs(text: string): {
+  refs: BibleRef[];
+  translation: Translation;
+} {
   // Extract translation once — applies to all refs in message
   const transMatch = text.match(TRANS_RE);
   const translation: Translation = transMatch
@@ -217,10 +444,7 @@ function detectAllBibleRefs(
 }
 
 /** Group refs by book+chapter so we can batch them into one API call */
-function groupRefs(
-  refs: BibleRef[],
-  translation: Translation
-): RefGroup[] {
+function groupRefs(refs: BibleRef[], translation: Translation): RefGroup[] {
   const map = new Map<string, RefGroup>();
 
   for (const ref of refs) {
@@ -282,7 +506,8 @@ function joinVerses(
     if (!result) {
       result = chunk;
     } else {
-      result += rawText.trimEnd() !== rawText.trim() ? `\n\n${chunk}` : ` ${chunk}`;
+      result +=
+        rawText.trimEnd() !== rawText.trim() ? `\n\n${chunk}` : ` ${chunk}`;
     }
   }
   return result.trim();
@@ -343,8 +568,14 @@ async function fetchSct(group: RefGroup): Promise<EmbedBuilder | null> {
 
   if (!filtered.length) return null;
 
-  const description = filtered.map((v) => `**[${v.verse}]** ${v.text.trim()}`).join(" ");
-  const title = buildTitle(group.bookNumber, group.chapterStart, group.verseNumbers);
+  const description = filtered
+    .map((v) => `**[${v.verse}]** ${v.text.trim()}`)
+    .join(" ");
+  const title = buildTitle(
+    group.bookNumber,
+    group.chapterStart,
+    group.verseNumbers
+  );
 
   return new EmbedBuilder()
     .setColor("Purple")
@@ -397,7 +628,11 @@ async function fetchBibleApi(
       ? stripInlineCrossRefs(verses[0].text)
       : joinVerses(verses as Array<{ verse: number; text: string }>);
 
-  const title = buildTitle(group.bookNumber, group.chapterStart, group.verseNumbers);
+  const title = buildTitle(
+    group.bookNumber,
+    group.chapterStart,
+    group.verseNumbers
+  );
 
   return new EmbedBuilder()
     .setColor("Purple")
@@ -434,7 +669,11 @@ async function fetchNrsvue(group: RefGroup): Promise<EmbedBuilder | null> {
 
   // API.Bible returns verse numbers as [1], [2] already — strip any cross-refs
   const cleaned = stripInlineCrossRefs(rawText.trim()).replace(/\s{2,}/g, " ");
-  const title = buildTitle(group.bookNumber, group.chapterStart, group.verseNumbers);
+  const title = buildTitle(
+    group.bookNumber,
+    group.chapterStart,
+    group.verseNumbers
+  );
 
   return new EmbedBuilder()
     .setColor("Purple")
@@ -442,6 +681,12 @@ async function fetchNrsvue(group: RefGroup): Promise<EmbedBuilder | null> {
     .setDescription(cleaned.substring(0, 4000) + SEPARATOR)
     .setFooter({ text: `Bible  ·  ${TRANSLATION_LABELS.nrsvue}` });
 }
+
+// ─── Access control ───────────────────────────────────────────────────────────
+
+// Fill in your Discord user ID to enable the Bible command for that user only.
+// Leave empty ("") to disable completely.
+const BIBLE_ALLOWED_USER_ID = "771800475410497576";
 
 // ─── Event listener ───────────────────────────────────────────────────────────
 
@@ -451,6 +696,11 @@ export default function listener(): WEventListener {
     handler: async (message) => {
       try {
         if (message.author.bot) return;
+        if (
+          !BIBLE_ALLOWED_USER_ID ||
+          message.author.id !== BIBLE_ALLOWED_USER_ID
+        )
+          return;
 
         const { refs, translation } = detectAllBibleRefs(message.content);
         if (!refs.length) return;
