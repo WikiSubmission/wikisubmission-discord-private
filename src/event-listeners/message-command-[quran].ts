@@ -2,7 +2,7 @@ import { EmbedBuilder } from "discord.js";
 import { WEventListener } from "../types/w-event-listener";
 import { stimulateDelay } from "../utils/stimulate-delay";
 import { logError } from "../utils/log-error";
-import { ws } from "../utils/wikisubmission-sdk";
+import { wsApi } from "../utils/ws-api";
 
 export default function listener(): WEventListener {
   return {
@@ -30,19 +30,10 @@ export default function listener(): WEventListener {
           )
           .join(",");
 
-        const request = await ws.Quran.query(formattedVerses, {
-          adjustments: {
-            index: true,
-            chapters: false,
-            text: false,
-            subtitles: false,
-            footnotes: false,
-            wordByWord: false,
-          },
-          normalizeGodCasing: true
-        });
+        const langs = isEqCommand ? ["en", "ar"] : ["en"];
+        const response = await wsApi.getQuran({ verses: formattedVerses, langs });
 
-        if (request.status === "error") {
+        if (!response.chapters?.length) {
           const msg = await message.reply(
             `\`No verse/(s) found with "${verses}"\``
           );
@@ -52,44 +43,41 @@ export default function listener(): WEventListener {
             } catch (_) {}
           }, 3000);
           return;
-        } else if (
-          request.type === "verse" ||
-          request.type === "multiple_verses"
-        ) {
+        } else {
           let description = "";
           let [iteration, maxVerses, reachedLimit] = [0, 30, false];
-          for (const i of request.data) {
-            if (iteration < maxVerses) {
-              if (i.ws_quran_subtitles?.english) {
-                description += `${safeMarkdown(`\`${i.ws_quran_subtitles.english}\``)}\n\n`;
+          for (const chapter of response.chapters) {
+            for (const verse of chapter.verses ?? []) {
+              if (iteration < maxVerses) {
+                if (verse.tr?.["en"]?.s) {
+                  description += `${safeMarkdown(`\`${verse.tr["en"].s}\``)}\n\n`;
+                }
+                description += `**[${verse.vk}]** ${safeMarkdown(`${verse.tr?.["en"]?.tx ?? ""}\n\n`)}`;
+                if (isEqCommand) {
+                  description += `${verse.tr?.["ar"]?.tx ?? ""}\n\n`;
+                }
+                if (verse.tr?.["en"]?.f) {
+                  description += `*${safeMarkdown(verse.tr["en"].f)}*\n\n`;
+                }
+              } else if (!reachedLimit) {
+                description += `----- You have reached the maximum verse limit per single request (${maxVerses}) -----`;
+                reachedLimit = true;
               }
-              description += `**[${i.verse_id}]** ${safeMarkdown(`${i.ws_quran_text.english}\n\n`)}`;
-              if (isEqCommand) {
-                description += `${i.ws_quran_text.arabic}\n\n`;
-              }
-              if (i.ws_quran_footnotes?.english) {
-                description += `*${safeMarkdown(i.ws_quran_footnotes.english)}*\n\n`;
-              }
-              
-            } else if (!reachedLimit) {
-              description += `----- You have reached the maximum verse limit per single request (${maxVerses}) -----`;
-              reachedLimit = true;
+              iteration++;
             }
-            iteration++;
           }
 
           if (!description.trim()) return;
 
           const chunks = splitToChunks(description);
+          const chapterTitle = response.chapters[0]?.titles?.["en"] ?? "Quran";
 
           let i = 0;
           for (const chunk of chunks) {
             await message.reply({
               embeds: [
                 new EmbedBuilder()
-                  .setTitle(
-                    `${request.metadata.formattedChapterTitle}${i > 1 ? ` (cont'd)` : ``}`
-                  )
+                  .setTitle(`${chapterTitle}${i > 1 ? ` (cont'd)` : ``}`)
                   .setDescription(chunk)
                   .setFooter({ text: `Quran: The Final Testament` })
                   .setColor("DarkButNotBlack"),

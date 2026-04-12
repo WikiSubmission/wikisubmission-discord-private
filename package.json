@@ -8,7 +8,9 @@
     "build": "npm run clean && tsc",
     "start": "npm run build && node build/index.js $*",
     "update-types": "npx supabase gen types --lang=typescript --project-id lbubcoodmaimkadoessn --schema internal > src/types/generated/database.types.ts",
-    "dev": "tsx watch src/index.ts"
+    "dev": "tsx watch src/index.ts",
+    "sync-api": "cp ../ws-backend/openapi.yaml src/api/openapi.yaml",
+    "generate": "openapi-typescript src/api/openapi.yaml -o src/api/types.gen.ts"
   },
   "engines": {
     "node": ">=20.18.1"
@@ -25,11 +27,11 @@
     "minimist": "^1.2.8",
     "node-cache": "^5.1.2",
     "rimraf": "^6.1.2",
-    "typescript": "^5.9.3",
-    "wikisubmission-sdk": "^2.0.8"
+    "typescript": "^5.9.3"
   },
   "devDependencies": {
     "@types/minimist": "^1.2.5",
+    "openapi-typescript": "^7.13.0",
     "supabase": "^2.74.5",
     "tsx": "^4.21.0"
   }
