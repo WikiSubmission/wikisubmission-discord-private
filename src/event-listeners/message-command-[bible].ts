@@ -684,9 +684,9 @@ async function fetchNrsvue(group: RefGroup): Promise<EmbedBuilder | null> {
 
 // ─── Access control ───────────────────────────────────────────────────────────
 
-// Fill in your Discord user ID to enable the Bible command for that user only.
-// Leave empty ("") to disable completely.
-const BIBLE_ALLOWED_USER_ID = "771800475410497576";
+// Fill in Discord user IDs to enable the Bible command for those users only.
+// Leave the array empty ([]) to disable completely.
+const BIBLE_ALLOWED_USER_IDS: string[] = ["771800475410497576"];
 
 // ─── Event listener ───────────────────────────────────────────────────────────
 
@@ -696,11 +696,7 @@ export default function listener(): WEventListener {
     handler: async (message) => {
       try {
         if (message.author.bot) return;
-        if (
-          !BIBLE_ALLOWED_USER_ID ||
-          message.author.id !== BIBLE_ALLOWED_USER_ID
-        )
-          return;
+        if (!BIBLE_ALLOWED_USER_IDS.includes(message.author.id)) return;
 
         const { refs, translation } = detectAllBibleRefs(message.content);
         if (!refs.length) return;
