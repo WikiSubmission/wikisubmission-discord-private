@@ -661,7 +661,13 @@ async function fetchNrsvue(group: RefGroup): Promise<EmbedBuilder | null> {
     headers: { "api-key": API_BIBLE_KEY },
   });
 
-  if (!res.ok) return null;
+  if (!res.ok) {
+    logError(
+      new Error(`NRSVue API.Bible error ${res.status} for passage "${passageId}"`),
+      __filename
+    );
+    return null;
+  }
 
   const data = await res.json();
   const rawText: string = data?.data?.content ?? "";
@@ -712,11 +718,12 @@ export default function listener(): WEventListener {
             if (translation === "sct") {
               embed = await fetchSct(group);
             } else if (translation === "nrsvue") {
-              if (!API_BIBLE_KEY) {
-                // NRSVue requires API.Bible key — fall back to KJV
-                embed = await fetchBibleApi(group, "kjv");
-              } else {
+              if (API_BIBLE_KEY) {
                 embed = await fetchNrsvue(group);
+              }
+              // Fall back to KJV if NRSVue is unavailable or the API call failed
+              if (!embed) {
+                embed = await fetchBibleApi(group, "kjv");
               }
             } else {
               embed = await fetchBibleApi(
