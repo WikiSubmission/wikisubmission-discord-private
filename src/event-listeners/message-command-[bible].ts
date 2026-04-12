@@ -221,7 +221,7 @@ export default function listener(): WEventListener {
           await message.reply({
             embeds: [
               new EmbedBuilder()
-                .setColor("DarkButNotBlack")
+                .setColor("Purple")
                 .setTitle(titleChapter)
                 .setDescription(
                   description.replace(/[`]/g, "'").substring(0, 4000)
@@ -264,7 +264,7 @@ export default function listener(): WEventListener {
           await message.reply({
             embeds: [
               new EmbedBuilder()
-                .setColor("DarkButNotBlack")
+                .setColor("Purple")
                 .setTitle(data.reference as string)
                 .setDescription(
                   formattedText.replace(/[`]/g, "'").substring(0, 4000)
