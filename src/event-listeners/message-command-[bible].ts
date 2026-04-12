@@ -415,7 +415,7 @@ function detectAllBibleRefs(text: string): {
   const transMatch = text.match(TRANS_RE);
   const translation: Translation = transMatch
     ? (transMatch[0].toLowerCase() as Translation)
-    : "sct";
+    : "nrsvue";
 
   const clean = text.replace(TRANS_RE, "").replace(/\s+/g, " ").trim();
 
@@ -717,12 +717,11 @@ export default function listener(): WEventListener {
               embed = await fetchSct(group);
             } else if (translation === "nrsvue") {
               if (!API_BIBLE_KEY) {
-                await message.reply(
-                  "`NRSVue requires an API.Bible key (API_BIBLE_KEY) to be configured.`"
-                );
-                return;
+                // NRSVue requires API.Bible key — fall back to KJV
+                embed = await fetchBibleApi(group, "kjv");
+              } else {
+                embed = await fetchNrsvue(group);
               }
-              embed = await fetchNrsvue(group);
             } else {
               embed = await fetchBibleApi(
                 group,
