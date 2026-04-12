@@ -184,7 +184,9 @@ export default function listener(): WEventListener {
             chapter_start: ref.chapterStart,
             chapter_end: ref.chapterEnd,
             verse_start: ref.verseStart,
-            verse_end: ref.verseEnd,
+            // when a single verse is requested, pin verse_end = verse_start so the
+            // API doesn't default to end-of-chapter
+            verse_end: ref.verseEnd ?? ref.verseStart,
             langs: ["en"],
           });
 
@@ -207,8 +209,8 @@ export default function listener(): WEventListener {
           const description =
             allVerses.length > 1
               ? allVerses
-                  .map((v) => `**[${v.verseNum}]** ${v.text}`)
-                  .join("\n\n")
+                  .map((v) => `**[${v.verseNum}]** ${v.text.trim()}`)
+                  .join(" ")
               : (allVerses[0]?.text ?? "");
 
           const titleChapter =
@@ -254,9 +256,9 @@ export default function listener(): WEventListener {
               .filter((v: { text: string }) => v.text !== "\n")
               .map(
                 (v: { verse: string; text: string }) =>
-                  `**[${v.verse}]** ${v.text}`
+                  `**[${v.verse}]** ${v.text.trim()}`
               )
-              .join("\n\n");
+              .join(" ");
           }
 
           await message.reply({
