@@ -532,7 +532,7 @@ function buildTitle(
   return `[${t}] ${book}  ·  ${ref}`;
 }
 
-const SEPARATOR = "\n\n─────────────────────";
+const SEPARATOR = "\n\n~~                               ~~";
 
 // ─── Fetchers ─────────────────────────────────────────────────────────────────
 
@@ -663,7 +663,9 @@ async function fetchNrsvue(group: RefGroup): Promise<EmbedBuilder | null> {
 
   if (!res.ok) {
     logError(
-      new Error(`NRSVue API.Bible error ${res.status} for passage "${passageId}"`),
+      new Error(
+        `NRSVue API.Bible error ${res.status} for passage "${passageId}"`
+      ),
       __filename
     );
     return null;
