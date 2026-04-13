@@ -580,7 +580,13 @@ async function fetchSct(group: RefGroup): Promise<EmbedBuilder | null> {
   return new EmbedBuilder()
     .setColor("Purple")
     .setTitle(title)
-    .setDescription(description.substring(0, 4000) + SEPARATOR)
+    .setDescription(description.substring(0, 4000))
+    .addFields([
+      {
+        name: "",
+        value: SEPARATOR,
+      },
+    ])
     .setFooter({ text: `Bible  ·  ${TRANSLATION_LABELS.sct}` });
 }
 
