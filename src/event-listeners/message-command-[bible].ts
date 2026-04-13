@@ -532,7 +532,8 @@ function buildTitle(
   return `[${t}] ${book}  ·  ${ref}`;
 }
 
-const SEPARATOR = "\n\n~~                               ~~";
+const SEPARATOR =
+  "\n\n~~                                                                                                                                                          ~~";
 
 // ─── Fetchers ─────────────────────────────────────────────────────────────────
 
