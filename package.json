@@ -19,6 +19,7 @@
   "author": "WikiSubmission",
   "license": "MIT",
   "type": "commonjs",
+  "skipLibCheck": true,
   "dependencies": {
     "@supabase/supabase-js": "^2.93.3",
     "date-fns": "^4.1.0",
