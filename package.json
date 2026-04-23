@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf ./build",
-    "build": "npm run clean && tsc",
-    "start": "npm run build && node build/index.js $*",
+    "build": "pnpm run clean && tsc",
+    "start": "pnpm run build && node build/index.js $*",
     "update-types": "npx supabase gen types --lang=typescript --project-id lbubcoodmaimkadoessn --schema internal > src/types/generated/database.types.ts",
     "dev": "tsx watch src/index.ts",
     "sync-api": "cp ../ws-backend/openapi.yaml src/api/openapi.yaml",
