@@ -1,6 +1,7 @@
 export const SelectableRoles: {
   category:
     | "Religion"
+    | "Hadith Rejection"
     | "Region"
     | "Age"
     | "Gender"
@@ -14,10 +15,7 @@ export const SelectableRoles: {
     category: "Religion",
     roleNames: [
       "Submitter",
-      "Traditional Muslim - Sunni",
-      "Traditional Muslim - Shia",
-      "Traditional Muslim - Other",
-      "Quranist",
+      "Muslim",
       "Christian",
       "Christian - Nontrinitarian",
       "Jewish",
@@ -29,6 +27,10 @@ export const SelectableRoles: {
       "Undecided / Exploring",
       "Other Religion",
     ],
+  },
+  {
+    category: "Hadith Rejection",
+    roleNames: ["Reject Hadith", "Do not reject Hadith"],
   },
   {
     category: "Age",

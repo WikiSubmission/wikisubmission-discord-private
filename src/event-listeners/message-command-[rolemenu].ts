@@ -77,6 +77,27 @@ export default function listener(): WEventListener {
           },
 
           {
+            content: `📜 **Do you reject Hadith?**`,
+            components: [
+              {
+                type: 1,
+                components: [
+                  {
+                    type: 3,
+                    custom_id: `role_update`,
+                    options: SelectableRoles.filter(
+                      (role) => role.category === "Hadith Rejection"
+                    )[0]?.roleNames.map((roleName) => ({
+                      label: roleName,
+                      value: `Hadith Rejection:${roleName}`,
+                    })),
+                  },
+                ],
+              },
+            ],
+          },
+
+          {
             content: `🙋‍♂️ **Gender**`,
             components: [
               {
