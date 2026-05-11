@@ -3,6 +3,7 @@ import { WEventListener } from "../types/w-event-listener";
 import { stimulateDelay } from "../utils/stimulate-delay";
 import { logError } from "../utils/log-error";
 import { wsApi } from "../utils/ws-api";
+import { normalizeQuranVerseQuery } from "../utils/normalize-quran-verse-query";
 
 export default function listener(): WEventListener {
   return {
@@ -98,21 +99,25 @@ function detectQuranicVerses(text: string): string[] {
   // First, normalize the input by replacing multiple spaces with single space
   const normalizedText = text.trim().replace(/\s+/g, " ");
 
-  // Updated patterns to handle both comma and space separation
+  // Updated patterns to handle colon, space separation, and comma-separated lists
   const patternA =
-    /\b(eq|q)\s*\d{1,3}:\d{1,3}(-\d{1,3})?\b(?:[\s,]+\d{1,3}:\d{1,3}(-\d{1,3})?\b)*/gi;
+    /\b(eq|q)\s*\d{1,3}[: ]\d{1,3}(-\d{1,3})?\b(?:[\s,]+\d{1,3}[: ]\d{1,3}(-\d{1,3})?\b)*/gi;
   const patternB =
-    /\beq\d{1,3}:\d{1,3}(-\d{1,3})?(?:[\s,]+\d{1,3}:\d{1,3}(-\d{1,3})?)*\b/gi;
+    /\beq\d{1,3}[: ]\d{1,3}(-\d{1,3})?(?:[\s,]+\d{1,3}[: ]\d{1,3}(-\d{1,3})?)*\b/gi;
 
   const matches = normalizedText.match(patternA) || [];
   const simpleMatches = normalizedText.match(patternB) || [];
 
-  // Process each match to split by both comma and space
+  // Process each match
   const processedMatches = [...matches, ...simpleMatches].flatMap((match) => {
     // Remove the initial eq/q command
     const withoutCommand = match.replace(/^(eq|q)\s*/i, "");
-    // Split by both comma and space, then clean each verse reference
-    return withoutCommand
+    
+    // Use the normalization utility to handle space-separated chapter:verse
+    const normalizedMatch = normalizeQuranVerseQuery(withoutCommand);
+    
+    // Split by comma or space (now that space between chapter:verse is gone)
+    return normalizedMatch
       .split(/[\s,]+/)
       .map((verse) => verse.trim())
       .filter((verse) => verse.match(/^\d{1,3}:\d{1,3}(-\d{1,3})?$/)); // Ensure valid verse format
