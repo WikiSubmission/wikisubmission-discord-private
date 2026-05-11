@@ -16,9 +16,15 @@ export default function Command(): WSlashCommand {
       },
       {
         name: "to-role",
-        description: "The destination role to move users to",
+        description: "The primary destination role to move users to",
         type: 8, // Role type
         required: true,
+      },
+      {
+        name: "to-role-2",
+        description: "An optional second destination role to move users to",
+        type: 8, // Role type
+        required: false,
       },
     ],
     access_control: "MOD_AND_ABOVE",
@@ -32,10 +38,11 @@ export default function Command(): WSlashCommand {
         // [Fetch roles]
         const fromRole = interaction.options.getRole("from-role") as Role;
         const toRole = interaction.options.getRole("to-role") as Role;
+        const toRole2 = interaction.options.getRole("to-role-2") as Role | null;
 
         if (!fromRole || !toRole) {
           await interaction.editReply({
-            content: "❌ One or both roles were not found.",
+            content: "❌ One or both primary roles were not found.",
           });
           return;
         }
@@ -69,16 +76,17 @@ export default function Command(): WSlashCommand {
 
         for (const [id, member] of membersWithRole) {
           try {
-            // Logic: 
-            // - If NOT has toRole: Add toRole, Remove fromRole
-            // - If ALREADY has toRole: Remove fromRole
-            
-            const hasToRole = member.roles.cache.has(toRole.id);
-
-            if (!hasToRole) {
+            // Add first destination role if needed
+            if (!member.roles.cache.has(toRole.id)) {
               await member.roles.add(toRole);
             }
+
+            // Add second destination role if provided and needed
+            if (toRole2 && !member.roles.cache.has(toRole2.id)) {
+              await member.roles.add(toRole2);
+            }
             
+            // Always remove source role
             await member.roles.remove(fromRole);
             
             successCount++;
@@ -87,7 +95,7 @@ export default function Command(): WSlashCommand {
             console.error(`Failed to migrate user ${member.user.tag}:`, error);
           }
 
-          // Small delay to respect rate limits (approx 20 updates per second)
+          // Small delay to respect rate limits
           await stimulateDelay(50);
         }
 
@@ -95,7 +103,7 @@ export default function Command(): WSlashCommand {
         const embed = new EmbedBuilder()
           .setTitle("Role Migration Complete")
           .setDescription(
-            `Successfully migrated users from <@&${fromRole.id}> to <@&${toRole.id}>.`
+            `Successfully migrated users from <@&${fromRole.id}> to <@&${toRole.id}>${toRole2 ? ` and <@&${toRole2.id}>` : ""}.`
           )
           .addFields(
             { name: "Total Users Found", value: `${membersWithRole.size}`, inline: true },
