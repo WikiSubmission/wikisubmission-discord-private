@@ -1,6 +1,4 @@
-export function getEnv(
-  secret: `DISCORD_TOKEN_${string}` | `DISCORD_CLIENTID_${string}`
-): string {
+export function getEnv(secret: string): string {
   if (process.env[secret]) {
     return process.env[secret];
   } else {
