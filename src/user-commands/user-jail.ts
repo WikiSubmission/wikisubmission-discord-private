@@ -64,7 +64,11 @@ export default function Command(): WUserCommand {
             content: `User <@${suspect.id}> has been jailed!`,
             flags: "Ephemeral",
           });
-          const jailChannel = getChannel("jail", "text", interaction);
+          const jailChannel = getChannel(
+            "reflection-room",
+            "text",
+            interaction
+          );
           const staffChannel = getChannel("staff-log", "text", interaction);
           if (!jailChannel) {
             console.error("No jail channel. Please create one. ");

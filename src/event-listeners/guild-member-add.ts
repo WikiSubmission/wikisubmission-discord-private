@@ -74,11 +74,11 @@ export default function listener(): WEventListener {
                   },
                   ...(rolesString !== "None"
                     ? [
-                      {
-                        name: "Roles",
-                        value: rolesString,
-                      },
-                    ]
+                        {
+                          name: "Roles",
+                          value: rolesString,
+                        },
+                      ]
                     : [])
                 ),
             ],
@@ -93,7 +93,7 @@ export default function listener(): WEventListener {
                 .setColor("DarkBlue")
                 .setTimestamp(Date.now())
                 .setDescription(
-                  `**Welcome to 19,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`,
+                  `**Welcome to 19,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`
                 )
                 .setFooter({
                   text:
@@ -145,11 +145,11 @@ export default function listener(): WEventListener {
                     name: "Previous Roles",
                     value:
                       memberRecord.data.roles &&
-                        memberRecord.data.roles.trim().length > 0
+                      memberRecord.data.roles.trim().length > 0
                         ? memberRecord.data.roles
-                          .split(",")
-                          .map((r) => `<@&${r}>`)
-                          .join(", ")
+                            .split(",")
+                            .map((r) => `<@&${r}>`)
+                            .join(", ")
                         : "No previous roles",
                   }
                 ),
@@ -165,7 +165,7 @@ export default function listener(): WEventListener {
                 .setColor("DarkBlue")
                 .setTimestamp(Date.now())
                 .setDescription(
-                  `**Welcome back,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`,
+                  `**Welcome back,** <@${member.user.id}>. Join <#${getChannel("VC1", "text", member)?.id || "576134569338732565"}> any time to get involved in discussions, ask questions, share your thoughts, or just listen in.\n\nYou can choose your server-roles at <#${getChannel("choose-roles", "text", member)?.id || "576134569338732565"}>.`
                 )
                 .setFooter({
                   text:
@@ -179,7 +179,7 @@ export default function listener(): WEventListener {
           // === [Rejail if previously jailed] ===
 
           // [Dependencies]
-          const jailChannel = getChannel("jail", "text", member);
+          const jailChannel = getChannel("reflection-room", "text", member);
           const jailRole = getRole("Jail", member);
           if (!jailChannel) {
             console.warn(`Jail channel not found`);

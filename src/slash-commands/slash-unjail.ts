@@ -34,7 +34,7 @@ export default function Command(): WSlashCommand {
         }
 
         // [Fetch associated roles and channels]
-        const channels = getChannels(["jail", "staff-log"]);
+        const channels = getChannels(["reflection-room", "staff-log"]);
         const jailRole = getRole("Jail", interaction);
         if (!channels) {
           await interaction.reply({
@@ -73,7 +73,7 @@ export default function Command(): WSlashCommand {
         }
 
         // [Send alerts]
-        await channels["jail"].send({
+        await channels["reflection-room"].send({
           embeds: [
             new EmbedBuilder()
               .setAuthor({
