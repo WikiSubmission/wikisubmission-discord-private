@@ -197,10 +197,12 @@ export default function listener(): WEventListener {
 
             // [Alert user]
             await jailChannel.send({
-              content: `<@${member.user.id}> **You have been jailed**. Please wait for a moderator to review the incident.`,
+              content: `<@${member.user.id}> **You have been put into the reflection room.** Please wait for a moderator to review the incident.`,
               embeds: [
                 new EmbedBuilder()
-                  .setDescription(`Reason: rejoined (previously jailed)`)
+                  .setDescription(
+                    `Reason: rejoined (previously in reflection room)`
+                  )
                   .addFields({
                     name: "User",
                     value: stringifyName(member),
@@ -220,12 +222,12 @@ export default function listener(): WEventListener {
               embeds: [
                 new EmbedBuilder()
                   .setAuthor({
-                    name: `${member.user.username} was jailed`,
+                    name: `${member.user.username} was put into the reflection room`,
                     iconURL: member.displayAvatarURL(),
                   })
                   .addFields({
                     name: "Reason",
-                    value: "Rejoined (previously jailed)",
+                    value: "Rejoined (previously in reflection room)",
                   })
                   .setFooter({
                     text: member.client.user.username,

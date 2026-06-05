@@ -4,6 +4,8 @@ import { getChannel } from "../utils/get-channel";
 import { logError } from "../utils/log-error";
 import { stimulateDelay } from "../utils/stimulate-delay";
 import { stringifyName } from "../utils/stringify-name";
+import { recordModeration } from "../utils/record-moderation";
+import { checkModeratorActivity } from "../utils/check-moderator-abuse";
 
 export default function listener(): WEventListener {
   return {
@@ -62,6 +64,36 @@ export default function listener(): WEventListener {
               .setColor("DarkRed"),
           ],
         });
+
+        // [Record for moderation history + abuse check]
+        // Only attribute a moderator if the audit entry is recent, otherwise a
+        // stale ban entry could be mis-credited (and wrongly inflate counts).
+        const isRecentBanLog =
+          !!banLog && Date.now() - banLog.createdTimestamp < 10000;
+        const moderatorId = isRecentBanLog
+          ? (banLog?.executor?.id ?? null)
+          : null;
+        const moderatorName = isRecentBanLog
+          ? (banLog?.executor?.displayName ?? null)
+          : null;
+
+        await recordModeration({
+          guildId: ban.guild.id,
+          userId: ban.user.id,
+          userName: ban.user.username,
+          action: "ban",
+          reason: ban.reason || banLog?.reason || null,
+          moderatorId,
+          moderatorName,
+        });
+
+        if (moderatorId) {
+          await checkModeratorActivity({
+            guild: ban.guild,
+            moderatorId,
+            moderatorName: moderatorName || moderatorId,
+          });
+        }
       } catch (error) {
         logError(error, __filename);
       }

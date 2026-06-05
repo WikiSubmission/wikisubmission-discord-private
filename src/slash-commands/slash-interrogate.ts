@@ -67,7 +67,7 @@ export default function Command(): WSlashCommand {
         // [Check if has jail role]
         if (suspect.roles.cache.has(getRole("Jail", interaction)?.id || "")) {
           await interaction.reply({
-            content: `User "<@${suspectID}>" is currently in jail. To move them out, use \`/unjail\`.`,
+            content: `User "<@${suspectID}>" is currently in the reflection room. To move them out, use \`/unjail\`.`,
             flags: ["Ephemeral"],
           });
           return;

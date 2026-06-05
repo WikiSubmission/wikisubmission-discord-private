@@ -6,21 +6,22 @@ import { getRole } from "../utils/get-role";
 import { getChannel, getChannels } from "../utils/get-channel";
 import { logError } from "../utils/log-error";
 import { authenticateMember } from "../utils/authenticate-member";
+import { recordModeration } from "../utils/record-moderation";
 
 export default function Command(): WSlashCommand {
   return {
     name: "jail",
-    description: "Jail a user",
+    description: "Send a user to the reflection room",
     options: [
       {
         name: "user",
-        description: "The user to jail",
+        description: "The user to send to the reflection room",
         type: 6,
         required: true,
       },
       {
         name: "reason",
-        description: "The reason for the jail",
+        description: "The reason for the reflection room",
         required: true,
         type: 3,
         max_length: 76,
@@ -48,7 +49,7 @@ export default function Command(): WSlashCommand {
         const jailRole = getRole("Jail", interaction);
         if (!channels) {
           await interaction.reply({
-            content: `At least one channel is missing: jail, staff-log`,
+            content: `At least one channel is missing: reflection-room, staff-log`,
             flags: ["Ephemeral"],
           });
           return;
@@ -56,7 +57,7 @@ export default function Command(): WSlashCommand {
 
         if (!jailRole) {
           await interaction.reply({
-            content: `Jail role not found`,
+            content: `Reflection room role not found`,
             flags: ["Ephemeral"],
           });
           return;
@@ -87,16 +88,27 @@ export default function Command(): WSlashCommand {
           await suspect.roles.add(jailRole);
         } catch (error) {
           await interaction.reply({
-            content: `Failed to jail user "<@${suspectID}>" (permission/role error).`,
+            content: `Failed to send user "<@${suspectID}>" to the reflection room (permission/role error).`,
             flags: ["Ephemeral"],
           });
           return;
         }
 
+        // [Record for moderation history]
+        await recordModeration({
+          guildId: suspect.guild.id,
+          userId: suspect.user.id,
+          userName: suspect.user.username,
+          action: "jail",
+          reason: reason || null,
+          moderatorId: interaction.user.id,
+          moderatorName: interaction.user.username,
+        });
+
         // [Send alerts]
         if (!reason?.includes("!testing")) {
           await channels["reflection-room"].send({
-            content: `<@${suspect.user.id}> **You have been jailed.** Please wait for a moderator to review the incident.`,
+            content: `<@${suspect.user.id}> **You have been put into the reflection room.** Please wait for a moderator to review the incident.`,
             embeds: [
               new EmbedBuilder()
                 .setDescription(reason || "No reason provided")
@@ -129,7 +141,7 @@ export default function Command(): WSlashCommand {
             embeds: [
               new EmbedBuilder()
                 .setAuthor({
-                  name: `${suspect.user.username} was jailed`,
+                  name: `${suspect.user.username} was put into the reflection room`,
                   iconURL: suspect.displayAvatarURL(),
                 })
                 .setDescription(reason || "No reason provided")
@@ -168,7 +180,7 @@ export default function Command(): WSlashCommand {
         }
         // [Reply]
         await interaction.reply({
-          content: `✅ Jailed <@${suspectID}>.`,
+          content: `✅ Sent <@${suspectID}> to the reflection room.`,
           flags: ["Ephemeral"],
         });
       } catch (error) {

@@ -19,7 +19,7 @@ export default function Command(): WUserCommand {
           console.error("Member not found when trying user jail.");
           await interaction.reply({
             content:
-              "Could not find member to unjail. Please try again, if this persist contact a dev. ",
+              "Could not find member to release from the reflection room. Please try again, if this persist contact a dev. ",
             flags: "Ephemeral",
           });
           return;
@@ -27,7 +27,7 @@ export default function Command(): WUserCommand {
         const jailRole = getRole("Jail", interaction);
         if (!jailRole) {
           await interaction.reply({
-            content: "Could not find jail role. Please contact a dev. ",
+            content: "Could not find reflection room role. Please contact a dev. ",
             flags: "Ephemeral",
           });
           return;
@@ -38,7 +38,7 @@ export default function Command(): WUserCommand {
           suspect instanceof GuildMember
         ) {
           await interaction.reply({
-            content: `User <@${suspect.id}> is not jailed`,
+            content: `User <@${suspect.id}> is not in the reflection room`,
             flags: "Ephemeral",
           });
           return;
@@ -49,7 +49,7 @@ export default function Command(): WUserCommand {
         ) {
           suspect.roles.remove(jailRole);
           await interaction.reply({
-            content: `User <@${suspect.id}> has been unjailed!`,
+            content: `User <@${suspect.id}> has been released from the reflection room!`,
             flags: "Ephemeral",
           });
           const staffChannel = getChannel("staff-log", "text", interaction);
@@ -83,7 +83,7 @@ export default function Command(): WUserCommand {
       } catch (error) {
         console.error(error);
         await interaction.reply({
-          content: "Could not find user to jail.",
+          content: "Could not find user to release from the reflection room.",
           flags: "Ephemeral",
         });
         return;

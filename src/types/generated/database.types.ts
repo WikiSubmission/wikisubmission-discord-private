@@ -89,6 +89,45 @@ export type Database = {
         };
         Relationships: [];
       };
+      ws_discord_moderation_logs: {
+        Row: {
+          action: string;
+          created_at: string;
+          guild_id: string;
+          id: number;
+          metadata: Json | null;
+          moderator_id: string | null;
+          moderator_name: string | null;
+          reason: string | null;
+          user_id: string;
+          user_name: string;
+        };
+        Insert: {
+          action: string;
+          created_at?: string;
+          guild_id: string;
+          id?: number;
+          metadata?: Json | null;
+          moderator_id?: string | null;
+          moderator_name?: string | null;
+          reason?: string | null;
+          user_id: string;
+          user_name?: string;
+        };
+        Update: {
+          action?: string;
+          created_at?: string;
+          guild_id?: string;
+          id?: number;
+          metadata?: Json | null;
+          moderator_id?: string | null;
+          moderator_name?: string | null;
+          reason?: string | null;
+          user_id?: string;
+          user_name?: string;
+        };
+        Relationships: [];
+      };
       ws_discord_message_deletion_schedule: {
         Row: {
           channel_id: string;

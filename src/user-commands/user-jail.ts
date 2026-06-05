@@ -10,6 +10,7 @@ import { getRole } from "../utils/get-role";
 import { authenticateMember } from "../utils/authenticate-member";
 import { DateUtils } from "../utils/date-utils";
 import { stringifyName } from "../utils/stringify-name";
+import { recordModeration } from "../utils/record-moderation";
 
 export default function Command(): WUserCommand {
   return {
@@ -22,7 +23,7 @@ export default function Command(): WUserCommand {
           console.error("Member not found when trying user jail.");
           await interaction.reply({
             content:
-              "Could not find member to jail. Please try again, if this persist contact a dev. ",
+              "Could not find member to send to the reflection room. Please try again, if this persist contact a dev. ",
             flags: "Ephemeral",
           });
           return;
@@ -38,7 +39,7 @@ export default function Command(): WUserCommand {
         const jailRole = getRole("Jail", interaction);
         if (!jailRole) {
           await interaction.reply({
-            content: "Could not find jail role. Please contact a dev. ",
+            content: "Could not find reflection room role. Please contact a dev. ",
             flags: "Ephemeral",
           });
           return;
@@ -50,7 +51,7 @@ export default function Command(): WUserCommand {
           suspect instanceof GuildMember
         ) {
           await interaction.reply({
-            content: `User <@${suspect.id}> is already jailed`,
+            content: `User <@${suspect.id}> is already in the reflection room`,
             flags: "Ephemeral",
           });
           return;
@@ -61,8 +62,18 @@ export default function Command(): WUserCommand {
         ) {
           suspect.roles.add(jailRole);
           await interaction.reply({
-            content: `User <@${suspect.id}> has been jailed!`,
+            content: `User <@${suspect.id}> has been put into the reflection room!`,
             flags: "Ephemeral",
+          });
+          // [Record for moderation history]
+          await recordModeration({
+            guildId: suspect.guild.id,
+            userId: suspect.user.id,
+            userName: suspect.user.username,
+            action: "jail",
+            reason: null,
+            moderatorId: interaction.user.id,
+            moderatorName: interaction.user.username,
           });
           const jailChannel = getChannel(
             "reflection-room",
@@ -74,7 +85,7 @@ export default function Command(): WUserCommand {
             console.error("No jail channel. Please create one. ");
           } else {
             await jailChannel.send({
-              content: `<@${suspect.user.id}> **You have been jailed.** Please wait for a moderator to review the incident.`,
+              content: `<@${suspect.user.id}> **You have been put into the reflection room.** Please wait for a moderator to review the incident.`,
               embeds: [
                 new EmbedBuilder()
                   // .setDescription(reason || 'No reason provided')
@@ -112,7 +123,7 @@ export default function Command(): WUserCommand {
               embeds: [
                 new EmbedBuilder()
                   .setAuthor({
-                    name: `${suspect.user.username} was jailed`,
+                    name: `${suspect.user.username} was put into the reflection room`,
                     iconURL: suspect.displayAvatarURL(),
                   })
                   // .setDescription(reason || 'No reason provided')
@@ -153,7 +164,7 @@ export default function Command(): WUserCommand {
       } catch (error) {
         console.error(error);
         await interaction.reply({
-          content: "Could not find user to jail.",
+          content: "Could not find user to send to the reflection room.",
           flags: "Ephemeral",
         });
         return;

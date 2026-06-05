@@ -7,11 +7,11 @@ import { logError } from "../utils/log-error";
 export default function Command(): WSlashCommand {
   return {
     name: "unjail",
-    description: "Unjail a user",
+    description: "Release a user from the reflection room",
     options: [
       {
         name: "user",
-        description: "The user to unjail",
+        description: "The user to release from the reflection room",
         type: 6,
         required: true,
       },
@@ -38,7 +38,7 @@ export default function Command(): WSlashCommand {
         const jailRole = getRole("Jail", interaction);
         if (!channels) {
           await interaction.reply({
-            content: `At least one channel is missing: jail, staff-log`,
+            content: `At least one channel is missing: reflection-room, staff-log`,
             flags: ["Ephemeral"],
           });
           return;
@@ -46,7 +46,7 @@ export default function Command(): WSlashCommand {
 
         if (!jailRole) {
           await interaction.reply({
-            content: `Jail role not found`,
+            content: `Reflection room role not found`,
             flags: ["Ephemeral"],
           });
           return;
@@ -55,7 +55,7 @@ export default function Command(): WSlashCommand {
         // [Check if already unjailed]
         if (!suspect.roles.cache.has(jailRole.id)) {
           await interaction.reply({
-            content: `User "<@${suspectID}>" is already unjailed.`,
+            content: `User "<@${suspectID}>" is already out of the reflection room.`,
             flags: ["Ephemeral"],
           });
           return;
@@ -66,7 +66,7 @@ export default function Command(): WSlashCommand {
           await suspect.roles.remove(jailRole);
         } catch (error) {
           await interaction.reply({
-            content: `Failed to unjail user "<@${suspectID}>" (permission/role error).`,
+            content: `Failed to release user "<@${suspectID}>" from the reflection room (permission/role error).`,
             flags: ["Ephemeral"],
           });
           return;
@@ -107,7 +107,7 @@ export default function Command(): WSlashCommand {
 
         // [Reply]
         await interaction.reply({
-          content: `✅ Unjailed <@${suspectID}>.`,
+          content: `✅ Released <@${suspectID}> from the reflection room.`,
           flags: ["Ephemeral"],
         });
       } catch (error) {
