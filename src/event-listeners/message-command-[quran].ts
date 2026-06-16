@@ -22,14 +22,15 @@ export default function listener(): WEventListener {
 
         await message.channel.sendTyping();
 
-        const formattedVerses = verses
-          .map((v) =>
-            v
-              .toLowerCase()
-              .replace(/^(eq|q)/i, "")
-              .replace(/\s+/g, "")
+        const formattedVerses = [...new Set(
+          verses.flatMap((v) =>
+            expandQuranVerseRef(
+              normalizeQuranVerseQuery(
+                v.toLowerCase().replace(/^(eq|q)/i, "")
+              )
+            )
           )
-          .join(",");
+        )].join(",");
 
         const langs = isEqCommand ? ["en", "ar"] : ["en"];
         const response = await wsApi.getQuran({ verses: formattedVerses, langs });
@@ -124,6 +125,24 @@ function detectQuranicVerses(text: string): string[] {
   });
 
   return [...new Set(processedMatches)];
+}
+
+function expandQuranVerseRef(ref: string): string[] {
+  const rangeMatch = ref.match(/^(\d{1,3}):(\d{1,3})-(\d{1,3})$/);
+  if (!rangeMatch) return [ref];
+
+  const [chapterPart, verseRange] = ref.split(":");
+  const [verseStartPart, verseEndPart] = verseRange.split("-");
+  const chapter = parseInt(chapterPart, 10);
+  const verseStart = parseInt(verseStartPart, 10);
+  const verseEnd = parseInt(verseEndPart, 10);
+
+  // Only prepend the basmallah for explicit ranges that start at verse 1.
+  if (chapter === 9 || chapter === 0 || verseStart !== 1) {
+    return [ref];
+  }
+
+  return [chapter + ":0", chapter + ":" + verseStart + "-" + verseEnd];
 }
 
 function safeMarkdown(s?: string | null): string {
