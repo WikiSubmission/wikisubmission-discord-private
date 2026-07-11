@@ -50,6 +50,33 @@ export type Database = {
         };
         Relationships: [];
       };
+      ws_discord_markers: {
+        Row: {
+          author_id: string | null;
+          author_name: string | null;
+          content: string;
+          created_at: string;
+          name: string;
+          updated_at: string;
+        };
+        Insert: {
+          author_id?: string | null;
+          author_name?: string | null;
+          content: string;
+          created_at?: string;
+          name: string;
+          updated_at?: string;
+        };
+        Update: {
+          author_id?: string | null;
+          author_name?: string | null;
+          content?: string;
+          created_at?: string;
+          name?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       ws_discord_members: {
         Row: {
           avatar_url: string;

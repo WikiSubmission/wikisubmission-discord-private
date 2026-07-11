@@ -1,0 +1,246 @@
+import { EmbedBuilder } from "discord.js";
+import { WSlashCommand } from "../types/w-slash-command";
+import { getSupabaseInternalClient } from "../utils/get-supabase-client";
+import { stringifyName } from "../utils/stringify-name";
+import { logError } from "../utils/log-error";
+
+const NAME_MAX_LENGTH = 64;
+const CONTENT_MAX_LENGTH = 1900;
+const LIST_LIMIT = 50;
+
+export default function Command(): WSlashCommand {
+  return {
+    name: "marker",
+    description: "Create and manage named markers (string notes)",
+    access_control: "COMMUNITY_AND_ABOVE",
+    options: [
+      {
+        name: "set",
+        description: "Create or update a marker",
+        type: 1, // SUB_COMMAND
+        options: [
+          {
+            name: "name",
+            description: "Unique name for the marker",
+            type: 3, // STRING
+            required: true,
+            max_length: NAME_MAX_LENGTH,
+          },
+          {
+            name: "content",
+            description: "The string content to store",
+            type: 3, // STRING
+            required: true,
+            max_length: CONTENT_MAX_LENGTH,
+          },
+        ],
+      },
+      {
+        name: "get",
+        description: "Show a marker's content",
+        type: 1, // SUB_COMMAND
+        options: [
+          {
+            name: "name",
+            description: "Name of the marker to show",
+            type: 3, // STRING
+            required: true,
+            max_length: NAME_MAX_LENGTH,
+          },
+        ],
+      },
+      {
+        name: "list",
+        description: "List all markers",
+        type: 1, // SUB_COMMAND
+      },
+      {
+        name: "delete",
+        description: "Delete a marker",
+        type: 1, // SUB_COMMAND
+        options: [
+          {
+            name: "name",
+            description: "Name of the marker to delete",
+            type: 3, // STRING
+            required: true,
+            max_length: NAME_MAX_LENGTH,
+          },
+        ],
+      },
+    ],
+    execute: async (interaction) => {
+      // [Subcommands are only available on chat input commands]
+      if (!interaction.isChatInputCommand()) return;
+
+      try {
+        await interaction.deferReply({ flags: ["Ephemeral"] });
+
+        const supaClient = getSupabaseInternalClient();
+        const subcommand = interaction.options.getSubcommand();
+
+        switch (subcommand) {
+          case "set": {
+            const name = interaction.options.getString("name", true).trim();
+            const content = interaction.options.getString("content", true);
+
+            if (!name) {
+              await interaction.editReply({
+                content: "❌ Marker name cannot be empty.",
+              });
+              return;
+            }
+
+            const timestamp = new Date().toISOString();
+            const { error } = await supaClient
+              .from("ws_discord_markers")
+              .upsert(
+                {
+                  name,
+                  content,
+                  updated_at: timestamp,
+                  author_id: interaction.user.id,
+                  author_name: stringifyName(interaction.member),
+                },
+                { onConflict: "name" }
+              );
+
+            if (error) {
+              console.error("[marker set] DB error:", error);
+              await interaction.editReply({
+                content: "❌ Failed to save marker. Check logs for details.",
+              });
+              return;
+            }
+
+            await interaction.editReply({
+              content: `✅ Marker **${name}** saved.`,
+            });
+            return;
+          }
+
+          case "get": {
+            const name = interaction.options.getString("name", true).trim();
+
+            const { data, error } = await supaClient
+              .from("ws_discord_markers")
+              .select("name, content, updated_at, author_name")
+              .eq("name", name)
+              .maybeSingle();
+
+            if (error) {
+              console.error("[marker get] DB error:", error);
+              await interaction.editReply({
+                content: "❌ Failed to fetch marker. Check logs for details.",
+              });
+              return;
+            }
+
+            if (!data) {
+              await interaction.editReply({
+                content: `❌ No marker named **${name}** found.`,
+              });
+              return;
+            }
+
+            const embed = new EmbedBuilder()
+              .setTitle(`📌 ${data.name}`)
+              .setDescription(data.content)
+              .setFooter({
+                text: data.author_name
+                  ? `Last updated by ${data.author_name}`
+                  : "Marker",
+              })
+              .setTimestamp(new Date(data.updated_at));
+
+            await interaction.editReply({ embeds: [embed] });
+            return;
+          }
+
+          case "list": {
+            const { data, error } = await supaClient
+              .from("ws_discord_markers")
+              .select("name, updated_at")
+              .order("updated_at", { ascending: false })
+              .limit(LIST_LIMIT);
+
+            if (error) {
+              console.error("[marker list] DB error:", error);
+              await interaction.editReply({
+                content: "❌ Failed to list markers. Check logs for details.",
+              });
+              return;
+            }
+
+            if (!data || data.length === 0) {
+              await interaction.editReply({
+                content: "📭 No markers have been created yet.",
+              });
+              return;
+            }
+
+            const lines = data
+              .map(
+                (m) =>
+                  `• **${m.name}** — updated <t:${Math.floor(
+                    new Date(m.updated_at).getTime() / 1000
+                  )}:R>`
+              )
+              .join("\n");
+
+            const embed = new EmbedBuilder()
+              .setTitle(`📌 Markers (${data.length})`)
+              .setDescription(lines);
+
+            await interaction.editReply({ embeds: [embed] });
+            return;
+          }
+
+          case "delete": {
+            const name = interaction.options.getString("name", true).trim();
+
+            const { data, error } = await supaClient
+              .from("ws_discord_markers")
+              .delete()
+              .eq("name", name)
+              .select("name");
+
+            if (error) {
+              console.error("[marker delete] DB error:", error);
+              await interaction.editReply({
+                content: "❌ Failed to delete marker. Check logs for details.",
+              });
+              return;
+            }
+
+            if (!data || data.length === 0) {
+              await interaction.editReply({
+                content: `❌ No marker named **${name}** found.`,
+              });
+              return;
+            }
+
+            await interaction.editReply({
+              content: `🗑️ Marker **${name}** deleted.`,
+            });
+            return;
+          }
+
+          default: {
+            await interaction.editReply({
+              content: `❌ Unknown subcommand: ${subcommand}`,
+            });
+            return;
+          }
+        }
+      } catch (err) {
+        logError(err, "slash-marker");
+        if (interaction.deferred || interaction.replied) {
+          await interaction.editReply({
+            content: "⚠️ Something went wrong while handling the marker.",
+          });
+        }
+      }
+    },
+  };
+}

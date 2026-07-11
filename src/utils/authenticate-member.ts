@@ -30,6 +30,16 @@ export function authenticateMember(
       requiredRoles.add("Developer");
       break;
 
+    case "COMMUNITY_AND_ABOVE":
+      requiredRoles.add("Community");
+      requiredRoles.add("Insider");
+      requiredRoles.add("Mod");
+      requiredRoles.add("Moderator");
+      requiredRoles.add("Admin");
+      requiredRoles.add("Administrator");
+      requiredRoles.add("Developer");
+      break;
+
     case "INSIDER_AND_ABOVE":
       requiredRoles.add("Insider");
       requiredRoles.add("Mod");
