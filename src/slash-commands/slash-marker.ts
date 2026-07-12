@@ -1,7 +1,10 @@
-import { AutocompleteInteraction, EmbedBuilder } from "discord.js";
+import {
+  AutocompleteInteraction,
+  EmbedBuilder,
+  GuildMember,
+} from "discord.js";
 import { WSlashCommand } from "../types/w-slash-command";
 import { getSupabaseInternalClient } from "../utils/get-supabase-client";
-import { stringifyName } from "../utils/stringify-name";
 import { logError } from "../utils/log-error";
 
 const NAME_MAX_LENGTH = 64;
@@ -137,8 +140,11 @@ export default function Command(): WSlashCommand {
                   content,
                   updated_at: timestamp,
                   author_id: interaction.user.id,
-                  // [Omit the <@id> tag: mentions do not render in embed footers]
-                  author_name: stringifyName(interaction.member, true).trim(),
+                  // [Store the display name only (e.g. "Hichem"), not the username]
+                  author_name:
+                    interaction.member instanceof GuildMember
+                      ? interaction.member.displayName
+                      : interaction.user.displayName,
                 },
                 { onConflict: "name" }
               );
