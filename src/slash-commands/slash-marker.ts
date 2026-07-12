@@ -106,11 +106,15 @@ export default function Command(): WSlashCommand {
       // [Subcommands are only available on chat input commands]
       if (!interaction.isChatInputCommand()) return;
 
+      const subcommand = interaction.options.getSubcommand();
+
       try {
-        await interaction.deferReply({ flags: ["Ephemeral"] });
+        // [Posting a marker (get) is public; management actions stay ephemeral]
+        await interaction.deferReply(
+          subcommand === "get" ? {} : { flags: ["Ephemeral"] }
+        );
 
         const supaClient = getSupabaseInternalClient();
-        const subcommand = interaction.options.getSubcommand();
 
         switch (subcommand) {
           case "set": {
@@ -133,7 +137,8 @@ export default function Command(): WSlashCommand {
                   content,
                   updated_at: timestamp,
                   author_id: interaction.user.id,
-                  author_name: stringifyName(interaction.member),
+                  // [Omit the <@id> tag: mentions do not render in embed footers]
+                  author_name: stringifyName(interaction.member, true).trim(),
                 },
                 { onConflict: "name" }
               );
@@ -176,13 +181,16 @@ export default function Command(): WSlashCommand {
               return;
             }
 
+            // [Strip any stored <@id> mention: it renders as raw text in footers]
+            const authorName = data.author_name
+              ?.replace(/<@!?\d+>/g, "")
+              .trim();
+
             const embed = new EmbedBuilder()
               .setTitle(`📌 ${data.name}`)
               .setDescription(data.content)
               .setFooter({
-                text: data.author_name
-                  ? `Last updated by ${data.author_name}`
-                  : "Marker",
+                text: authorName ? `Last updated by ${authorName}` : "Marker",
               })
               .setTimestamp(new Date(data.updated_at));
 
