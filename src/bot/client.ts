@@ -230,6 +230,30 @@ export class Bot {
     this.addEventListener("interactionCreate", async (interaction) => {
       const startTime = Date.now();
 
+      // ---- AUTOCOMPLETE ----
+      if (interaction.isAutocomplete()) {
+        const slashCommand = slashCommands.find(
+          (c) => c.name === interaction.commandName
+        );
+        if (!slashCommand?.autocomplete) return;
+
+        // [Only surface suggestions to authorized members]
+        if (
+          slashCommand.access_control &&
+          !authenticateMember(interaction.member, slashCommand.access_control)
+        ) {
+          await interaction.respond([]);
+          return;
+        }
+
+        try {
+          await slashCommand.autocomplete(interaction);
+        } catch (error) {
+          logError(error, `autocomplete (/${interaction.commandName})`);
+        }
+        return;
+      }
+
       // ---- SLASH COMMANDS ----
       if (interaction.isChatInputCommand()) {
         console.log(parseInteraction(interaction));

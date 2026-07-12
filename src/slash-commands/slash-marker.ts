@@ -1,4 +1,4 @@
-import { EmbedBuilder } from "discord.js";
+import { AutocompleteInteraction, EmbedBuilder } from "discord.js";
 import { WSlashCommand } from "../types/w-slash-command";
 import { getSupabaseInternalClient } from "../utils/get-supabase-client";
 import { stringifyName } from "../utils/stringify-name";
@@ -7,12 +7,43 @@ import { logError } from "../utils/log-error";
 const NAME_MAX_LENGTH = 64;
 const CONTENT_MAX_LENGTH = 1900;
 const LIST_LIMIT = 50;
+const AUTOCOMPLETE_LIMIT = 25; // Discord caps autocomplete at 25 choices.
+
+async function autocompleteMarkerNames(
+  interaction: AutocompleteInteraction
+): Promise<void> {
+  const focused = interaction.options.getFocused()?.toString() ?? "";
+
+  const supaClient = getSupabaseInternalClient();
+  let query = supaClient
+    .from("ws_discord_markers")
+    .select("name")
+    .order("updated_at", { ascending: false })
+    .limit(AUTOCOMPLETE_LIMIT);
+
+  if (focused.trim()) {
+    query = query.ilike("name", `%${focused.trim()}%`);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    console.error("[marker autocomplete] DB error:", error);
+    await interaction.respond([]);
+    return;
+  }
+
+  await interaction.respond(
+    (data ?? []).map((m) => ({ name: m.name, value: m.name }))
+  );
+}
 
 export default function Command(): WSlashCommand {
   return {
     name: "marker",
     description: "Create and manage named markers (string notes)",
     access_control: "COMMUNITY_AND_ABOVE",
+    autocomplete: autocompleteMarkerNames,
     options: [
       {
         name: "set",
@@ -46,6 +77,7 @@ export default function Command(): WSlashCommand {
             type: 3, // STRING
             required: true,
             max_length: NAME_MAX_LENGTH,
+            autocomplete: true,
           },
         ],
       },
@@ -65,6 +97,7 @@ export default function Command(): WSlashCommand {
             type: 3, // STRING
             required: true,
             max_length: NAME_MAX_LENGTH,
+            autocomplete: true,
           },
         ],
       },
