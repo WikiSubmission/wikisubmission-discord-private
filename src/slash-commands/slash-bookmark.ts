@@ -12,7 +12,7 @@ const CONTENT_MAX_LENGTH = 1900;
 const LIST_LIMIT = 50;
 const AUTOCOMPLETE_LIMIT = 25; // Discord caps autocomplete at 25 choices.
 
-async function autocompleteMarkerNames(
+async function autocompleteBookmarkNames(
   interaction: AutocompleteInteraction
 ): Promise<void> {
   const focused = interaction.options.getFocused()?.toString() ?? "";
@@ -31,7 +31,7 @@ async function autocompleteMarkerNames(
   const { data, error } = await query;
 
   if (error) {
-    console.error("[marker autocomplete] DB error:", error);
+    console.error("[bookmark autocomplete] DB error:", error);
     await interaction.respond([]);
     return;
   }
@@ -43,19 +43,19 @@ async function autocompleteMarkerNames(
 
 export default function Command(): WSlashCommand {
   return {
-    name: "marker",
-    description: "Create and manage named markers (string notes)",
+    name: "bookmark",
+    description: "Create and manage named bookmarks (string notes)",
     access_control: "COMMUNITY_AND_ABOVE",
-    autocomplete: autocompleteMarkerNames,
+    autocomplete: autocompleteBookmarkNames,
     options: [
       {
         name: "set",
-        description: "Create or update a marker",
+        description: "Create or update a bookmark",
         type: 1, // SUB_COMMAND
         options: [
           {
             name: "name",
-            description: "Unique name for the marker",
+            description: "Unique name for the bookmark",
             type: 3, // STRING
             required: true,
             max_length: NAME_MAX_LENGTH,
@@ -71,12 +71,12 @@ export default function Command(): WSlashCommand {
       },
       {
         name: "get",
-        description: "Show a marker's content",
+        description: "Show a bookmark's content",
         type: 1, // SUB_COMMAND
         options: [
           {
             name: "name",
-            description: "Name of the marker to show",
+            description: "Name of the bookmark to show",
             type: 3, // STRING
             required: true,
             max_length: NAME_MAX_LENGTH,
@@ -86,17 +86,17 @@ export default function Command(): WSlashCommand {
       },
       {
         name: "list",
-        description: "List all markers",
+        description: "List all bookmarks",
         type: 1, // SUB_COMMAND
       },
       {
         name: "delete",
-        description: "Delete a marker",
+        description: "Delete a bookmark",
         type: 1, // SUB_COMMAND
         options: [
           {
             name: "name",
-            description: "Name of the marker to delete",
+            description: "Name of the bookmark to delete",
             type: 3, // STRING
             required: true,
             max_length: NAME_MAX_LENGTH,
@@ -112,7 +112,7 @@ export default function Command(): WSlashCommand {
       const subcommand = interaction.options.getSubcommand();
 
       try {
-        // [Posting a marker (get) is public; management actions stay ephemeral]
+        // [Posting a bookmark (get) is public; management actions stay ephemeral]
         await interaction.deferReply(
           subcommand === "get" ? {} : { flags: ["Ephemeral"] }
         );
@@ -126,7 +126,7 @@ export default function Command(): WSlashCommand {
 
             if (!name) {
               await interaction.editReply({
-                content: "❌ Marker name cannot be empty.",
+                content: "❌ Bookmark name cannot be empty.",
               });
               return;
             }
@@ -150,15 +150,15 @@ export default function Command(): WSlashCommand {
               );
 
             if (error) {
-              console.error("[marker set] DB error:", error);
+              console.error("[bookmark set] DB error:", error);
               await interaction.editReply({
-                content: "❌ Failed to save marker. Check logs for details.",
+                content: "❌ Failed to save bookmark. Check logs for details.",
               });
               return;
             }
 
             await interaction.editReply({
-              content: `✅ Marker **${name}** saved.`,
+              content: `✅ Bookmark **${name}** saved.`,
             });
             return;
           }
@@ -173,16 +173,16 @@ export default function Command(): WSlashCommand {
               .maybeSingle();
 
             if (error) {
-              console.error("[marker get] DB error:", error);
+              console.error("[bookmark get] DB error:", error);
               await interaction.editReply({
-                content: "❌ Failed to fetch marker. Check logs for details.",
+                content: "❌ Failed to fetch bookmark. Check logs for details.",
               });
               return;
             }
 
             if (!data) {
               await interaction.editReply({
-                content: `❌ No marker named **${name}** found.`,
+                content: `❌ No bookmark named **${name}** found.`,
               });
               return;
             }
@@ -193,10 +193,10 @@ export default function Command(): WSlashCommand {
               .trim();
 
             const embed = new EmbedBuilder()
-              .setTitle(`📌 ${data.name}`)
+              .setTitle(`🔖 ${data.name}`)
               .setDescription(data.content)
               .setFooter({
-                text: authorName ? `Last updated by ${authorName}` : "Marker",
+                text: authorName ? `Last updated by ${authorName}` : "Bookmark",
               })
               .setTimestamp(new Date(data.updated_at));
 
@@ -212,16 +212,16 @@ export default function Command(): WSlashCommand {
               .limit(LIST_LIMIT);
 
             if (error) {
-              console.error("[marker list] DB error:", error);
+              console.error("[bookmark list] DB error:", error);
               await interaction.editReply({
-                content: "❌ Failed to list markers. Check logs for details.",
+                content: "❌ Failed to list bookmarks. Check logs for details.",
               });
               return;
             }
 
             if (!data || data.length === 0) {
               await interaction.editReply({
-                content: "📭 No markers have been created yet.",
+                content: "📭 No bookmarks have been created yet.",
               });
               return;
             }
@@ -236,7 +236,7 @@ export default function Command(): WSlashCommand {
               .join("\n");
 
             const embed = new EmbedBuilder()
-              .setTitle(`📌 Markers (${data.length})`)
+              .setTitle(`🔖 Bookmarks (${data.length})`)
               .setDescription(lines);
 
             await interaction.editReply({ embeds: [embed] });
@@ -253,22 +253,23 @@ export default function Command(): WSlashCommand {
               .select("name");
 
             if (error) {
-              console.error("[marker delete] DB error:", error);
+              console.error("[bookmark delete] DB error:", error);
               await interaction.editReply({
-                content: "❌ Failed to delete marker. Check logs for details.",
+                content:
+                  "❌ Failed to delete bookmark. Check logs for details.",
               });
               return;
             }
 
             if (!data || data.length === 0) {
               await interaction.editReply({
-                content: `❌ No marker named **${name}** found.`,
+                content: `❌ No bookmark named **${name}** found.`,
               });
               return;
             }
 
             await interaction.editReply({
-              content: `🗑️ Marker **${name}** deleted.`,
+              content: `🗑️ Bookmark **${name}** deleted.`,
             });
             return;
           }
@@ -281,10 +282,10 @@ export default function Command(): WSlashCommand {
           }
         }
       } catch (err) {
-        logError(err, "slash-marker");
+        logError(err, "slash-bookmark");
         if (interaction.deferred || interaction.replied) {
           await interaction.editReply({
-            content: "⚠️ Something went wrong while handling the marker.",
+            content: "⚠️ Something went wrong while handling the bookmark.",
           });
         }
       }
