@@ -34,6 +34,21 @@ export function logError(
     // Fallback for generic JS errors
     console.error(`[${context}] Error at ${source}: ${error.message}`);
     console.error(error.stack);
+    // undici hides the real reason (DNS, TLS, ECONNREFUSED) behind a bare
+    // "fetch failed", so unwrap the cause chain or the log is useless.
+    let cause: unknown = (error as Error & { cause?: unknown }).cause;
+    while (cause !== undefined && cause !== null) {
+      if (cause instanceof Error) {
+        const code = (cause as Error & { code?: string }).code;
+        console.error(
+          `Caused by: ${cause.name}: ${cause.message}${code ? ` (code: ${code})` : ""}`
+        );
+        cause = (cause as Error & { cause?: unknown }).cause;
+      } else {
+        console.error("Caused by:", cause);
+        break;
+      }
+    }
   } else {
     // Catch-all for unknown error types (e.g., string, null, object)
     console.error(`[${context}] Unknown error at ${source}:`, error);
