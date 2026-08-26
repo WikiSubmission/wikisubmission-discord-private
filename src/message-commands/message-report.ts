@@ -1,8 +1,8 @@
 import {
   ActionRowBuilder,
   ApplicationCommandType,
-  MessageContextMenuCommandInteraction,
   ModalBuilder,
+  ModalSubmitInteraction,
   TextChannel,
   TextInputBuilder,
   TextInputStyle,
@@ -18,8 +18,10 @@ export default function Command(): WMessageCommand {
     async execute(interaction) {
       console.log(`[ReportCommand] Triggered by ${interaction.user.tag}`);
 
+      let submission: ModalSubmitInteraction | null = null;
+
       try {
-        // ✅ Step 1: Show modal
+        // Step 1: Show modal
         const modal = new ModalBuilder()
           .setCustomId(`report-modal-${interaction.targetMessage.id}`)
           .setTitle("Report Message");
@@ -41,15 +43,20 @@ export default function Command(): WMessageCommand {
         await interaction.showModal(modal);
         console.log("[ReportCommand] Modal shown, waiting for submission...");
 
-        const submission = await interaction.awaitModalSubmit({
+        submission = await interaction.awaitModalSubmit({
           time: 5 * 60_000, // 5 minutes
           filter: (i) =>
-            i.customId === `report-modal-${interaction.targetMessage.id}`,
+            i.customId === `report-modal-${interaction.targetMessage.id}` &&
+            i.user.id === interaction.user.id,
         });
 
         console.log("[ReportCommand] Modal submitted.");
 
-        // ✅ Step 2: Extract reason + prepare report
+        // Acknowledge right away: everything below takes longer than the
+        // 3 second window Discord gives us to respond to the submission.
+        await submission.deferReply({ flags: ["Ephemeral"] });
+
+        // Step 2: Extract reason + prepare report
         const reason = submission.fields.getTextInputValue("reason");
         console.log(`[ReportCommand] Reason received: ${reason}`);
 
@@ -67,9 +74,8 @@ export default function Command(): WMessageCommand {
               content: `⚠️ Channel 'report-logs' not found. Please create one. <@${devRole.id}>`,
             });
           }
-          submission.reply({
+          await submission.editReply({
             content: "❌ Reporting channel not found. Please contact staff.",
-            ephemeral: true,
           });
           return;
         }
@@ -78,7 +84,7 @@ export default function Command(): WMessageCommand {
         const reporter = interaction.user;
         const suspect = targetMessage.author;
 
-        // ✅ Step 3: Create report thread
+        // Step 3: Create report thread
         console.log(`[ReportCommand] Creating thread for ${suspect?.tag}`);
         const thread = await reportChannel.threads.create({
           name: `Report: ${suspect?.username ?? "UnknownUser"}`,
@@ -95,7 +101,7 @@ export default function Command(): WMessageCommand {
           content: `**Reason:** ${reason}\n**Reported message:**\n> ${targetMessage.content || "(no text)"}\n[Jump to message](${targetMessage.url})`,
         });
 
-        // ✅ Step 4: Fetch context
+        // Step 4: Fetch context
         console.log("[ReportCommand] Fetching context...");
         const N = 5;
         const channel = targetMessage.channel as TextChannel;
@@ -111,12 +117,11 @@ export default function Command(): WMessageCommand {
           (a, b) => a.createdTimestamp - b.createdTimestamp
         );
 
+        const attachmentUrls: string[] = [];
         const contextText = sorted
           .map((m) => {
-            if (m.attachments.size > 0) {
-              for (const [, attachment] of m.attachments) {
-                thread.send({ content: `📎 ${attachment.url}` });
-              }
+            for (const [, attachment] of m.attachments) {
+              attachmentUrls.push(attachment.url);
             }
             const label = m.id === targetMessage.id ? "🔴 [REPORTED]" : "▫️";
             return `${label} **${m.author.tag}:** ${m.content || "(no text)"}`;
@@ -127,26 +132,31 @@ export default function Command(): WMessageCommand {
           content: `**Context (${N} before / ${N} after):**\n${contextText}`,
         });
 
-        // ✅ Step 5: Confirm success
+        for (const url of attachmentUrls) {
+          await thread.send({ content: `📎 ${url}` });
+        }
+
+        // Step 5: Confirm success
         console.log("[ReportCommand] Sending confirmation to reporter...");
-        await submission.reply({
+        await submission.editReply({
           content: "✅ Report logged. A moderator will review it shortly.",
-          ephemeral: true,
         });
         console.log("[ReportCommand] Done.");
       } catch (error) {
         console.error("[ReportCommand] Error:", error);
 
+        const responder = submission ?? interaction;
+
         try {
-          if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({
+          if (responder.deferred || responder.replied) {
+            await responder.followUp({
               content: "❌ Failed to log report. Please contact a moderator.",
-              ephemeral: true,
+              flags: ["Ephemeral"],
             });
           } else {
-            await interaction.reply({
+            await responder.reply({
               content: "❌ Failed to log report. Please contact a moderator.",
-              ephemeral: true,
+              flags: ["Ephemeral"],
             });
           }
         } catch (replyError) {

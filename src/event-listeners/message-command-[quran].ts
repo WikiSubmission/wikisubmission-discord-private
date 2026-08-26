@@ -91,6 +91,18 @@ export default function listener(): WEventListener {
         }
       } catch (error) {
         logError(error, __filename);
+        // Without this the user just sees the typing indicator stop and never
+        // learns the lookup failed.
+        try {
+          const msg = await message.reply(
+            "`Could not reach the Quran service. Please try again in a moment.`"
+          );
+          setTimeout(async () => {
+            try {
+              await msg.delete();
+            } catch (_) {}
+          }, 6000);
+        } catch (_) {}
       }
     },
   };
