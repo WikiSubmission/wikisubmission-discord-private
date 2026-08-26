@@ -1,4 +1,7 @@
 import { WEventListener } from '../types/w-event-listener'
+import { authenticateMember } from '../utils/authenticate-member'
+import { isDeleteReaction } from '../utils/is-delete-reaction'
+import { isQuranEmbed } from '../utils/is-quran-embed'
 
 export default function listener(): WEventListener {
   return {
@@ -31,6 +34,19 @@ export default function listener(): WEventListener {
         // Only handle messages from this bot
         if (message.author.id !== user.client.user.id) {
           return
+        }
+
+        // Quran embeds can be cleared by any community member, not only by the
+        // person who asked for them.
+        if (isDeleteReaction(reaction.emoji) && isQuranEmbed(message)) {
+          const member = await message.guild?.members
+            .fetch(user.id)
+            .catch(() => null)
+
+          if (member && authenticateMember(member, 'COMMUNITY_AND_ABOVE')) {
+            await message.delete()
+            return
+          }
         }
 
         // Check if this bot message was a reply to the same user reacting
