@@ -6,6 +6,7 @@ import {
   Snowflake,
 } from "discord.js";
 import { stringifyName } from "./stringify-name";
+import { MessageDeleter } from "./resolve-message-deleter";
 
 type AnyMessage = Message | PartialMessage;
 
@@ -51,10 +52,38 @@ const NO_CONTENT_DELETED = "*[content unavailable — message was not cached]*";
 const NO_CONTENT_ORIGINAL = "*[original content unavailable — not cached]*";
 const EMPTY_CONTENT = "*[no text content]*";
 
+const UNKNOWN_DELETER: Record<
+  Extract<MessageDeleter, { kind: "unknown" }>["reason"],
+  string
+> = {
+  "audit-log-unavailable": "`Unknown (audit log unreadable)`",
+  "uncached-author": "`Unknown (message was not cached)`",
+  inconclusive: "`Unknown (audit log was ambiguous)`",
+};
+
 /**
- * Embed for a single deleted message.
+ * Render who removed the message.
  */
-export function buildDeleteEmbed(message: AnyMessage): EmbedBuilder {
+function describeDeleter(
+  message: AnyMessage,
+  deletedBy: MessageDeleter | undefined
+): string {
+  if (!deletedBy) return UNKNOWN_DELETER["audit-log-unavailable"];
+  if (deletedBy.kind === "user") return stringifyName(deletedBy.user);
+  if (deletedBy.kind === "self") {
+    return `${describeAuthor(message)} *(self-deleted)*`;
+  }
+  return UNKNOWN_DELETER[deletedBy.reason];
+}
+
+/**
+ * Embed for a single deleted message. Pass `deletedBy` (resolved from the
+ * guild audit log) to attribute the deletion to a moderator or to the bot.
+ */
+export function buildDeleteEmbed(
+  message: AnyMessage,
+  deletedBy?: MessageDeleter
+): EmbedBuilder {
   const content = message.content
     ? truncate(message.content, FIELD_VALUE_LIMIT)
     : message.partial
@@ -66,6 +95,7 @@ export function buildDeleteEmbed(message: AnyMessage): EmbedBuilder {
     .setColor("DarkRed")
     .addFields(
       { name: "Author", value: describeAuthor(message) },
+      { name: "Deleted by", value: describeDeleter(message, deletedBy) },
       { name: "Channel", value: `<#${message.channelId}>` },
       { name: "Content", value: content }
     )

@@ -2,6 +2,7 @@ import { WEventListener } from "../types/w-event-listener";
 import { getChannel } from "../utils/get-channel";
 import { logError } from "../utils/log-error";
 import { buildDeleteEmbed } from "../utils/build-message-log-embed";
+import { resolveMessageDeleter } from "../utils/resolve-message-deleter";
 
 export default function listener(): WEventListener {
   return {
@@ -21,7 +22,12 @@ export default function listener(): WEventListener {
         // [Don't log activity happening inside the log channel itself]
         if (message.channelId === messageLogs.id) return;
 
-        await messageLogs.send({ embeds: [buildDeleteEmbed(message)] });
+        // [Who pulled the trigger: a moderator, this bot, or the author]
+        const deletedBy = await resolveMessageDeleter(message);
+
+        await messageLogs.send({
+          embeds: [buildDeleteEmbed(message, deletedBy)],
+        });
       } catch (error) {
         logError(error, __filename);
       }
